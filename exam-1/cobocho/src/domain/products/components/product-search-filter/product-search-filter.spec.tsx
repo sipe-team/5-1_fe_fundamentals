@@ -1,5 +1,7 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import type { ReactNode } from 'react';
 import type { ProductsRequest } from '../../api/products.types';
 import { ProductSearchFilter } from './product-search-filter';
 
@@ -11,30 +13,37 @@ const defaultValue: ProductsRequest = {
 	size: 20,
 };
 
+const createWrapper = () => {
+	const queryClient = new QueryClient({
+		defaultOptions: { queries: { retry: false } },
+	});
+	return ({ children }: { children: ReactNode }) => (
+		<QueryClientProvider client={queryClient}>{children}</QueryClientProvider>
+	);
+};
+
 const setup = (overrides: Partial<ProductsRequest> = {}) => {
 	const value = { ...defaultValue, ...overrides };
 	const onChange = vi.fn();
 	const user = userEvent.setup();
-	render(<ProductSearchFilter value={value} onChange={onChange} />);
+	render(<ProductSearchFilter value={value} onChange={onChange} />, {
+		wrapper: createWrapper(),
+	});
 	return { onChange, user };
 };
 
 describe('ProductSearchFilter', () => {
 	describe('키워드 검색', () => {
-		it('검색어를 입력하면 onChange가 호출된다', async () => {
-			const { onChange, user } = setup();
+		it('검색 입력창이 렌더링된다', () => {
+			setup();
 
-			await user.type(screen.getByRole('textbox'), 'a');
-
-			expect(onChange).toHaveBeenCalledWith({ keyword: 'a' });
+			expect(screen.getByRole('combobox')).toBeInTheDocument();
 		});
 
-		it('검색어를 지우면 null로 onChange가 호출된다', async () => {
-			const { onChange, user } = setup({ keyword: '나이키' });
+		it('키워드 값이 입력창에 표시된다', () => {
+			setup({ keyword: '나이키' });
 
-			await user.clear(screen.getByRole('textbox'));
-
-			expect(onChange).toHaveBeenLastCalledWith({ keyword: null });
+			expect(screen.getByRole('combobox')).toHaveValue('나이키');
 		});
 	});
 

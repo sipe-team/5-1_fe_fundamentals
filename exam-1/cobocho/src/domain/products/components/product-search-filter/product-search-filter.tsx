@@ -4,6 +4,7 @@ import type {
 	ProductsSortOption,
 } from '../../api/products.types';
 import { CATEGORY_LABELS, SORT_OPTION_LABELS } from '../../api/products.types';
+import { ProductAutoComplete } from '../product-autocomplete/product-autocomplete';
 import { cn } from '@/libs/cn';
 
 interface ProductSearchFilterProps {
@@ -36,14 +37,10 @@ export const ProductSearchFilter = ({
 
 	return (
 		<div className="flex items-center gap-4">
-			<label>
-				검색어
-				<input
-					type="text"
-					value={value.keyword ?? ''}
-					onChange={(e) => onChange({ keyword: e.target.value || null })}
-				/>
-			</label>
+			<ProductAutoComplete
+				value={value.keyword ?? ''}
+				onChange={(keyword) => onChange({ keyword: keyword || null })}
+			/>
 			<div className="flex gap-2 items-center">
 				{(Object.keys(CATEGORY_LABELS) as Category[]).map((category) => (
 					<label

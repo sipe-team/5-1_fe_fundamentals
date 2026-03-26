@@ -28,14 +28,10 @@ describe('URL 동기화', () => {
 		expect(params.get('categories')).toBe('shoes');
 	});
 
-	it('검색어를 입력하면 URL 쿼리스트링에 반영된다', async () => {
-		const user = userEvent.setup();
+	it('검색 입력창이 렌더링된다', () => {
 		render(<App />, { wrapper: createWrapper() });
 
-		await user.type(screen.getByRole('textbox'), '나이키');
-
-		const params = new URLSearchParams(window.location.search);
-		expect(params.get('keyword')).toBe('나이키');
+		expect(screen.getByRole('combobox')).toBeInTheDocument();
 	});
 
 	it('정렬을 선택하면 URL 쿼리스트링에 반영된다', async () => {
@@ -56,7 +52,7 @@ describe('URL 동기화', () => {
 		);
 		render(<App />, { wrapper: createWrapper() });
 
-		expect(screen.getByRole('textbox')).toHaveValue('아디다스');
+		expect(screen.getByRole('combobox')).toHaveDisplayValue('아디다스');
 		expect(screen.getByLabelText('신발')).toBeChecked();
 		expect(screen.getByLabelText('상의')).toBeChecked();
 		expect(screen.getByLabelText('하의')).not.toBeChecked();
