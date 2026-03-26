@@ -42,7 +42,7 @@ export const ProductAutoComplete = ({
 		onChangeRef.current(debouncedKeyword);
 	}, [debouncedKeyword]);
 
-	const { data } = useQuery({
+	const { data, isFetching } = useQuery({
 		...productsQuery.getAutoCompleteQueryOptions({ keyword: debouncedKeyword }),
 		enabled: debouncedKeyword.length > 0,
 		placeholderData: { suggestions: [] },
@@ -54,6 +54,7 @@ export const ProductAutoComplete = ({
 		<AutoComplete
 			value={keyword}
 			onChange={handleChange}
+			loading={isFetching}
 			onSelect={(selected) => {
 				setKeyword(selected);
 				onChange(selected);

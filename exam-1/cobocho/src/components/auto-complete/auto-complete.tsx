@@ -6,6 +6,7 @@ interface AutoCompleteProps
 	value: string;
 	onChange: (value: string) => void;
 	onSelect: (value: string) => void;
+	loading?: boolean;
 	children: React.ReactNode;
 }
 
@@ -13,6 +14,7 @@ export const AutoComplete = ({
 	value,
 	onChange,
 	onSelect,
+	loading = false,
 	children,
 	...props
 }: AutoCompleteProps) => {
@@ -90,8 +92,13 @@ export const AutoComplete = ({
 					activeIndex >= 0 ? `autocomplete-option-${activeIndex}` : undefined
 				}
 				placeholder="검색어를 입력하세요"
-				className="w-full rounded-md border border-gray-300 px-3 py-2 text-sm outline-none transition-colors focus:border-black"
+				className="w-full rounded-md border border-gray-300 px-3 py-2 pr-8 text-sm outline-none transition-colors focus:border-black"
 			/>
+			{loading && (
+				<div className="absolute right-2.5 top-1/2 -translate-y-1/2">
+					<div className="h-4 w-4 animate-spin rounded-full border-2 border-gray-300 border-t-black" />
+				</div>
+			)}
 			{open && items.length > 0 && (
 				<div
 					role="listbox"
