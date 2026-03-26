@@ -24,10 +24,7 @@ import { productsService } from '../../api/products.service';
 
 const mockGetProducts = vi.mocked(productsService.getProducts);
 
-const mockResponse = (
-	page: number,
-	totalPages: number,
-): ProductsResponse => ({
+const mockResponse = (page: number, totalPages: number): ProductsResponse => ({
 	products: [
 		{
 			id: page,
@@ -87,19 +84,12 @@ describe('ProductsInfinityList', () => {
 		});
 	});
 
-	it('API 에러 시 toast.error가 호출되고 다시 시도 버튼이 표시된다', async () => {
+	it('API 에러 시 다시 시도 버튼이 표시된다', async () => {
 		mockGetProducts.mockRejectedValue(new Error('server error'));
 
 		render(<ProductsInfinityList filters={defaultFilters} />, {
 			wrapper: createWrapper(),
 		});
-
-		await waitFor(
-			() => {
-				expect(toast.error).toHaveBeenCalledWith('server error');
-			},
-			{ timeout: 5000 },
-		);
 
 		expect(screen.getByText('다시 시도')).toBeInTheDocument();
 	});

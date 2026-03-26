@@ -1,7 +1,6 @@
 /** biome-ignore-all lint/suspicious/noArrayIndexKey: <explanation> */
 import { useInfiniteQuery } from '@tanstack/react-query';
-import { useCallback, useEffect } from 'react';
-import { toast } from 'sonner';
+import { useCallback } from 'react';
 import InfinityScroll from '@/components/infinity-scroll/infinity-scroll';
 import { Grid } from '@/components/layout';
 import { VStack } from '@/components/layout';
@@ -10,7 +9,6 @@ import type { ProductsRequest } from '../../api/products.types';
 import { ProductCard } from '../product-card/product-card';
 import { Skeleton } from '@/components/skeleton';
 import { Card } from '@/components/card';
-import { InternalServerError, ServiceUnavailableError } from '@/libs/errors';
 
 interface ProductsInfinityListProps {
 	filters: ProductsRequest;
@@ -28,18 +26,6 @@ export const ProductsInfinityList = ({
 		isLoading,
 		isError,
 	} = useInfiniteQuery(productsQuery.getInfiniteProductsQueryOptions(filters));
-
-	useEffect(
-		function handleProductFetchError() {
-			if (
-				error instanceof InternalServerError ||
-				error instanceof ServiceUnavailableError
-			) {
-				toast.error(error.message);
-			}
-		},
-		[error],
-	);
 
 	const handleFetchMore = useCallback(async () => {
 		await fetchNextPage();
