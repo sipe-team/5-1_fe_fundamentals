@@ -1,6 +1,6 @@
 import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
-import { useProducts } from '@/hooks/useProducts';
+import { useProducts } from '@/hooks/queries/useProducts';
 import { ProductCard } from './ProductCard';
 import {
   ProductFilterProvider,

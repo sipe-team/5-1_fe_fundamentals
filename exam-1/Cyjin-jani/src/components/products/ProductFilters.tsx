@@ -1,10 +1,7 @@
 import { RotateCcw } from 'lucide-react';
-import { type ChangeEvent, useCallback, useRef } from 'react';
-import { useDebounce } from '@/hooks/useDebounce';
 import type { Category, SortOption } from '@/types/product';
 import { Button } from '../ui/button';
 import { Checkbox } from '../ui/checkbox';
-import { Input } from '../ui/input';
 import {
   Select,
   SelectContent,
@@ -13,6 +10,7 @@ import {
   SelectValue,
 } from '../ui/select';
 import { useProductFilterContext } from './ProductFilterContext';
+import { SearchInput } from './SearchInput';
 
 const categories: Category[] = ['accessories', 'bottoms', 'shoes', 'tops'];
 
@@ -33,35 +31,18 @@ export const ProductFilters = () => {
     setSort,
     resetFilters,
   } = useProductFilterContext();
-  const inputRef = useRef<HTMLInputElement>(null);
-  const debouncedSetKeyword = useDebounce(setKeyword, 500);
 
   const handleFilterChange = (category: Category) => {
     toggleCategory(category);
-  };
-
-  const handleKeywordChange = useCallback(
-    (e: ChangeEvent<HTMLInputElement>) => {
-      debouncedSetKeyword(e.target.value);
-    },
-    [debouncedSetKeyword],
-  );
-
-  const handleReset = () => {
-    resetFilters();
-    if (inputRef.current) inputRef.current.value = '';
   };
 
   return (
     <div className="flex flex-col gap-4">
       <div className="relative flex w-full items-center">
         <div className="mx-auto w-full max-w-[360px]">
-          <Input
-            ref={inputRef}
-            className="w-full"
-            placeholder="keyword 검색"
+          <SearchInput
             defaultValue={filters.keyword}
-            onChange={handleKeywordChange}
+            onSearch={setKeyword}
           />
         </div>
         <Button
@@ -69,7 +50,7 @@ export const ProductFilters = () => {
           variant="outline"
           size="sm"
           disabled={!hasActiveFilters}
-          onClick={handleReset}
+          onClick={resetFilters}
           className="absolute right-0 gap-1.5"
         >
           <RotateCcw />
