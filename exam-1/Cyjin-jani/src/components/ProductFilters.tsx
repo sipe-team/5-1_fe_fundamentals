@@ -1,15 +1,30 @@
 import { type ChangeEvent, useCallback } from 'react';
 import { useDebounce } from '@/hooks/useDebounce';
 import { useProductFilters } from '@/hooks/useProductFilters';
-import type { Category } from '@/types/product';
+import type { Category, SortOption } from '@/types/product';
 import { Checkbox } from './ui/checkbox';
 import { Input } from './ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from './ui/select';
 
 const categories: Category[] = ['accessories', 'bottoms', 'shoes', 'tops'];
 
+const SORT_OPTIONS: { value: SortOption; label: string }[] = [
+  { value: 'newest', label: '최신순' },
+  { value: 'price_asc', label: '가격 낮은순' },
+  { value: 'price_desc', label: '가격 높은순' },
+  { value: 'rating', label: '평점순' },
+];
+
 export const ProductFilters = () => {
-  const { filters, isPending, setKeyword, toggleCategory } =
+  const { filters, isPending, setKeyword, toggleCategory, setSort } =
     useProductFilters();
+  console.log('🚀 ~ ProductFilters ~ isPending:', isPending);
 
   const debouncedSetKeyword = useDebounce(setKeyword, 500);
 
@@ -52,7 +67,21 @@ export const ProductFilters = () => {
           ))}
         </div>
 
-        <div>정렬 옵션</div>
+        <Select
+          value={filters.sort}
+          onValueChange={(v) => setSort(v as SortOption)}
+        >
+          <SelectTrigger>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            {SORT_OPTIONS.map(({ value, label }) => (
+              <SelectItem key={value} value={value}>
+                {label}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
       </div>
     </div>
   );
