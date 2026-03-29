@@ -1,16 +1,64 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback, useMemo, useSyncExternalStore } from 'react';
 import type {
   Category,
   Product,
   ProductFilters,
   SortOption,
 } from '@/types';
+import { ALL_CATEGORIES } from '@/shared/constants/product';
 
-const DEFAULT_FILTERS: ProductFilters = {
-  categories: [],
-  keyword: '',
-  sort: 'newest',
-};
+const VALID_SORTS: SortOption[] = ['price_asc', 'price_desc', 'newest', 'rating'];
+
+function getSearchParams(): URLSearchParams {
+  return new URLSearchParams(window.location.search);
+}
+
+function parseFilters(params: URLSearchParams): ProductFilters {
+  const categories = params
+    .getAll('categories')
+    .filter((c) => ALL_CATEGORIES.includes(c as Category)) as Category[];
+
+  const keyword = params.get('keyword') ?? '';
+
+  const sortParam = params.get('sort');
+  const sort: SortOption = VALID_SORTS.includes(sortParam as SortOption)
+    ? (sortParam as SortOption)
+    : 'newest';
+
+  return { categories, keyword, sort };
+}
+
+function buildSearch(filters: ProductFilters): string {
+  const parts: string[] = [];
+
+  for (const cat of filters.categories) {
+    parts.push(`categories=${cat}`);
+  }
+  if (filters.keyword.trim()) {
+    parts.push(`keyword=${encodeURIComponent(filters.keyword)}`);
+  }
+  if (filters.sort !== 'newest') {
+    parts.push(`sort=${filters.sort}`);
+  }
+
+  return parts.length > 0 ? parts.join('&') : '';
+}
+
+function setSearchParams(filters: ProductFilters) {
+  const search = buildSearch(filters);
+  const url = search ? `${window.location.pathname}?${search}` : window.location.pathname;
+  window.history.pushState(null, '', url);
+  window.dispatchEvent(new PopStateEvent('popstate'));
+}
+
+function subscribe(callback: () => void) {
+  window.addEventListener('popstate', callback);
+  return () => window.removeEventListener('popstate', callback);
+}
+
+function getSnapshot() {
+  return window.location.search;
+}
 
 function sortProducts(products: Product[], sort: SortOption): Product[] {
   const sorted = [...products];
@@ -32,7 +80,9 @@ function sortProducts(products: Product[], sort: SortOption): Product[] {
 }
 
 export function useFilters(products: Product[]) {
-  const [filters, setFilters] = useState<ProductFilters>(DEFAULT_FILTERS);
+  const search = useSyncExternalStore(subscribe, getSnapshot);
+
+  const filters = useMemo(() => parseFilters(getSearchParams()), [search]);
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
@@ -51,27 +101,28 @@ export function useFilters(products: Product[]) {
   }, [products, filters]);
 
   const toggleCategory = useCallback((category: Category) => {
-    setFilters((prev) => {
-      const has = prev.categories.includes(category);
-      return {
-        ...prev,
-        categories: has
-          ? prev.categories.filter((cat) => cat !== category)
-          : [...prev.categories, category],
-      };
+    const current = parseFilters(getSearchParams());
+    const has = current.categories.includes(category);
+    setSearchParams({
+      ...current,
+      categories: has
+        ? current.categories.filter((cat) => cat !== category)
+        : [...current.categories, category],
     });
   }, []);
 
   const setKeyword = useCallback((keyword: string) => {
-    setFilters((prev) => ({ ...prev, keyword }));
+    const current = parseFilters(getSearchParams());
+    setSearchParams({ ...current, keyword });
   }, []);
 
   const setSort = useCallback((sort: SortOption) => {
-    setFilters((prev) => ({ ...prev, sort }));
+    const current = parseFilters(getSearchParams());
+    setSearchParams({ ...current, sort });
   }, []);
 
   const resetFilters = useCallback(() => {
-    setFilters(DEFAULT_FILTERS);
+    setSearchParams({ categories: [], keyword: '', sort: 'newest' });
   }, []);
 
   const hasActiveFilters =
