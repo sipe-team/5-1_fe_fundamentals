@@ -8,7 +8,7 @@ interface ProductCardProps {
 
 export const ProductCard: FC<ProductCardProps> = ({
   product: { name, price, category, createdAt, rating, imageUrl },
-}: ProductCardProps) => {
+}) => {
   const formattedPrice = getFormattedKRPrice(price);
   const formattedDate = getFormattedKRDate(createdAt);
 
@@ -26,7 +26,9 @@ export const ProductCard: FC<ProductCardProps> = ({
       </div>
 
       <div className="flex flex-col gap-1 p-3">
-        <p className="text-sm font-medium text-gray-800 line-clamp-2 leading-snug">{name}</p>
+        <p className="text-sm font-medium text-gray-800 line-clamp-2 leading-snug">
+          {name}
+        </p>
 
         <div className="flex items-center gap-1 mt-0.5">
           <span className="text-yellow-400 text-xs">★</span>
@@ -34,7 +36,9 @@ export const ProductCard: FC<ProductCardProps> = ({
         </div>
 
         <div className="flex items-center justify-between mt-1">
-          <span className="text-sm font-bold text-gray-900">₩{formattedPrice}</span>
+          <span className="text-sm font-bold text-gray-900">
+            ₩{formattedPrice}
+          </span>
           <span className="text-xs text-gray-400">{formattedDate}</span>
         </div>
       </div>

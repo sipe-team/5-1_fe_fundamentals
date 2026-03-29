@@ -1,7 +1,6 @@
 import './styles/App.css';
 
 import { useQueryErrorResetBoundary } from '@tanstack/react-query';
-import { Suspense } from 'react';
 import {
   ErrorBoundary,
   type FallbackProps,
@@ -13,12 +12,10 @@ function App() {
   const { reset } = useQueryErrorResetBoundary();
 
   return (
-    <div className="w-full h-dvh bg-gray-200 mx-auto px-[80px]">
+    <div className="w-full h-dvh bg-white mx-auto px-[80px]">
       <h1>🧪 Exam 1: 다중 필터 상품 목록</h1>
       <ErrorBoundary FallbackComponent={ErrorFallback} onReset={reset}>
-        <Suspense fallback={<LoadingFallback />}>
-          <Products />
-        </Suspense>
+        <Products />
       </ErrorBoundary>
     </div>
   );
@@ -36,8 +33,4 @@ function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
       </button>
     </div>
   );
-}
-
-function LoadingFallback() {
-  return <div>loading...</div>;
 }
