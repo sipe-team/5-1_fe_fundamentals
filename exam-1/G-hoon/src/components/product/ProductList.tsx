@@ -1,4 +1,5 @@
 import { TriangleAlert } from 'lucide-react';
+import { useCallback } from 'react';
 import { useIntersectionObserver } from '@/hooks/useIntersectionObserver';
 import { useProducts } from '@/hooks/useProducts';
 import ProductCard from './ProductCard';
@@ -58,8 +59,12 @@ function ProductList() {
   const { products, error, fetchNextPage, hasNextPage, isFetchingNextPage } =
     useProducts();
 
+  const handleIntersect = useCallback(() => {
+    fetchNextPage();
+  }, [fetchNextPage]);
+
   const observerRef = useIntersectionObserver({
-    onIntersect: () => fetchNextPage(),
+    onIntersect: handleIntersect,
     enabled: hasNextPage && !isFetchingNextPage && !error,
     rootMargin: '1500px',
     threshold: 0,

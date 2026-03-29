@@ -2,6 +2,14 @@ import { createContext, useContext } from 'react';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import type { Category } from '@/types/product';
 
+const CATEGORY_ORDER: Category[] = ['shoes', 'tops', 'bottoms', 'accessories'];
+
+function normalizeCategories(categories: Category[]) {
+  return [...categories].sort(
+    (a, b) => CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b),
+  );
+}
+
 interface CategoryFilterContextValue {
   selected: Category[];
   toggle: (category: Category) => void;
@@ -31,9 +39,11 @@ function CategoryFilter({ children }: CategoryFilterProps) {
 
   const toggle = (category: Category) => {
     if (categories.includes(category)) {
-      setCategories(categories.filter((c) => c !== category));
+      setCategories(
+        normalizeCategories(categories.filter((c) => c !== category)),
+      );
     } else {
-      setCategories([...categories, category]);
+      setCategories(normalizeCategories([...categories, category]));
     }
   };
 
