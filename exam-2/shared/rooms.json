@@ -1,0 +1,142 @@
+[
+  {
+    "id": "room-a",
+    "name": "회의실 A (소)",
+    "floor": 2,
+    "capacity": 4,
+    "equipment": ["monitor", "whiteboard"]
+  },
+  {
+    "id": "room-b",
+    "name": "회의실 B (중)",
+    "floor": 3,
+    "capacity": 8,
+    "equipment": ["monitor", "whiteboard", "video_conference"]
+  },
+  {
+    "id": "room-c",
+    "name": "회의실 C (대)",
+    "floor": 3,
+    "capacity": 15,
+    "equipment": ["monitor", "whiteboard", "video_conference", "projector"]
+  },
+  {
+    "id": "room-d",
+    "name": "미팅룸 D (소)",
+    "floor": 4,
+    "capacity": 3,
+    "equipment": ["monitor"]
+  },
+  {
+    "id": "room-e",
+    "name": "미팅룸 E (중)",
+    "floor": 4,
+    "capacity": 6,
+    "equipment": ["monitor", "whiteboard"]
+  },
+  {
+    "id": "room-f",
+    "name": "회의실 F (소)",
+    "floor": 5,
+    "capacity": 4,
+    "equipment": ["monitor"]
+  },
+  {
+    "id": "room-g",
+    "name": "회의실 G (중)",
+    "floor": 5,
+    "capacity": 8,
+    "equipment": ["monitor", "whiteboard", "video_conference"]
+  },
+  {
+    "id": "room-h",
+    "name": "회의실 H (대)",
+    "floor": 5,
+    "capacity": 14,
+    "equipment": ["monitor", "whiteboard", "projector"]
+  },
+  {
+    "id": "room-i",
+    "name": "미팅룸 I (소)",
+    "floor": 6,
+    "capacity": 3,
+    "equipment": ["monitor"]
+  },
+  {
+    "id": "room-j",
+    "name": "미팅룸 J (중)",
+    "floor": 6,
+    "capacity": 6,
+    "equipment": ["monitor", "whiteboard"]
+  },
+  {
+    "id": "room-k",
+    "name": "회의실 K (대)",
+    "floor": 6,
+    "capacity": 12,
+    "equipment": ["monitor", "whiteboard", "video_conference", "projector"]
+  },
+  {
+    "id": "room-l",
+    "name": "포커스룸 L",
+    "floor": 7,
+    "capacity": 2,
+    "equipment": ["monitor"]
+  },
+  {
+    "id": "room-m",
+    "name": "포커스룸 M",
+    "floor": 7,
+    "capacity": 2,
+    "equipment": ["monitor"]
+  },
+  {
+    "id": "room-n",
+    "name": "워크숍룸 N",
+    "floor": 7,
+    "capacity": 10,
+    "equipment": ["whiteboard", "projector"]
+  },
+  {
+    "id": "room-o",
+    "name": "워크숍룸 O",
+    "floor": 8,
+    "capacity": 16,
+    "equipment": ["monitor", "whiteboard", "video_conference", "projector"]
+  },
+  {
+    "id": "room-p",
+    "name": "회의실 P (소)",
+    "floor": 8,
+    "capacity": 5,
+    "equipment": ["monitor", "whiteboard"]
+  },
+  {
+    "id": "room-q",
+    "name": "회의실 Q (중)",
+    "floor": 8,
+    "capacity": 7,
+    "equipment": ["monitor", "video_conference"]
+  },
+  {
+    "id": "room-r",
+    "name": "미팅룸 R (소)",
+    "floor": 9,
+    "capacity": 4,
+    "equipment": ["monitor"]
+  },
+  {
+    "id": "room-s",
+    "name": "미팅룸 S (중)",
+    "floor": 9,
+    "capacity": 6,
+    "equipment": ["monitor", "whiteboard"]
+  },
+  {
+    "id": "room-t",
+    "name": "전략회의실 T",
+    "floor": 9,
+    "capacity": 18,
+    "equipment": ["monitor", "whiteboard", "video_conference", "projector"]
+  }
+]

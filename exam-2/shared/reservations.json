@@ -1,0 +1,112 @@
+[
+  {
+    "id": "rsv-001",
+    "roomId": "room-a",
+    "date": "2026-04-07",
+    "startTime": "09:00",
+    "endTime": "10:00",
+    "title": "주간 스크럼",
+    "organizer": "김철수",
+    "attendees": 3,
+    "createdAt": "2026-04-01T09:00:00Z"
+  },
+  {
+    "id": "rsv-002",
+    "roomId": "room-a",
+    "date": "2026-04-07",
+    "startTime": "14:00",
+    "endTime": "15:30",
+    "title": "스프린트 회고",
+    "organizer": "김철수",
+    "attendees": 4,
+    "createdAt": "2026-04-01T09:10:00Z"
+  },
+  {
+    "id": "rsv-003",
+    "roomId": "room-b",
+    "date": "2026-04-07",
+    "startTime": "10:00",
+    "endTime": "12:00",
+    "title": "기획 회의",
+    "organizer": "박영희",
+    "attendees": 7,
+    "createdAt": "2026-04-01T10:00:00Z"
+  },
+  {
+    "id": "rsv-004",
+    "roomId": "room-b",
+    "date": "2026-04-07",
+    "startTime": "13:00",
+    "endTime": "14:00",
+    "title": "디자인 리뷰",
+    "organizer": "이민수",
+    "attendees": 5,
+    "createdAt": "2026-04-01T10:30:00Z"
+  },
+  {
+    "id": "rsv-005",
+    "roomId": "room-c",
+    "date": "2026-04-07",
+    "startTime": "09:00",
+    "endTime": "11:00",
+    "title": "전체 타운홀 미팅",
+    "organizer": "박영희",
+    "attendees": 12,
+    "createdAt": "2026-04-01T11:00:00Z"
+  },
+  {
+    "id": "rsv-006",
+    "roomId": "room-c",
+    "date": "2026-04-07",
+    "startTime": "15:00",
+    "endTime": "17:00",
+    "title": "분기 발표 리허설",
+    "organizer": "최지우",
+    "attendees": 10,
+    "createdAt": "2026-04-02T09:00:00Z"
+  },
+  {
+    "id": "rsv-007",
+    "roomId": "room-d",
+    "date": "2026-04-07",
+    "startTime": "11:00",
+    "endTime": "11:30",
+    "title": "1:1 면담",
+    "organizer": "이민수",
+    "attendees": 2,
+    "createdAt": "2026-04-02T14:00:00Z"
+  },
+  {
+    "id": "rsv-008",
+    "roomId": "room-e",
+    "date": "2026-04-07",
+    "startTime": "16:00",
+    "endTime": "17:30",
+    "title": "FE 스터디",
+    "organizer": "최지우",
+    "attendees": 5,
+    "createdAt": "2026-04-03T09:00:00Z"
+  },
+  {
+    "id": "rsv-009",
+    "roomId": "room-a",
+    "date": "2026-04-08",
+    "startTime": "10:00",
+    "endTime": "11:00",
+    "title": "코드 리뷰",
+    "organizer": "김철수",
+    "attendees": 3,
+    "createdAt": "2026-04-03T10:00:00Z"
+  },
+  {
+    "id": "rsv-010",
+    "roomId": "room-b",
+    "date": "2026-04-08",
+    "startTime": "14:00",
+    "endTime": "16:00",
+    "title": "신규 기능 브레인스토밍",
+    "organizer": "박영희",
+    "attendees": 6,
+    "createdAt": "2026-04-03T11:00:00Z"
+  }
+]
