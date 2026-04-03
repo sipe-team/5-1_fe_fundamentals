@@ -2,6 +2,14 @@ import { useTransition } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import type { Category, SortOption } from '@/types/product';
 
+/** URL·쿼리키가 선택 순서에 따라 달라지지 않도록 고정 순서 유지 */
+const CATEGORY_ORDER: Category[] = ['accessories', 'bottoms', 'shoes', 'tops'];
+
+const sortCategories = (categories: Category[]): Category[] =>
+  [...categories].sort(
+    (a, b) => CATEGORY_ORDER.indexOf(a) - CATEGORY_ORDER.indexOf(b),
+  );
+
 export interface ProductFiltersReturn {
   filters: {
     categories: Category[];
@@ -23,7 +31,7 @@ export const useProductFilters = (): ProductFiltersReturn => {
   const [isPending, startTransition] = useTransition();
 
   const filters = {
-    categories: searchParams.getAll('category') as Category[],
+    categories: sortCategories(searchParams.getAll('category') as Category[]),
     keyword: searchParams.get('keyword') ?? '',
     sort: (searchParams.get('sort') as SortOption) ?? DEFAULT_SORT,
   };
@@ -50,18 +58,17 @@ export const useProductFilters = (): ProductFiltersReturn => {
   const toggleCategory = (category: Category) => {
     startTransition(() => {
       setSearchParams((params) => {
-        const current = params.getAll('category');
+        const current = params.getAll('category') as Category[];
+        const next = sortCategories(
+          current.includes(category)
+            ? current.filter((c) => c !== category)
+            : [...current, category],
+        );
 
-        if (current.includes(category)) {
-          params.delete('category');
-          current
-            .filter((cur) => cur !== category)
-            .forEach((c) => {
-              params.append('category', c);
-            });
-        } else {
-          params.append('category', category);
-        }
+        params.delete('category');
+        next.forEach((c) => {
+          params.append('category', c);
+        });
 
         return params;
       });

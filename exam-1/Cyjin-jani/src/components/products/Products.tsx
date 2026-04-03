@@ -1,5 +1,11 @@
+import { useQueryErrorResetBoundary } from '@tanstack/react-query';
 import { Loader2 } from 'lucide-react';
 import { Suspense } from 'react';
+import {
+  ErrorBoundary,
+  type FallbackProps,
+  getErrorMessage,
+} from 'react-error-boundary';
 import { useProducts } from '@/hooks/queries/useProducts';
 import { ProductCard } from './ProductCard';
 import {
@@ -8,16 +14,22 @@ import {
 } from './ProductFilterContext';
 import { ProductFilters } from './ProductFilters';
 
-export const Products = () => (
-  <ProductFilterProvider>
-    <div className="w-full max-w-[860px] mx-auto px-4 py-6">
-      <ProductFilters />
-      <Suspense fallback={<LoadingFallback />}>
-        <ProductList />
-      </Suspense>
-    </div>
-  </ProductFilterProvider>
-);
+export const Products = () => {
+  const { reset } = useQueryErrorResetBoundary();
+
+  return (
+    <ProductFilterProvider>
+      <div className="w-full max-w-[860px] mx-auto px-4 py-6">
+        <ProductFilters />
+        <ErrorBoundary FallbackComponent={ErrorFallback} onReset={reset}>
+          <Suspense fallback={<LoadingFallback />}>
+            <ProductList />
+          </Suspense>
+        </ErrorBoundary>
+      </div>
+    </ProductFilterProvider>
+  );
+};
 
 const LoadingFallback = () => (
   <div className="grid grid-cols-4 gap-4 mt-6">
@@ -35,9 +47,9 @@ const LoadingFallback = () => (
 
 const ProductList = () => {
   const { filters, isPending } = useProductFilterContext();
-  const { data } = useProducts(filters);
+  const { data: products } = useProducts(filters);
 
-  if (data.products.length === 0) {
+  if (products.length === 0) {
     return (
       <div className="mt-6 flex items-center justify-center py-20 text-gray-400">
         찾으시는 상품이 없습니다.
@@ -55,10 +67,22 @@ const ProductList = () => {
       <div
         className={`grid grid-cols-4 gap-4 transition-opacity duration-200 ${isPending ? 'opacity-40 pointer-events-none' : 'opacity-100'}`}
       >
-        {data.products.map((product) => (
+        {products.map((product) => (
           <ProductCard key={product.id} product={product} />
         ))}
       </div>
     </div>
   );
 };
+
+function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
+  return (
+    <div role="alert">
+      <p>Something went wrong :(</p>
+      <pre style={{ color: 'red' }}>{getErrorMessage(error)}</pre>
+      <button type="button" onClick={resetErrorBoundary}>
+        Retry
+      </button>
+    </div>
+  );
+}

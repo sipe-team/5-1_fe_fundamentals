@@ -5,7 +5,7 @@ import {
   useRef,
   useState,
 } from 'react';
-import { useAutoComplete } from '@/hooks/queries/useAutocomplete';
+import { useAutoComplete } from '@/hooks/queries/useAutoComplete';
 import { useAutocompleteDropdown } from '@/hooks/useAutocompleteDropdown';
 import { useDebounce } from '@/hooks/useDebounce';
 import { Input } from '../ui/input';

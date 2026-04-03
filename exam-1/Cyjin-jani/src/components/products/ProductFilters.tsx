@@ -40,10 +40,7 @@ export const ProductFilters = () => {
     <div className="flex flex-col gap-4">
       <div className="relative flex w-full items-center">
         <div className="mx-auto w-full max-w-[360px]">
-          <SearchInput
-            defaultValue={filters.keyword}
-            onSearch={setKeyword}
-          />
+          <SearchInput defaultValue={filters.keyword} onSearch={setKeyword} />
         </div>
         <Button
           type="button"
@@ -62,16 +59,18 @@ export const ProductFilters = () => {
           className={`flex items-center gap-[12px] transition-opacity ${isPending ? 'opacity-50 pointer-events-none' : 'opacity-100'}`}
         >
           {categories.map((category) => (
-            <div key={category} className="flex items-center gap-2">
+            <label
+              key={category}
+              htmlFor={category}
+              className="flex cursor-pointer items-center gap-2 text-sm"
+            >
               <Checkbox
                 id={category}
                 checked={filters.categories.includes(category)}
                 onCheckedChange={() => handleFilterChange(category)}
               />
-              <label htmlFor={category} className="text-sm cursor-pointer">
-                {category}
-              </label>
-            </div>
+              <span>{category}</span>
+            </label>
           ))}
         </div>
 

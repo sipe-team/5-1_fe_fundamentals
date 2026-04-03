@@ -29,15 +29,11 @@ const fetchProducts = async (
 };
 
 export const useProducts = (filters: ProductFilters) => {
-  const query = useSuspenseQuery<IProductsResponse>({
-    queryKey: [
-      'products',
-      filters.keyword,
-      filters.sort,
-      filters.categories.join(','),
-    ],
-    queryFn: () => fetchProducts(filters),
-  });
+  const { keyword, sort, categories } = filters;
 
-  return query;
+  return useSuspenseQuery({
+    queryKey: ['products', keyword, sort, categories.join(',')],
+    queryFn: () => fetchProducts(filters),
+    select: (data: IProductsResponse) => data.products,
+  });
 };
