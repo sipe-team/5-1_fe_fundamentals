@@ -6,7 +6,7 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { LoadingFallback } from '@/shared/components/LoadingFallback';
 import { QueryErrorFallback } from '@/shared/components/QueryErrorFallback';
 
-import { ReservationForm } from '@/features/reservations/components/ReservationForm';
+import { ReservationForm } from '@/features/reservations/components/create/ReservationForm';
 
 export function ReservationAddPage() {
   const [searchParams] = useSearchParams();

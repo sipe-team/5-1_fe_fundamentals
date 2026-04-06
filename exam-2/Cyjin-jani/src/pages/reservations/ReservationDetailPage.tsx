@@ -1,13 +1,11 @@
 import { Suspense } from 'react';
-import { Link, useParams } from 'react-router-dom';
-import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
+import { useParams } from 'react-router-dom';
+import { ErrorBoundary } from 'react-error-boundary';
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { HTTPError } from 'ky';
 
-import { ReservationDetail } from '@/features/reservations/components/ReservationDetail';
+import { ReservationDetail } from '@/features/reservations/components/detail/ReservationDetail';
 import { LoadingFallback } from '@/shared/components/LoadingFallback';
-import { QueryErrorFallback } from '@/shared/components/QueryErrorFallback';
-import { Button } from '@/shared/components/ui/button';
+import { ReservationDetailErrorFallback } from '@/features/reservations/components/detail/ReservationDetailErrorFallback';
 
 export function ReservationDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -20,7 +18,7 @@ export function ReservationDetailPage() {
 
       <QueryErrorResetBoundary>
         {({ reset }) => (
-          <ErrorBoundary onReset={reset} FallbackComponent={ErrorFallback}>
+          <ErrorBoundary onReset={reset} FallbackComponent={ReservationDetailErrorFallback}>
             <Suspense fallback={<LoadingFallback />}>
               <ReservationDetail id={id} />
             </Suspense>
@@ -29,22 +27,4 @@ export function ReservationDetailPage() {
       </QueryErrorResetBoundary>
     </main>
   );
-}
-
-function ErrorFallback({ error, resetErrorBoundary }: FallbackProps) {
-  const is404 = error instanceof HTTPError && error.response.status === 404;
-
-  if (is404) {
-    return (
-      <div className="flex flex-col items-center gap-4 py-16 text-center">
-        <p className="text-lg font-medium">예약을 찾을 수 없습니다.</p>
-        <p className="text-sm text-muted-foreground">존재하지 않거나 이미 취소된 예약입니다.</p>
-        <Button asChild variant="outline">
-          <Link to="/">타임라인으로 돌아가기</Link>
-        </Button>
-      </div>
-    );
-  }
-
-  return <QueryErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />;
 }

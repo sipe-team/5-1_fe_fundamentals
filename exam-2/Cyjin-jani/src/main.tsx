@@ -5,7 +5,6 @@ import { Toaster } from '@/shared/components/ui/sonner';
 import App from './App';
 import { DevToolPanel } from './DevToolPanel';
 import { initializeMockStorage } from './mocks/storage';
-// import './styles/reset.css';
 import './styles/tailwind.css';
 
 const queryClient = new QueryClient({

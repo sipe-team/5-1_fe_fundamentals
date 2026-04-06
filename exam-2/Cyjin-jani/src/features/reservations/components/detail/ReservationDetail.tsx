@@ -5,18 +5,11 @@ import { toast } from 'sonner';
 import { CalendarIcon, ClockIcon, UserIcon, UsersIcon, BuildingIcon } from 'lucide-react';
 
 import { Button } from '@/shared/components/ui/button';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-} from '@/shared/components/ui/dialog';
 import { useReservation } from '@/features/reservations/hooks/queries/useReservation';
 import { useDeleteReservation } from '@/features/reservations/hooks/queries/useDeleteReservation';
 import { reservationsQueryKeys } from '@/features/reservations/hooks/queries/querykeys';
-import { useRooms } from '@/features/rooms/hooks/queries/useRooms';
+import { useRoomName } from '@/features/rooms/hooks/useRoomName';
+import { ReservationCancelDialog } from './ReservationCancelDialog';
 
 interface ReservationDetailProps {
   id: string;
@@ -28,9 +21,7 @@ export function ReservationDetail({ id }: ReservationDetailProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: reservation } = useReservation(id);
-  const { data: rooms } = useRooms();
-
-  const roomName = rooms.find((r) => r.id === reservation.roomId)?.name ?? reservation.roomId;
+  const roomName = useRoomName(reservation.roomId);
 
   const { mutate: deleteReservation, isPending } = useDeleteReservation({
     onSuccess: () => {
@@ -102,25 +93,13 @@ export function ReservationDetail({ id }: ReservationDetailProps) {
         </div>
       </div>
 
-      <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent showCloseButton={false}>
-          <DialogHeader>
-            <DialogTitle>예약을 취소하시겠습니까?</DialogTitle>
-            <DialogDescription>
-              <span className="font-medium text-foreground">{reservation.title}</span> 예약을
-              취소하면 되돌릴 수 없습니다.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setIsDialogOpen(false)} disabled={isPending}>
-              닫기
-            </Button>
-            <Button variant="destructive" onClick={handleConfirmCancel} disabled={isPending}>
-              {isPending ? '취소 중...' : '예약 취소'}
-            </Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ReservationCancelDialog
+        open={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
+        onConfirm={handleConfirmCancel}
+        reservationTitle={reservation.title}
+        isPending={isPending}
+      />
     </>
   );
 }

@@ -18,19 +18,19 @@ const EQUIPMENT_OPTIONS: { value: Equipment; label: string }[] = [
   { value: 'projector', label: '프로젝터' },
 ];
 
-interface RoomFilterProps {
+interface RoomsFilterProps {
   capacity: number | null;
   equipment: Equipment[];
   onCapacityChange: (value: number | null) => void;
   onEquipmentChange: (value: Equipment[]) => void;
 }
 
-export function RoomFilter({
+export function RoomsFilter({
   capacity,
   equipment,
   onCapacityChange,
   onEquipmentChange,
-}: RoomFilterProps) {
+}: RoomsFilterProps) {
   const handleEquipmentToggle = (item: Equipment, checked: boolean) => {
     if (checked) {
       onEquipmentChange([...equipment, item]);

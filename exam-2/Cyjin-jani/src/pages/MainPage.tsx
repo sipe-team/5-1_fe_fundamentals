@@ -5,7 +5,7 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { ChevronLeft, ChevronRight } from 'lucide-react';
 
 import { TimelineTable } from '@/features/reservations/components/TimelineTable';
-import { RoomFilter } from '@/features/rooms/components/RoomFilter';
+import { RoomsFilter } from '@/features/rooms/components/RoomsFilter';
 import { formatLocalDate } from '@/lib/dateFormat';
 import { LoadingFallback } from '@/shared/components/LoadingFallback';
 import { QueryErrorFallback } from '@/shared/components/QueryErrorFallback';
@@ -84,7 +84,7 @@ export function MainPage() {
       </div>
 
       <div className="mb-4 w-full flex justify-center">
-        <RoomFilter
+        <RoomsFilter
           capacity={selectedCapacity}
           equipment={selectedEquipment}
           onCapacityChange={handleCapacityChange}

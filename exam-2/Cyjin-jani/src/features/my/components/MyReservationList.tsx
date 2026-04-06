@@ -2,13 +2,18 @@ import { useNavigate } from 'react-router-dom';
 import { CalendarIcon, ClockIcon, BuildingIcon } from 'lucide-react';
 
 import { useMyReservations } from '@/features/my/hooks/queries/useMyReservations';
-import { useRooms } from '@/features/rooms/hooks/queries/useRooms';
+import { useRoomName } from '@/features/rooms/hooks/useRoomName';
 import { Button } from '@/shared/components/ui/button';
+import type { Reservation } from '@/features/reservations/types';
+
+interface MyReservationItemProps {
+  reservation: Reservation;
+  onClick: () => void;
+}
 
 export function MyReservationList() {
   const navigate = useNavigate();
   const { data: reservations } = useMyReservations();
-  const { data: rooms } = useRooms();
 
   const isEmpty = reservations.length === 0;
 
@@ -28,37 +33,45 @@ export function MyReservationList() {
 
   return (
     <ul className="flex w-full flex-col gap-3">
-      {reservations.map((reservation) => {
-        const roomName = rooms.find((r) => r.id === reservation.roomId)?.name ?? reservation.roomId;
-
-        return (
-          <li key={reservation.id}>
-            <button
-              type="button"
-              className="w-full rounded-xl border bg-card p-4 text-left shadow-sm transition-colors hover:bg-accent"
-              onClick={() => navigate(`/reservations/${reservation.id}`)}
-            >
-              <p className="mb-3 font-semibold">{reservation.title}</p>
-              <dl className="flex flex-col gap-1.5">
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <BuildingIcon className="h-3.5 w-3.5 shrink-0" />
-                  <dd>{roomName}</dd>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
-                  <dd>{reservation.date}</dd>
-                </div>
-                <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                  <ClockIcon className="h-3.5 w-3.5 shrink-0" />
-                  <dd>
-                    {reservation.startTime} ~ {reservation.endTime}
-                  </dd>
-                </div>
-              </dl>
-            </button>
-          </li>
-        );
-      })}
+      {reservations.map((reservation) => (
+        <MyReservationItem
+          key={reservation.id}
+          reservation={reservation}
+          onClick={() => navigate(`/reservations/${reservation.id}`)}
+        />
+      ))}
     </ul>
+  );
+}
+
+function MyReservationItem({ reservation, onClick }: MyReservationItemProps) {
+  const roomName = useRoomName(reservation.roomId);
+
+  return (
+    <li>
+      <button
+        type="button"
+        className="w-full rounded-xl border bg-card p-4 text-left shadow-sm transition-colors hover:bg-accent"
+        onClick={onClick}
+      >
+        <p className="mb-3 font-semibold">{reservation.title}</p>
+        <dl className="flex flex-col gap-1.5">
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <BuildingIcon className="h-3.5 w-3.5 shrink-0" />
+            <dd>{roomName}</dd>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <CalendarIcon className="h-3.5 w-3.5 shrink-0" />
+            <dd>{reservation.date}</dd>
+          </div>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <ClockIcon className="h-3.5 w-3.5 shrink-0" />
+            <dd>
+              {reservation.startTime} ~ {reservation.endTime}
+            </dd>
+          </div>
+        </dl>
+      </button>
+    </li>
   );
 }

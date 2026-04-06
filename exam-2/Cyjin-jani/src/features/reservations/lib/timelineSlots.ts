@@ -59,3 +59,11 @@ export const TIMELINE_HOURS: number[] = Array.from(
   { length: TOTAL_HOURS },
   (_, i) => START_HOUR + i,
 );
+
+export const END_TIME_SLOTS = TIMELINE_SLOTS.map((slot) => ({
+  label: formatMinutesAsTime(slot.endMinutes),
+  value: formatMinutesAsTime(slot.endMinutes),
+})).filter((slot) => {
+  const [h, m] = slot.value.split(':').map(Number);
+  return h * 60 + m <= TIMELINE_BUSINESS_LAST_SLOT_START_MINUTES + TIMELINE_SLOT_MINUTES;
+});
