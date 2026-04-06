@@ -5,7 +5,7 @@ import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { HTTPError } from 'ky';
 
 import { ReservationDetail } from '@/features/reservations/components/ReservationDetail';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/components/ui/button';
 
 export function ReservationDetailPage() {
   const { id } = useParams<{ id: string }>();

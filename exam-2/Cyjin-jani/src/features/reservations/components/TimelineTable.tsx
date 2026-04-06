@@ -14,13 +14,27 @@ import {
   TIMELINE_HOURS,
 } from '@/features/reservations/lib/timelineSlots';
 import { cn } from '@/lib/utils';
+import type { Equipment } from '@/features/rooms/types';
 
-export function TimelineTable({ date }: { date: string }) {
+interface TimelineTableProps {
+  date: string;
+  capacity?: number | null;
+  equipment?: Equipment[];
+}
+
+export function TimelineTable({ date, capacity = null, equipment = [] }: TimelineTableProps) {
   const navigate = useNavigate();
   const { data: rooms } = useRooms();
   const { data: reservations } = useReservations(date);
 
-  const sortedRooms = useMemo(() => sortRoomsByFloorAndName(rooms), [rooms]);
+  const sortedRooms = useMemo(() => {
+    const sorted = sortRoomsByFloorAndName(rooms);
+    return sorted.filter((room) => {
+      if (capacity !== null && room.capacity < capacity) return false;
+      if (equipment.length > 0 && !equipment.every((e) => room.equipment.includes(e))) return false;
+      return true;
+    });
+  }, [rooms, capacity, equipment]);
   const byRoom = useMemo(() => groupReservationsByRoomId(reservations), [reservations]);
 
   const handleReservationClick = (reservationId: string) => {
@@ -32,9 +46,11 @@ export function TimelineTable({ date }: { date: string }) {
   };
 
   return (
-    <section>
-      <p className="mb-2 text-sm text-gray-600">예약 {reservations.length}건</p>
-      <div className="w-fit max-w-full max-h-[calc(100dvh-12rem)] overflow-y-auto overflow-x-auto overscroll-none rounded-lg border border-slate-200 border-r-0 bg-white">
+    <section className="flex flex-col min-h-0 flex-1 w-full">
+      <p className="mb-2 text-sm text-gray-600">
+        {date} 예약된 회의실 : {reservations.length}건
+      </p>
+      <div className="w-fit max-w-full overflow-y-auto overflow-x-auto overscroll-none rounded-lg border border-slate-200 border-r-0 bg-white">
         <table className="w-fit border-separate border-spacing-0  text-sm">
           <thead>
             <tr>

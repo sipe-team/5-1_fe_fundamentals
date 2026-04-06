@@ -4,7 +4,7 @@ import { useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import { CalendarIcon, ClockIcon, UserIcon, UsersIcon, BuildingIcon } from 'lucide-react';
 
-import { Button } from '@/components/ui/button';
+import { Button } from '@/shared/components/ui/button';
 import {
   Dialog,
   DialogContent,
@@ -12,7 +12,7 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-} from '@/components/ui/dialog';
+} from '@/shared/components/ui/dialog';
 import { useReservation } from '@/features/reservations/hooks/queries/useReservation';
 import { useDeleteReservation } from '@/features/reservations/hooks/queries/useDeleteReservation';
 import { reservationsQueryKeys } from '@/features/reservations/hooks/queries/querykeys';
