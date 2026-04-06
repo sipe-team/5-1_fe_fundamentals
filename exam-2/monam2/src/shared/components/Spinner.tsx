@@ -13,8 +13,9 @@ const spinnerContainer = css`
   justify-content: center;
   align-items: center;
   height: 100%;
+  min-height: 400px;
   width: 100%;
-  padding: 10px 0;
+  padding: 24px;
 `;
 
 const spinnerElement = css`

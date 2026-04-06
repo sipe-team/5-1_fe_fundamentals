@@ -68,6 +68,6 @@ const navStyle = css({
 });
 
 const activeStyle = css({
-  color: "#2563eb",
+  color: "#f97316",
   fontWeight: 700,
 });

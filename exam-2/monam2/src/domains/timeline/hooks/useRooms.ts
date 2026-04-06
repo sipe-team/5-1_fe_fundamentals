@@ -1,10 +1,10 @@
-import { useQuery } from "@tanstack/react-query";
+import { useSuspenseQuery } from "@tanstack/react-query";
 import { getRooms } from "@/domains/timeline/apis";
 
 const QUERY_KEY = ["rooms"];
 
 export default function useRooms() {
-  return useQuery({
+  return useSuspenseQuery({
     queryKey: QUERY_KEY,
     queryFn: getRooms,
     select: (data) => data.rooms,
