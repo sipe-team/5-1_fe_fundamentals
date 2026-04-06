@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import {
   MyReservations,
@@ -20,14 +21,16 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
-        <Routes>
-          <Route element={<Layout />}>
-            <Route path="/" element={<Timeline />} />
-            <Route path="/reservations/new" element={<ReservationNew />} />
-            <Route path="/reservations/:id" element={<ReservationDetail />} />
-            <Route path="/my-reservations" element={<MyReservations />} />
-          </Route>
-        </Routes>
+        <NuqsAdapter>
+          <Routes>
+            <Route element={<Layout />}>
+              <Route path="/" element={<Timeline />} />
+              <Route path="/reservations/new" element={<ReservationNew />} />
+              <Route path="/reservations/:id" element={<ReservationDetail />} />
+              <Route path="/my-reservations" element={<MyReservations />} />
+            </Route>
+          </Routes>
+        </NuqsAdapter>
       </BrowserRouter>
     </QueryClientProvider>
   );

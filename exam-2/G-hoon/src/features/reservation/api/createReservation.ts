@@ -1,8 +1,8 @@
+import { api } from '@/shared/api/client';
 import type {
   CreateReservationRequest,
   ReservationResponse,
 } from '@/types/reservation';
-import { api } from '@/shared/api/client';
 
 /**
  * 새 예약을 생성합니다.
