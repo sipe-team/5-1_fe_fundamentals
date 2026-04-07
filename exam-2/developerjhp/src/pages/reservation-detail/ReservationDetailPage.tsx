@@ -1,7 +1,7 @@
 import { css } from "@emotion/react";
 import type { ReactNode } from "react";
 import { useNavigate, useParams, useLocation } from "react-router";
-import { SuspenseQuery } from "@suspensive/react-query-5";
+import { SuspenseQueries } from "@suspensive/react-query-5";
 import { ReservationTimelinePreview } from "@/pages/reservation-detail/ReservationTimelinePreview";
 import { roomsQueryOptions } from "@/reservation/api/rooms";
 import { HttpError } from "@/reservation/api/client";
@@ -35,24 +35,22 @@ export function ReservationDetailPage() {
         </Switch>
       )}
     >
-      <SuspenseQuery {...reservationQueryOptions(id!)}>
-        {({ data: { reservation } }) => (
-          <SuspenseQuery {...roomsQueryOptions()}>
-            {({ data: { rooms } }) => {
-              const room = rooms.find((item) => item.id === reservation.roomId) ?? null;
+      <SuspenseQueries
+        queries={[reservationQueryOptions(id!), roomsQueryOptions()]}
+      >
+        {([{ data: { reservation } }, { data: { rooms } }]) => {
+          const room = rooms.find((item) => item.id === reservation.roomId) ?? null;
 
-              return (
-                <ReservationDetail
-                  reservation={reservation}
-                  returnTo={returnTo}
-                  roomName={room?.name ?? reservation.roomId}
-                  room={room}
-                />
-              );
-            }}
-          </SuspenseQuery>
-        )}
-      </SuspenseQuery>
+          return (
+            <ReservationDetail
+              reservation={reservation}
+              returnTo={returnTo}
+              roomName={room?.name ?? reservation.roomId}
+              room={room}
+            />
+          );
+        }}
+      </SuspenseQueries>
     </AsyncBoundary>
   );
 }
