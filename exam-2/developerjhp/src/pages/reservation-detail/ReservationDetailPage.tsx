@@ -1,16 +1,19 @@
 import { css } from "@emotion/react";
+import type { ReactNode } from "react";
 import { useNavigate, useParams, useLocation } from "react-router";
 import { useQuery } from "@tanstack/react-query";
-import { ErrorBoundary, Suspense } from "@suspensive/react";
 import { SuspenseQuery } from "@suspensive/react-query-5";
-import { QueryErrorResetBoundary } from "@tanstack/react-query";
 import { roomsQueryOptions } from "@/reservation/api/rooms";
 import { HttpError } from "@/reservation/api/client";
 import { reservationQueryOptions } from "@/reservation/api/reservations";
 import { useDeleteReservation } from "@/reservation/hooks/useDeleteReservation";
 import type { Reservation } from "@/reservation/types";
-import { color, spacing, radius } from "@/styles/tokens";
+import { color, radius, spacing } from "@/styles/tokens";
+import { AsyncBoundary } from "@/components/AsyncBoundary";
+import { Button } from "@/components/Button";
+import { EmptyState } from "@/components/EmptyState";
 import { ErrorFallback } from "@/components/ErrorFallback";
+import { Match, Switch } from "@/components/Switch";
 
 export function ReservationDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -19,43 +22,25 @@ export function ReservationDetailPage() {
   const returnTo = parseReturnTo(location.state);
 
   return (
-    <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary
-          onReset={reset}
-          fallback={({ error, reset: resetBoundary }) => {
-            if (error instanceof HttpError && error.status === 404) {
-              return (
-                <div css={centerStyle}>
-                  <h2>존재하지 않는 예약입니다</h2>
-                  <p>예약이 삭제되었거나 잘못된 주소입니다.</p>
-                  <button
-                    type="button"
-                    onClick={() => navigate(returnTo)}
-                    css={btnStyle}
-                  >
-                    돌아가기
-                  </button>
-                </div>
-              );
-            }
-
-            return <ErrorFallback error={error} reset={resetBoundary} />;
-          }}
-        >
-          <Suspense fallback={<p>로딩 중...</p>}>
-            <SuspenseQuery {...reservationQueryOptions(id!)}>
-              {({ data: { reservation } }) => (
-                <ReservationDetail
-                  reservation={reservation}
-                  returnTo={returnTo}
-                />
-              )}
-            </SuspenseQuery>
-          </Suspense>
-        </ErrorBoundary>
+    <AsyncBoundary
+      errorFallback={({ error, reset }) => (
+        <Switch fallback={<ErrorFallback error={error} reset={reset} />}>
+          <Match when={isNotFound(error)}>
+            <EmptyState
+              title="존재하지 않는 예약입니다"
+              description="예약이 삭제되었거나 잘못된 주소입니다."
+              action={<Button onClick={() => navigate(returnTo)}>돌아가기</Button>}
+            />
+          </Match>
+        </Switch>
       )}
-    </QueryErrorResetBoundary>
+    >
+      <SuspenseQuery {...reservationQueryOptions(id!)}>
+        {({ data: { reservation } }) => (
+          <ReservationDetail reservation={reservation} returnTo={returnTo} />
+        )}
+      </SuspenseQuery>
+    </AsyncBoundary>
   );
 }
 
@@ -84,46 +69,58 @@ function ReservationDetail({
 
   return (
     <div css={detailStyle}>
-      <h1
-        css={css`
-          margin-bottom: ${spacing.lg};
-        `}
-      >
-        예약 상세
-      </h1>
+      <h1 css={css`margin-bottom: ${spacing.lg};`}>예약 상세</h1>
       <dl>
-        <dt>회의실</dt>
-        <dd>{roomName}</dd>
-        <dt>날짜</dt>
-        <dd>{reservation.date}</dd>
-        <dt>시간</dt>
-        <dd>
-          {reservation.startTime} ~ {reservation.endTime}
-        </dd>
-        <dt>제목</dt>
-        <dd>{reservation.title}</dd>
-        <dt>예약자</dt>
-        <dd>{reservation.organizer}</dd>
-        <dt>참석 인원</dt>
-        <dd>{reservation.attendees}명</dd>
+        <DetailItem label="회의실" value={roomName} />
+        <DetailItem label="날짜" value={reservation.date} />
+        <DetailItem label="시간" value={`${reservation.startTime} ~ ${reservation.endTime}`} />
+        <DetailItem label="제목" value={reservation.title} />
+        <DetailItem label="예약자" value={reservation.organizer} />
+        <DetailItem label="참석 인원" value={`${reservation.attendees}명`} />
       </dl>
 
-      {deleteMutation.error && (
-        <div css={errorBannerStyle}>
-          삭제 실패: 서버 오류가 발생했습니다. 다시 시도해주세요.
-        </div>
-      )}
+      <Switch>
+        <Match when={isNotFound(deleteMutation.error)}>
+          <div css={errorBannerStyle}>
+            이미 삭제된 예약입니다.
+            <Button
+              variant="secondary"
+              onClick={() => navigate(returnTo)}
+              css={css`margin-left: ${spacing.sm};`}
+            >
+              돌아가기
+            </Button>
+          </div>
+        </Match>
+        <Match when={deleteMutation.error != null}>
+          <div css={errorBannerStyle}>
+            삭제 실패: 서버 오류가 발생했습니다. 다시 시도해주세요.
+          </div>
+        </Match>
+      </Switch>
 
-      <button
-        type="button"
+      <Button
+        variant="danger"
         onClick={handleDelete}
         disabled={deleteMutation.isPending}
-        css={dangerBtnStyle}
       >
         {deleteMutation.isPending ? "취소 중..." : "예약 취소"}
-      </button>
+      </Button>
     </div>
   );
+}
+
+function DetailItem({ label, value }: { label: string; value: ReactNode }) {
+  return (
+    <>
+      <dt>{label}</dt>
+      <dd>{value}</dd>
+    </>
+  );
+}
+
+function isNotFound(error: unknown): boolean {
+  return error instanceof HttpError && error.status === 404;
 }
 
 function parseReturnTo(state: unknown): string {
@@ -148,25 +145,6 @@ const detailStyle = css`
   dt {
     font-weight: bold;
   }
-`;
-
-const centerStyle = css`
-  text-align: center;
-  padding: ${spacing.xxl};
-`;
-const btnStyle = css`
-  margin-top: ${spacing.md};
-  padding: ${spacing.sm} ${spacing.lg};
-  cursor: pointer;
-`;
-
-const dangerBtnStyle = css`
-  padding: ${spacing.sm} ${spacing.xl};
-  cursor: pointer;
-  background: ${color.danger};
-  color: white;
-  border: none;
-  border-radius: ${radius.sm};
 `;
 
 const errorBannerStyle = css`

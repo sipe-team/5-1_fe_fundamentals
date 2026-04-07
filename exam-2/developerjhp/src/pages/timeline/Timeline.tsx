@@ -1,8 +1,10 @@
-import type { KeyboardEvent } from "react";
 import { css } from "@emotion/react";
+import type { ReactNode } from "react";
 import { TIME_SLOTS } from "@/reservation/constants";
 import type { Reservation, Room } from "@/reservation/types";
 import { timeToSlotIndex } from "@/reservation/utils/reservationTime";
+import { ClickableCell } from "@/components/ClickableCell";
+import { EmptyState } from "@/components/EmptyState";
 import { color, spacing, fontSize } from "@/styles/tokens";
 
 interface TimelineProps {
@@ -12,32 +14,6 @@ interface TimelineProps {
   onEmptySlotClick: (roomId: string, startTime: string) => void;
 }
 
-function groupReservationsByRoom(
-  reservations: Reservation[],
-): Map<string, Map<string, Reservation>> {
-  const grouped = new Map<string, Map<string, Reservation>>();
-
-  for (const reservation of reservations) {
-    let roomMap = grouped.get(reservation.roomId);
-    if (!roomMap) {
-      roomMap = new Map();
-      grouped.set(reservation.roomId, roomMap);
-    }
-    roomMap.set(reservation.startTime, reservation);
-  }
-
-  return grouped;
-}
-
-function handleKeyDown(callback: () => void) {
-  return (e: KeyboardEvent) => {
-    if (e.key === "Enter" || e.key === " ") {
-      e.preventDefault();
-      callback();
-    }
-  };
-}
-
 export function Timeline({
   rooms,
   reservations,
@@ -45,19 +21,13 @@ export function Timeline({
   onEmptySlotClick,
 }: TimelineProps) {
   if (rooms.length === 0) {
-    return <p>필터 조건에 맞는 회의실이 없습니다.</p>;
+    return <EmptyState title="필터 조건에 맞는 회의실이 없습니다." />;
   }
 
   const reservationsByRoom = groupReservationsByRoom(reservations);
 
   return (
-    <div
-      css={css`
-        overflow-x: auto;
-      `}
-      role="region"
-      aria-label="회의실 예약 타임라인"
-    >
+    <div css={css`overflow-x: auto;`} role="region" aria-label="회의실 예약 타임라인">
       <table css={tableStyle}>
         <thead>
           <tr>
@@ -74,9 +44,7 @@ export function Timeline({
               room={room}
               slotMap={reservationsByRoom.get(room.id) ?? EMPTY_SLOT_MAP}
               onReservationClick={onReservationClick}
-              onEmptySlotClick={(startTime) =>
-                onEmptySlotClick(room.id, startTime)
-              }
+              onEmptySlotClick={(startTime) => onEmptySlotClick(room.id, startTime)}
             />
           ))}
         </tbody>
@@ -98,6 +66,23 @@ export function Timeline({
 
 const EMPTY_SLOT_MAP = new Map<string, Reservation>();
 
+function groupReservationsByRoom(
+  reservations: Reservation[],
+): Map<string, Map<string, Reservation>> {
+  const grouped = new Map<string, Map<string, Reservation>>();
+
+  for (const reservation of reservations) {
+    let roomMap = grouped.get(reservation.roomId);
+    if (!roomMap) {
+      roomMap = new Map();
+      grouped.set(reservation.roomId, roomMap);
+    }
+    roomMap.set(reservation.startTime, reservation);
+  }
+
+  return grouped;
+}
+
 interface RoomRowProps {
   room: Room;
   slotMap: Map<string, Reservation>;
@@ -111,7 +96,21 @@ function RoomRow({
   onReservationClick,
   onEmptySlotClick,
 }: RoomRowProps) {
-  const cells: React.ReactNode[] = [];
+  return (
+    <tr>
+      <td css={roomNameStyle}>{room.name}</td>
+      {buildRowCells({ room, slotMap, onReservationClick, onEmptySlotClick })}
+    </tr>
+  );
+}
+
+function buildRowCells({
+  room,
+  slotMap,
+  onReservationClick,
+  onEmptySlotClick,
+}: RoomRowProps): ReactNode[] {
+  const cells: ReactNode[] = [];
   let skipUntil = -1;
 
   for (let i = 0; i < TIME_SLOTS.length; i++) {
@@ -126,40 +125,29 @@ function RoomRow({
       skipUntil = i + span;
 
       cells.push(
-        <td
+        <ClickableCell
           key={slotTime}
           colSpan={span}
           css={reservedStyle}
-          role="button"
-          tabIndex={0}
-          aria-label={`${reservation.title}, ${reservation.startTime}부터 ${reservation.endTime}까지`}
-          onClick={() => onReservationClick(reservation.id)}
-          onKeyDown={handleKeyDown(() => onReservationClick(reservation.id))}
+          ariaLabel={`${reservation.title}, ${reservation.startTime}부터 ${reservation.endTime}까지`}
+          onActivate={() => onReservationClick(reservation.id)}
         >
           {reservation.title}
-        </td>,
+        </ClickableCell>,
       );
     } else {
       cells.push(
-        <td
+        <ClickableCell
           key={slotTime}
           css={emptyStyle}
-          role="button"
-          tabIndex={0}
-          aria-label={`${room.name} ${slotTime} 빈 시간대, 클릭하여 예약`}
-          onClick={() => onEmptySlotClick(slotTime)}
-          onKeyDown={handleKeyDown(() => onEmptySlotClick(slotTime))}
+          ariaLabel={`${room.name} ${slotTime} 빈 시간대, 클릭하여 예약`}
+          onActivate={() => onEmptySlotClick(slotTime)}
         />,
       );
     }
   }
 
-  return (
-    <tr>
-      <td css={roomNameStyle}>{room.name}</td>
-      {cells}
-    </tr>
-  );
+  return cells;
 }
 
 const tableStyle = css`

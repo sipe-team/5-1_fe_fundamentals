@@ -6,13 +6,9 @@ import {
   getRoomReservations,
 } from "@/reservation/utils/reservation";
 
-type TimeFieldStatus = "blocked" | "loading" | "ready" | "empty";
+export type AvailabilityStatus = "idle" | "loading" | "error" | "ready" | "empty";
 
-export function useAvailableTimeSlots(
-  roomId: string,
-  date: string,
-  startTime: string,
-) {
+export function useAvailableTimeSlots(roomId: string, date: string, startTime: string) {
   const hasContext = Boolean(date && roomId);
 
   const reservationsQuery = useQuery({
@@ -20,41 +16,30 @@ export function useAvailableTimeSlots(
     enabled: hasContext,
   });
 
-  const roomReservations = roomId
-    ? getRoomReservations(reservationsQuery.data?.reservations ?? [], roomId)
-    : [];
+  if (!hasContext) {
+    return { status: "idle" as const, availableStartTimes: [], availableEndTimes: [] };
+  }
 
-  const isPending = hasContext && reservationsQuery.isPending;
+  if (reservationsQuery.isError) {
+    return { status: "error" as const, availableStartTimes: [], availableEndTimes: [], refetch: reservationsQuery.refetch };
+  }
 
-  const availableStartTimes =
-    hasContext && !isPending ? getAvailableStartTimes(roomReservations) : [];
+  if (reservationsQuery.isPending || !reservationsQuery.data) {
+    return { status: "loading" as const, availableStartTimes: [], availableEndTimes: [] };
+  }
 
-  const availableEndTimes =
-    startTime && hasContext && !isPending
-      ? getAvailableEndTimes(roomReservations, startTime)
-      : [];
+  const roomReservations = getRoomReservations(reservationsQuery.data.reservations, roomId);
+  const availableStartTimes = getAvailableStartTimes(roomReservations);
+  const availableEndTimes = startTime ? getAvailableEndTimes(roomReservations, startTime) : [];
 
-  const startTimeStatus: TimeFieldStatus = !hasContext
-    ? "blocked"
-    : isPending
-      ? "loading"
-      : availableStartTimes.length > 0
-        ? "ready"
-        : "empty";
-
-  const endTimeStatus: TimeFieldStatus = !startTime
-    ? "blocked"
-    : isPending
-      ? "loading"
-      : availableEndTimes.length > 0
-        ? "ready"
-        : "empty";
+  if (availableStartTimes.length === 0) {
+    return { status: "empty" as const, availableStartTimes: [], availableEndTimes: [], refetch: reservationsQuery.refetch };
+  }
 
   return {
+    status: "ready" as const,
     availableStartTimes,
     availableEndTimes,
-    startTimeStatus,
-    endTimeStatus,
-    isPending,
+    refetch: reservationsQuery.refetch,
   };
 }

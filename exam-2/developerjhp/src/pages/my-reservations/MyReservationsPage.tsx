@@ -2,59 +2,52 @@ import { SuspenseQuery } from "@suspensive/react-query-5";
 import { css } from "@emotion/react";
 import { Link } from "react-router";
 import { myReservationsQueryOptions } from "@/reservation/api/reservations";
+import type { Reservation } from "@/reservation/types";
 import { AsyncBoundary } from "@/components/AsyncBoundary";
+import { EmptyState } from "@/components/EmptyState";
 import { color, spacing } from "@/styles/tokens";
 
 export function MyReservationsPage() {
   return (
     <div>
-      <h1
-        css={css`
-          margin-bottom: ${spacing.lg};
-        `}
-      >
-        내 예약
-      </h1>
+      <h1 css={css`margin-bottom: ${spacing.lg};`}>내 예약</h1>
       <AsyncBoundary>
         <SuspenseQuery {...myReservationsQueryOptions()}>
-          {({ data: { reservations } }) =>
-            reservations.length === 0 ? (
-              <p
-                css={css`
-                  color: ${color.textMuted};
-                  text-align: center;
-                  padding: ${spacing.xxl};
-                `}
-              >
-                예약이 없습니다.
-              </p>
-            ) : (
-              <ul css={listStyle}>
-                {reservations.map((r) => (
-                  <li key={r.id}>
-                    <Link
-                      to={`/reservations/${r.id}`}
-                      state={{ from: "/my-reservations" }}
-                      css={itemStyle}
-                    >
-                      <strong>{r.title}</strong>
-                      <span
-                        css={css`
-                          margin-left: ${spacing.md};
-                          color: ${color.textSecondary};
-                        `}
-                      >
-                        {r.date} {r.startTime}~{r.endTime}
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )
-          }
+          {({ data: { reservations } }) => <MyReservationsList reservations={reservations} />}
         </SuspenseQuery>
       </AsyncBoundary>
     </div>
+  );
+}
+
+function MyReservationsList({ reservations }: { reservations: Reservation[] }) {
+  if (reservations.length === 0) {
+    return <EmptyState title="예약이 없습니다." />;
+  }
+
+  return (
+    <ul css={listStyle}>
+      {reservations.map((reservation) => (
+        <ReservationListItem key={reservation.id} reservation={reservation} />
+      ))}
+    </ul>
+  );
+}
+
+function ReservationListItem({ reservation }: { reservation: Reservation }) {
+  return (
+    <li>
+      <Link
+        to={`/reservations/${reservation.id}`}
+        state={{ from: "/my-reservations" }}
+        css={itemStyle}
+      >
+        <strong>{reservation.title}</strong>
+        <span css={css`margin-left: ${spacing.md}; color: ${color.textSecondary};`}>
+          {reservation.date} {reservation.startTime}~{reservation.endTime}
+        </span>
+      </Link>
+    </li>
   );
 }
 

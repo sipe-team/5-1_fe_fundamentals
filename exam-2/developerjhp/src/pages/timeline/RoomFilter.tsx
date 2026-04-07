@@ -5,6 +5,7 @@ import {
   MIN_CAPACITY_OPTIONS,
 } from "@/reservation/constants";
 import type { Equipment } from "@/reservation/types";
+import { CheckboxGroup } from "@/components/CheckboxGroup";
 import { spacing } from "@/styles/tokens";
 
 interface RoomFilterProps {
@@ -14,20 +15,17 @@ interface RoomFilterProps {
   onEquipmentChange: (equipment: Equipment[]) => void;
 }
 
+const equipmentOptions = ALL_EQUIPMENT.map((eq) => ({
+  value: eq,
+  label: EQUIPMENT_LABELS[eq],
+}));
+
 export function RoomFilter({
   minCapacity,
   onMinCapacityChange,
   selectedEquipment,
   onEquipmentChange,
 }: RoomFilterProps) {
-  const handleEquipmentToggle = (eq: Equipment) => {
-    if (selectedEquipment.includes(eq)) {
-      onEquipmentChange(selectedEquipment.filter((e) => e !== eq));
-    } else {
-      onEquipmentChange([...selectedEquipment, eq]);
-    }
-  };
-
   return (
     <div
       css={css`
@@ -43,9 +41,7 @@ export function RoomFilter({
         <select
           value={minCapacity}
           onChange={(e) => onMinCapacityChange(Number(e.target.value))}
-          css={css`
-            margin-left: ${spacing.xs};
-          `}
+          css={css`margin-left: ${spacing.xs};`}
         >
           {MIN_CAPACITY_OPTIONS.map((option) => (
             <option key={option.value} value={option.value}>
@@ -54,31 +50,13 @@ export function RoomFilter({
           ))}
         </select>
       </label>
-      <div
-        css={css`
-          display: flex;
-          gap: ${spacing.sm};
-          align-items: center;
-        `}
-      >
+      <div css={css`display: flex; align-items: center; gap: ${spacing.sm};`}>
         장비:
-        {ALL_EQUIPMENT.map((eq) => (
-          <label
-            key={eq}
-            css={css`
-              display: flex;
-              align-items: center;
-              gap: 2px;
-            `}
-          >
-            <input
-              type="checkbox"
-              checked={selectedEquipment.includes(eq)}
-              onChange={() => handleEquipmentToggle(eq)}
-            />
-            {EQUIPMENT_LABELS[eq]}
-          </label>
-        ))}
+        <CheckboxGroup
+          options={equipmentOptions}
+          selected={selectedEquipment}
+          onChange={onEquipmentChange}
+        />
       </div>
     </div>
   );

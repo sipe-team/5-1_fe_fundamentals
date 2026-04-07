@@ -17,9 +17,7 @@ export function useCreateReservation() {
       const reservation = data.reservation;
       const addReservation = (old: ReservationsResponse | undefined) => ({
         reservations: [
-          ...(old?.reservations ?? []).filter(
-            (item) => item.id !== reservation.id,
-          ),
+          ...(old?.reservations ?? []).filter((item) => item.id !== reservation.id),
           reservation,
         ],
       });
@@ -30,7 +28,9 @@ export function useCreateReservation() {
       ];
 
       for (const key of targetKeys) {
-        queryClient.setQueryData<ReservationsResponse>(key, addReservation);
+        if (queryClient.getQueryData(key) !== undefined) {
+          queryClient.setQueryData<ReservationsResponse>(key, addReservation);
+        }
       }
 
       queryClient.invalidateQueries({ queryKey: reservationKeys.all });

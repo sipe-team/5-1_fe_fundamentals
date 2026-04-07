@@ -1,5 +1,6 @@
 import { css } from "@emotion/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import type { ReactNode } from "react";
 import { useForm } from "react-hook-form";
 import { TIME_SLOTS } from "@/reservation/constants";
 import { useAvailableTimeSlots } from "@/reservation/hooks/useAvailableTimeSlots";
@@ -13,7 +14,10 @@ import type {
   Room,
   SubmitError,
 } from "@/reservation/types";
-import { color, spacing, fontSize, radius } from "@/styles/tokens";
+import { Match, Switch } from "@/components/Switch";
+import { Button } from "@/components/Button";
+import { ErrorText, HelperText } from "@/components/Text";
+import { color, fontSize, radius, spacing } from "@/styles/tokens";
 
 interface ReservationFormProps {
   rooms: Room[];
@@ -25,24 +29,6 @@ interface ReservationFormProps {
   onSubmit: (data: CreateReservationRequest) => void;
   isPending: boolean;
   submitError: SubmitError | null;
-}
-
-const START_TIME_GUIDE = {
-  blocked: "날짜와 회의실을 먼저 선택하세요.",
-  loading: "예약 가능한 시작 시간을 확인하는 중입니다.",
-  ready: undefined,
-  empty: "선택한 날짜와 회의실에는 예약 가능한 시작 시간이 없습니다.",
-} as const;
-
-const END_TIME_GUIDE = {
-  blocked: "시작 시간을 먼저 선택하세요.",
-  loading: "예약 가능한 종료 시간을 확인하는 중입니다.",
-  ready: undefined,
-  empty: "선택한 시작 시간으로 예약 가능한 종료 시간이 없습니다.",
-} as const;
-
-function isValidSlot(time: string): boolean {
-  return TIME_SLOTS.includes(time);
 }
 
 export function ReservationForm({
@@ -64,9 +50,7 @@ export function ReservationForm({
     defaultValues: {
       roomId: initialValues.roomId || "",
       date: initialValues.date || "",
-      startTime: isValidSlot(initialValues.startTime)
-        ? initialValues.startTime
-        : "",
+      startTime: TIME_SLOTS.includes(initialValues.startTime) ? initialValues.startTime : "",
       endTime: "",
       title: "",
       organizer: "",
@@ -78,47 +62,21 @@ export function ReservationForm({
   const date = watch("date");
   const startTime = watch("startTime");
   const selectedRoom = rooms.find((room) => room.id === roomId);
-
-  const {
-    availableStartTimes,
-    availableEndTimes,
-    startTimeStatus,
-    endTimeStatus,
-    isPending: isAvailabilityPending,
-  } = useAvailableTimeSlots(roomId, date, startTime);
+  const availability = useAvailableTimeSlots(roomId, date, startTime);
+  const canSelectStart = availability.status === "ready";
+  const canSelectEnd = canSelectStart && !!startTime && availability.availableEndTimes.length > 0;
 
   const clearTimeRange = () => {
     resetField("startTime", { defaultValue: "" });
     resetField("endTime", { defaultValue: "" });
   };
 
-  const roomField = register("roomId", { onChange: clearTimeRange });
-  const dateField = register("date", { onChange: clearTimeRange });
-  const startTimeField = register("startTime", {
-    onChange: () => resetField("endTime", { defaultValue: "" }),
-  });
-  const endTimeField = register("endTime");
-
-  const attendeesGuide = selectedRoom
-    ? `최대 ${selectedRoom.capacity}명까지 입력할 수 있습니다.`
-    : "회의실 선택 후 최대 인원을 확인하세요.";
-
   return (
     <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      {submitError?.type === "conflict" && submitError.conflict && (
-        <div css={errorBannerStyle}>
-          해당 시간대에 &apos;{submitError.conflict.title}&apos; 예약이
-          존재합니다 ({submitError.conflict.startTime}~
-          {submitError.conflict.endTime})
-        </div>
-      )}
-      {submitError?.type === "server" && (
-        <div css={errorBannerStyle}>{submitError.message}</div>
-      )}
+      <SubmitErrorBanner error={submitError} />
 
-      <div css={fieldStyle}>
-        <label htmlFor="roomId">회의실</label>
-        <select id="roomId" {...roomField}>
+      <FormField label="회의실" error={errors.roomId?.message}>
+        <select id="roomId" {...register("roomId", { onChange: clearTimeRange })}>
           <option value="">선택하세요</option>
           {rooms.map((room) => (
             <option key={room.id} value={room.id}>
@@ -126,81 +84,79 @@ export function ReservationForm({
             </option>
           ))}
         </select>
-        {errors.roomId?.message && (
-          <p css={errorMsgStyle}>{errors.roomId.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <div css={fieldStyle}>
-        <label htmlFor="date">날짜</label>
-        <input id="date" type="date" {...dateField} />
-        {errors.date?.message && (
-          <p css={errorMsgStyle}>{errors.date.message}</p>
-        )}
-      </div>
+      <FormField label="날짜" error={errors.date?.message}>
+        <input id="date" type="date" {...register("date", { onChange: clearTimeRange })} />
+      </FormField>
 
-      <div css={fieldStyle}>
-        <label htmlFor="startTime">시작 시간</label>
+      <FormField label="시작 시간" error={errors.startTime?.message}>
         <select
           id="startTime"
-          {...startTimeField}
-          disabled={startTimeStatus !== "ready"}
+          {...register("startTime", {
+            onChange: () => resetField("endTime", { defaultValue: "" }),
+          })}
+          disabled={!canSelectStart}
         >
           <option value="">선택하세요</option>
-          {availableStartTimes.map((slot) => (
-            <option key={slot} value={slot}>
-              {slot}
-            </option>
+          {canSelectStart && availability.availableStartTimes.map((slot) => (
+            <option key={slot} value={slot}>{slot}</option>
           ))}
         </select>
-        {START_TIME_GUIDE[startTimeStatus] && (
-          <p css={helperTextStyle}>{START_TIME_GUIDE[startTimeStatus]}</p>
-        )}
-        {errors.startTime?.message && (
-          <p css={errorMsgStyle}>{errors.startTime.message}</p>
-        )}
-      </div>
+        <Switch>
+          <Match when={availability.status === "idle"}>
+            <HelperText>날짜와 회의실을 먼저 선택하세요.</HelperText>
+          </Match>
+          <Match when={availability.status === "loading"}>
+            <HelperText>확인 중...</HelperText>
+          </Match>
+          <Match when={availability.status === "error"}>
+            <ErrorText>예약 현황을 불러올 수 없습니다.</ErrorText>
+          </Match>
+          <Match when={availability.status === "empty"}>
+            <HelperText>예약 가능한 시작 시간이 없습니다.</HelperText>
+          </Match>
+        </Switch>
+      </FormField>
 
-      <div css={fieldStyle}>
-        <label htmlFor="endTime">종료 시간</label>
-        <select
-          id="endTime"
-          {...endTimeField}
-          disabled={endTimeStatus !== "ready"}
-        >
+      <FormField label="종료 시간" error={errors.endTime?.message}>
+        <select id="endTime" {...register("endTime")} disabled={!canSelectEnd}>
           <option value="">선택하세요</option>
-          {availableEndTimes.map((slot) => (
-            <option key={slot} value={slot}>
-              {slot}
-            </option>
+          {availability.availableEndTimes.map((slot) => (
+            <option key={slot} value={slot}>{slot}</option>
           ))}
         </select>
-        {END_TIME_GUIDE[endTimeStatus] && (
-          <p css={helperTextStyle}>{END_TIME_GUIDE[endTimeStatus]}</p>
-        )}
-        {errors.endTime?.message && (
-          <p css={errorMsgStyle}>{errors.endTime.message}</p>
-        )}
-      </div>
+        <Switch>
+          <Match when={!startTime}>
+            <HelperText>시작 시간을 먼저 선택하세요.</HelperText>
+          </Match>
+          <Match when={availability.status === "loading"}>
+            <HelperText>확인 중...</HelperText>
+          </Match>
+          <Match when={availability.status === "error"}>
+            <ErrorText>예약 현황을 불러올 수 없습니다.</ErrorText>
+          </Match>
+          <Match when={availability.availableEndTimes.length === 0}>
+            <HelperText>예약 가능한 종료 시간이 없습니다.</HelperText>
+          </Match>
+        </Switch>
+      </FormField>
 
-      <div css={fieldStyle}>
-        <label htmlFor="title">회의 제목</label>
+      <FormField label="회의 제목" error={errors.title?.message}>
         <input id="title" type="text" {...register("title")} />
-        {errors.title?.message && (
-          <p css={errorMsgStyle}>{errors.title.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <div css={fieldStyle}>
-        <label htmlFor="organizer">예약자명</label>
+      <FormField label="예약자명" error={errors.organizer?.message}>
         <input id="organizer" type="text" {...register("organizer")} />
-        {errors.organizer?.message && (
-          <p css={errorMsgStyle}>{errors.organizer.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <div css={fieldStyle}>
-        <label htmlFor="attendees">참석 인원</label>
+      <FormField
+        label="참석 인원"
+        error={errors.attendees?.message}
+        guide={selectedRoom
+          ? `최대 ${selectedRoom.capacity}명까지 입력할 수 있습니다.`
+          : "회의실 선택 후 최대 인원을 확인하세요."}
+      >
         <input
           id="attendees"
           type="number"
@@ -208,24 +164,46 @@ export function ReservationForm({
           max={selectedRoom?.capacity}
           {...register("attendees")}
         />
-        <p css={helperTextStyle}>{attendeesGuide}</p>
-        {errors.attendees?.message && (
-          <p css={errorMsgStyle}>{errors.attendees.message}</p>
-        )}
-      </div>
+      </FormField>
 
-      <button
-        type="submit"
-        disabled={isPending || isAvailabilityPending}
-        css={css`
-          padding: ${spacing.sm} ${spacing.xl};
-          cursor: pointer;
-        `}
-      >
+      <Button type="submit" disabled={isPending || !canSelectStart}>
         {isPending ? "예약 중..." : "예약 생성"}
-      </button>
+      </Button>
     </form>
   );
+}
+
+interface FormFieldProps {
+  label: string;
+  error?: string;
+  guide?: string;
+  children: ReactNode;
+}
+
+function FormField({ label, error, guide, children }: FormFieldProps) {
+  return (
+    <div css={fieldStyle}>
+      <label>{label}</label>
+      {children}
+      {guide && <HelperText>{guide}</HelperText>}
+      {error && <ErrorText>{error}</ErrorText>}
+    </div>
+  );
+}
+
+function SubmitErrorBanner({ error }: { error: SubmitError | null }) {
+  if (!error) return null;
+
+  if (error.type === "conflict" && error.conflict) {
+    return (
+      <div css={errorBannerStyle}>
+        해당 시간대에 &apos;{error.conflict.title}&apos; 예약이 존재합니다
+        ({error.conflict.startTime}~{error.conflict.endTime})
+      </div>
+    );
+  }
+
+  return <div css={errorBannerStyle}>{error.message}</div>;
 }
 
 const fieldStyle = css`
@@ -245,18 +223,6 @@ const fieldStyle = css`
     border: 1px solid ${color.borderInput};
     border-radius: ${radius.sm};
   }
-`;
-
-const errorMsgStyle = css`
-  color: ${color.danger};
-  font-size: ${fontSize.md};
-  margin-top: 2px;
-`;
-
-const helperTextStyle = css`
-  color: ${color.textSecondary};
-  font-size: ${fontSize.sm};
-  margin-top: 2px;
 `;
 
 const errorBannerStyle = css`

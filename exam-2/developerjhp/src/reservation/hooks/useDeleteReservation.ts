@@ -18,7 +18,9 @@ export function useDeleteReservation() {
       const targetKeys = [reservationKeys.list(date), reservationKeys.my()];
 
       for (const key of targetKeys) {
-        queryClient.setQueryData<ReservationsResponse>(key, removeById);
+        if (queryClient.getQueryData(key) !== undefined) {
+          queryClient.setQueryData<ReservationsResponse>(key, removeById);
+        }
       }
 
       queryClient.removeQueries({ queryKey: reservationKeys.detail(id) });
