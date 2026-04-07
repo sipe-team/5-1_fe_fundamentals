@@ -125,19 +125,3 @@ export function normalizeCreateReservationSearch(
 ) {
   return createReservationSearchSchema.parse(search);
 }
-
-export function getTimelineSearchValues({
-  date,
-  minCapacity,
-  equipment,
-}: {
-  date: string;
-  minCapacity?: number;
-  equipment?: string;
-}) {
-  return {
-    date,
-    minCapacity: minCapacity && minCapacity > 0 ? minCapacity : null,
-    equipment: equipment || null,
-  };
-}

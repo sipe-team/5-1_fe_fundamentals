@@ -8,7 +8,6 @@ import { HttpError } from "@/reservation/api/client";
 import { roomsQueryOptions } from "@/reservation/api/rooms";
 import {
   createReservationSearchParsers,
-  getTimelineSearchValues,
   normalizeCreateReservationSearch,
   serializeTimelineSearch,
 } from "@/reservation/searchParams";
@@ -26,28 +25,6 @@ export function CreateReservationPage() {
   const mutation = useCreateReservation();
   const [search] = useQueryStates(createReservationSearchParsers);
   const normalizedSearch = normalizeCreateReservationSearch(search);
-  const initialRoomId = normalizedSearch.roomId ?? "";
-  const initialDate = normalizedSearch.date ?? "";
-  const initialStartTime = normalizedSearch.startTime ?? "";
-  const timelineSearchValues = getTimelineSearchValues({
-    date: initialDate,
-    minCapacity: normalizedSearch.minCapacity,
-    equipment: normalizedSearch.equipment,
-  });
-
-  const handleSubmit = (data: CreateReservationRequest) => {
-    mutation.mutate(data, {
-      onSuccess: (response: ReservationResponse) => {
-        navigate(
-          serializeTimelineSearch("/", {
-            ...timelineSearchValues,
-            date: response.reservation.date,
-          }),
-        );
-      },
-    });
-  };
-
   const submitError = parseSubmitError(mutation.error);
 
   return (
@@ -62,19 +39,31 @@ export function CreateReservationPage() {
       <AsyncBoundary>
         <SuspenseQuery {...roomsQueryOptions()}>
           {({ data: { rooms } }) => {
-            const validRoomId = rooms.some((room) => room.id === initialRoomId)
-              ? initialRoomId
-              : "";
+            const initialValues = {
+              roomId: rooms.some((room) => room.id === normalizedSearch.roomId)
+                ? normalizedSearch.roomId ?? ""
+                : "",
+              date: normalizedSearch.date ?? "",
+              startTime: normalizedSearch.startTime ?? "",
+            };
 
             return (
               <ReservationForm
                 rooms={rooms}
-                initialValues={{
-                  roomId: validRoomId,
-                  date: initialDate,
-                  startTime: initialStartTime,
+                initialValues={initialValues}
+                onSubmit={(data: CreateReservationRequest) => {
+                  mutation.mutate(data, {
+                    onSuccess: (response: ReservationResponse) => {
+                      navigate(
+                        serializeTimelineSearch("/", {
+                          date: response.reservation.date,
+                          minCapacity: normalizedSearch.minCapacity ?? null,
+                          equipment: normalizedSearch.equipment ?? null,
+                        }),
+                      );
+                    },
+                  });
                 }}
-                onSubmit={handleSubmit}
                 isPending={mutation.isPending}
                 submitError={submitError}
               />

@@ -8,7 +8,6 @@ import { Timeline } from "@/pages/timeline/Timeline";
 import { roomsQueryOptions } from "@/reservation/api/rooms";
 import { reservationsQueryOptions } from "@/reservation/api/reservations";
 import {
-  getTimelineSearchValues,
   normalizeTimelineSearch,
   serializeCreateReservationSearch,
   serializeTimelineSearch,
@@ -30,12 +29,11 @@ export function TimelinePage() {
   const minCapacity = normalizedTimelineSearch.minCapacity ?? 0;
   const equipment = normalizedTimelineSearch.equipment ?? "";
   const selectedEquipment = normalizedTimelineSearch.selectedEquipment;
-  const timelineSearchValues = getTimelineSearchValues({
+  const timelinePath = serializeTimelineSearch("/", {
     date,
-    minCapacity,
-    equipment,
+    minCapacity: minCapacity > 0 ? minCapacity : null,
+    equipment: equipment || null,
   });
-  const timelinePath = serializeTimelineSearch("/", timelineSearchValues);
 
   return (
     <div>
@@ -95,7 +93,9 @@ export function TimelinePage() {
                     onEmptySlotClick={(roomId, startTime) => {
                       navigate(
                         serializeCreateReservationSearch("/reservations/new", {
-                          ...timelineSearchValues,
+                          date,
+                          minCapacity: minCapacity > 0 ? minCapacity : null,
+                          equipment: equipment || null,
                           roomId,
                           startTime,
                         }),
