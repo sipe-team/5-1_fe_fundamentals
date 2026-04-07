@@ -15,7 +15,6 @@ import {
   TimelineGrid,
 } from '@/features/timeline/components';
 import { TIME_SLOTS_LENGTH } from '@/features/timeline/constants';
-import { useRooms } from '@/features/timeline/hooks';
 import { createRoomFilter } from '@/features/timeline/utils/roomFilter';
 import type { Equipment } from '@/types/reservation';
 
@@ -89,19 +88,12 @@ export default function Timeline() {
     [selectedFloor, minCapacity, selectedEquipment],
   );
 
-  const { data: rooms } = useRooms();
-
-  const floors = useMemo(() => {
-    return [...new Set(rooms.map((r) => r.floor))].sort((a, b) => a - b);
-  }, [rooms]);
-
   return (
     <div className="flex flex-col gap-5">
-      <div className="flex flex-wrap items-center justify-between gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <DatePicker value={date} onChange={(v) => setFilters({ date: v })} />
         <RoomFilter>
           <RoomFilter.Floor
-            floors={floors}
             value={selectedFloor}
             onChange={(v) => setFilters({ floor: v })}
           />

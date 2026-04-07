@@ -1,9 +1,11 @@
+import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
+import { ErrorBoundary } from 'react-error-boundary';
 import { useSearchParams } from 'react-router-dom';
 import { ReservationForm } from '@/features/reservation/components';
 import { useCreateReservation } from '@/features/reservation/hooks';
 import { useRooms } from '@/features/timeline/hooks';
-import { LoadingSpinner } from '@/shared/components';
+import { ErrorFallback, LoadingSpinner } from '@/shared/components';
 import type { CreateReservationRequest } from '@/types/reservation';
 
 function ReservationNewContent() {
@@ -36,8 +38,19 @@ function ReservationNewContent() {
 
 export default function ReservationNew() {
   return (
-    <Suspense fallback={<LoadingSpinner />}>
-      <ReservationNewContent />
-    </Suspense>
+    <QueryErrorResetBoundary>
+      {({ reset }) => (
+        <ErrorBoundary
+          onReset={reset}
+          fallbackRender={({ resetErrorBoundary }) => (
+            <ErrorFallback onReset={resetErrorBoundary} />
+          )}
+        >
+          <Suspense fallback={<LoadingSpinner />}>
+            <ReservationNewContent />
+          </Suspense>
+        </ErrorBoundary>
+      )}
+    </QueryErrorResetBoundary>
   );
 }
