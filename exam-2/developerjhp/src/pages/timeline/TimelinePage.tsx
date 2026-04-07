@@ -1,28 +1,41 @@
 import { ErrorBoundaryGroup } from "@suspensive/react";
 import { SuspenseQuery } from "@suspensive/react-query-5";
 import { css } from "@emotion/react";
+import { useQueryStates } from "nuqs";
 import { useNavigate } from "react-router";
 import { RoomFilter } from "@/pages/timeline/RoomFilter";
 import { Timeline } from "@/pages/timeline/Timeline";
-import { useTimelineSearch } from "@/pages/timeline/useTimelineSearch";
 import { roomsQueryOptions } from "@/reservation/api/rooms";
 import { reservationsQueryOptions } from "@/reservation/api/reservations";
+import {
+  getTimelineSearchValues,
+  normalizeTimelineSearch,
+  serializeCreateReservationSearch,
+  serializeTimelineSearch,
+  timelineSearchParsers,
+} from "@/reservation/searchParams";
+import type { Equipment } from "@/reservation/types";
 import { filterRooms } from "@/reservation/utils/room";
+import { todayString } from "@/reservation/utils/time";
 import { AsyncBoundary } from "@/components/AsyncBoundary";
 import { spacing } from "@/styles/tokens";
 
 export function TimelinePage() {
   const navigate = useNavigate();
-  const {
+  const [timelineSearch, setTimelineSearch] = useQueryStates(
+    timelineSearchParsers,
+  );
+  const normalizedTimelineSearch = normalizeTimelineSearch(timelineSearch);
+  const date = normalizedTimelineSearch.date ?? todayString();
+  const minCapacity = normalizedTimelineSearch.minCapacity ?? 0;
+  const equipment = normalizedTimelineSearch.equipment ?? "";
+  const selectedEquipment = normalizedTimelineSearch.selectedEquipment;
+  const timelineSearchValues = getTimelineSearchValues({
     date,
     minCapacity,
-    selectedEquipment,
-    timelinePath,
-    setDate,
-    setMinCapacity,
-    setEquipment,
-    buildCreateReservationPath,
-  } = useTimelineSearch();
+    equipment,
+  });
+  const timelinePath = serializeTimelineSearch("/", timelineSearchValues);
 
   return (
     <div>
@@ -43,7 +56,9 @@ export function TimelinePage() {
           <input
             type="date"
             value={date}
-            onChange={(e) => setDate(e.target.value)}
+            onChange={(e) => {
+              setTimelineSearch({ date: e.target.value });
+            }}
             css={css`
               margin-left: ${spacing.sm};
             `}
@@ -52,9 +67,16 @@ export function TimelinePage() {
       </div>
       <RoomFilter
         minCapacity={minCapacity}
-        onMinCapacityChange={setMinCapacity}
+        onMinCapacityChange={(nextMinCapacity) => {
+          setTimelineSearch({ minCapacity: nextMinCapacity || null });
+        }}
         selectedEquipment={selectedEquipment}
-        onEquipmentChange={setEquipment}
+        onEquipmentChange={(nextEquipment: Equipment[]) => {
+          setTimelineSearch({
+            equipment:
+              nextEquipment.length > 0 ? nextEquipment.join(",") : null,
+          });
+        }}
       />
       <ErrorBoundaryGroup>
         <AsyncBoundary>
@@ -70,9 +92,15 @@ export function TimelinePage() {
                         state: { from: timelinePath },
                       })
                     }
-                    onEmptySlotClick={(roomId, startTime) =>
-                      navigate(buildCreateReservationPath(roomId, startTime))
-                    }
+                    onEmptySlotClick={(roomId, startTime) => {
+                      navigate(
+                        serializeCreateReservationSearch("/reservations/new", {
+                          ...timelineSearchValues,
+                          roomId,
+                          startTime,
+                        }),
+                      );
+                    }}
                   />
                 )}
               </SuspenseQuery>
