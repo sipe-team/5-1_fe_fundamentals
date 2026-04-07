@@ -12,6 +12,7 @@ function Layout({ children, title }: Props) {
       <header className="bg-white border-b border-gray-200 px-6 py-4">
         <nav className="flex gap-4">
           <Link to="/" className="text-sm font-medium text-gray-700 hover:text-blue-500">타임라인</Link>
+          <Link to="/reservation/new" className="text-sm font-medium text-gray-700 hover:text-blue-500">회의실 예약</Link>
           <Link to="/my-reservations" className="text-sm font-medium text-gray-700 hover:text-blue-500">내 예약</Link>
         </nav>
       </header>
