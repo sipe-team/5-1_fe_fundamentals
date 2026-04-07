@@ -8,7 +8,9 @@ import {
 
 export type AvailabilityStatus = "idle" | "loading" | "error" | "ready" | "empty";
 
-export function useAvailableTimeSlots(roomId: string, date: string, startTime: string) {
+const emptyAvailableTimeSlots = () => [] as string[];
+
+export function useAvailableTimeSlots(roomId: string, date: string) {
   const hasContext = Boolean(date && roomId);
 
   const reservationsQuery = useQuery({
@@ -17,29 +19,44 @@ export function useAvailableTimeSlots(roomId: string, date: string, startTime: s
   });
 
   if (!hasContext) {
-    return { status: "idle" as const, availableStartTimes: [], availableEndTimes: [] };
+    return {
+      status: "idle" as const,
+      availableStartTimes: [],
+      getAvailableEndTimes: emptyAvailableTimeSlots,
+    };
   }
 
   if (reservationsQuery.isError) {
-    return { status: "error" as const, availableStartTimes: [], availableEndTimes: [], refetch: reservationsQuery.refetch };
+    return {
+      status: "error" as const,
+      availableStartTimes: [],
+      getAvailableEndTimes: emptyAvailableTimeSlots,
+    };
   }
 
   if (reservationsQuery.isPending || !reservationsQuery.data) {
-    return { status: "loading" as const, availableStartTimes: [], availableEndTimes: [] };
+    return {
+      status: "loading" as const,
+      availableStartTimes: [],
+      getAvailableEndTimes: emptyAvailableTimeSlots,
+    };
   }
 
   const roomReservations = getRoomReservations(reservationsQuery.data.reservations, roomId);
   const availableStartTimes = getAvailableStartTimes(roomReservations);
-  const availableEndTimes = startTime ? getAvailableEndTimes(roomReservations, startTime) : [];
 
   if (availableStartTimes.length === 0) {
-    return { status: "empty" as const, availableStartTimes: [], availableEndTimes: [], refetch: reservationsQuery.refetch };
+    return {
+      status: "empty" as const,
+      availableStartTimes: [],
+      getAvailableEndTimes: emptyAvailableTimeSlots,
+    };
   }
 
   return {
     status: "ready" as const,
     availableStartTimes,
-    availableEndTimes,
-    refetch: reservationsQuery.refetch,
+    getAvailableEndTimes: (startTime: string) =>
+      getAvailableEndTimes(roomReservations, startTime),
   };
 }

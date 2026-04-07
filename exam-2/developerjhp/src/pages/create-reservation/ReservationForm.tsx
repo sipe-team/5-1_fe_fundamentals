@@ -62,9 +62,12 @@ export function ReservationForm({
   const date = watch("date");
   const startTime = watch("startTime");
   const selectedRoom = rooms.find((room) => room.id === roomId);
-  const availability = useAvailableTimeSlots(roomId, date, startTime);
+  const availability = useAvailableTimeSlots(roomId, date);
+  const availableEndTimes = startTime
+    ? availability.getAvailableEndTimes(startTime)
+    : [];
   const canSelectStart = availability.status === "ready";
-  const canSelectEnd = canSelectStart && !!startTime && availability.availableEndTimes.length > 0;
+  const canSelectEnd = canSelectStart && !!startTime && availableEndTimes.length > 0;
 
   const clearTimeRange = () => {
     resetField("startTime", { defaultValue: "" });
@@ -122,7 +125,7 @@ export function ReservationForm({
       <FormField label="종료 시간" error={errors.endTime?.message}>
         <select id="endTime" {...register("endTime")} disabled={!canSelectEnd}>
           <option value="">선택하세요</option>
-          {availability.availableEndTimes.map((slot) => (
+          {availableEndTimes.map((slot) => (
             <option key={slot} value={slot}>{slot}</option>
           ))}
         </select>
@@ -136,7 +139,7 @@ export function ReservationForm({
           <Match when={availability.status === "error"}>
             <ErrorText>예약 현황을 불러올 수 없습니다.</ErrorText>
           </Match>
-          <Match when={availability.availableEndTimes.length === 0}>
+          <Match when={availableEndTimes.length === 0}>
             <HelperText>예약 가능한 종료 시간이 없습니다.</HelperText>
           </Match>
         </Switch>
