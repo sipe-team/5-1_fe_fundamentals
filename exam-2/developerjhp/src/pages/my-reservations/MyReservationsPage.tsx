@@ -25,12 +25,24 @@ function MyReservationsList({ reservations }: { reservations: Reservation[] }) {
     return <EmptyState title="예약이 없습니다." />;
   }
 
+  const reservationsByDate = groupReservationsByDate(reservations);
+
   return (
-    <ul css={listStyle}>
-      {reservations.map((reservation) => (
-        <ReservationListItem key={reservation.id} reservation={reservation} />
+    <div css={groupListStyle}>
+      {reservationsByDate.map(([date, reservations]) => (
+        <section key={date}>
+          <h2 css={groupTitleStyle}>{date}</h2>
+          <ul css={listStyle}>
+            {reservations.map((reservation) => (
+              <ReservationListItem
+                key={reservation.id}
+                reservation={reservation}
+              />
+            ))}
+          </ul>
+        </section>
       ))}
-    </ul>
+    </div>
   );
 }
 
@@ -40,16 +52,51 @@ function ReservationListItem({ reservation }: { reservation: Reservation }) {
       <Link
         to={`/reservations/${reservation.id}`}
         state={{ from: "/my-reservations" }}
+        aria-label={`${reservation.title}, ${reservation.date} ${reservation.startTime}부터 ${reservation.endTime}까지 상세 보기`}
         css={itemStyle}
       >
         <strong>{reservation.title}</strong>
         <span css={css`margin-left: ${spacing.md}; color: ${color.textSecondary};`}>
-          {reservation.date} {reservation.startTime}~{reservation.endTime}
+          {reservation.startTime}~{reservation.endTime}
         </span>
       </Link>
     </li>
   );
 }
+
+function groupReservationsByDate(reservations: Reservation[]) {
+  const grouped = new Map<string, Reservation[]>();
+  const sortedReservations = [...reservations].sort((left, right) => {
+    if (left.date !== right.date) {
+      return left.date.localeCompare(right.date);
+    }
+
+    return left.startTime.localeCompare(right.startTime);
+  });
+
+  for (const reservation of sortedReservations) {
+    const group = grouped.get(reservation.date);
+
+    if (group) {
+      group.push(reservation);
+      continue;
+    }
+
+    grouped.set(reservation.date, [reservation]);
+  }
+
+  return Array.from(grouped.entries());
+}
+
+const groupListStyle = css`
+  display: flex;
+  flex-direction: column;
+  gap: ${spacing.lg};
+`;
+
+const groupTitleStyle = css`
+  margin-bottom: ${spacing.sm};
+`;
 
 const listStyle = css`
   list-style: none;
@@ -69,5 +116,10 @@ const itemStyle = css`
 
   &:hover {
     background: ${color.bgHeader};
+  }
+
+  &:focus-visible {
+    outline: 2px solid ${color.primaryFocus};
+    outline-offset: 2px;
   }
 `;
