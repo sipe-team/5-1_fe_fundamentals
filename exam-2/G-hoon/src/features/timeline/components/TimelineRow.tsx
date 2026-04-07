@@ -35,6 +35,8 @@ export default function TimelineRow({
           <EmptySlot
             key={cell.slotIdx}
             slotIdx={cell.slotIdx}
+            time={cell.time}
+            roomName={room.name}
             onClick={() => onEmptyClick(room.id, cell.time)}
           />
         ),
