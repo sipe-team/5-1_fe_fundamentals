@@ -1,0 +1,681 @@
+openapi: 3.0.3
+info:
+  title: Exam 3 - 커피 주문 앱 API
+  description: |
+    카페 커피 주문 앱의 Mock API 문서입니다.
+
+    MSW(Mock Service Worker) 기반으로 동작하며, `pnpm dev` 실행 시 자동으로 활성화됩니다.
+
+    ### 주의사항
+    - 약 **15%** 확률로 느린 응답(1.5~5초)이 발생합니다.
+    - 약 **10%** 확률로 에러 응답(500, 503)이 반환됩니다.
+    - 데이터는 `localStorage`에 저장되므로 새로고침해도 유지됩니다.
+
+    ### 가격 계산
+    ```
+    최종 가격 = 기본 가격(price) + 선택한 옵션들의 추가 금액 합계
+    ```
+    각 옵션의 `prices` 배열은 `labels` 배열과 1:1로 대응됩니다.
+  version: 1.0.0
+  contact:
+    name: SIPE Frontend Study
+
+servers:
+  - url: http://localhost:5173
+    description: Vite 개발 서버 (MSW)
+
+tags:
+  - name: Catalog
+    description: 메뉴 및 옵션 조회
+  - name: Orders
+    description: 주문 생성, 조회, 취소
+
+paths:
+  /api/catalog/categories:
+    get:
+      tags: [Catalog]
+      summary: 카테고리 목록 조회
+      description: 전체 카테고리 목록을 반환합니다.
+      operationId: getCategories
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  categories:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MenuCategory"
+              example:
+                categories:
+                  - 커피
+                  - 음료
+                  - 디저트
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /api/catalog/items:
+    get:
+      tags: [Catalog]
+      summary: 전체 메뉴 목록 조회
+      description: 전체 메뉴 목록을 반환합니다.
+      operationId: getItems
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MenuItem"
+              example:
+                items:
+                  - id: menu-001
+                    category: 커피
+                    title: 아메리카노
+                    description: 깊고 진한 에스프레소에 물을 더한 클래식 커피
+                    price: 4500
+                    iconImg: /images/americano.png
+                    optionIds: [1, 2, 3, 4]
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /api/catalog/items/{itemId}:
+    get:
+      tags: [Catalog]
+      summary: 메뉴 상세 조회
+      description: 특정 메뉴의 상세 정보를 반환합니다. `optionIds`는 해당 메뉴에 적용 가능한 옵션 ID 목록입니다.
+      operationId: getItemById
+      parameters:
+        - name: itemId
+          in: path
+          required: true
+          description: "메뉴 ID (예: menu-001)"
+          schema:
+            type: string
+            example: menu-001
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  item:
+                    $ref: "#/components/schemas/MenuItem"
+              example:
+                item:
+                  id: menu-001
+                  category: 커피
+                  title: 아메리카노
+                  description: 깊고 진한 에스프레소에 물을 더한 클래식 커피
+                  price: 4500
+                  iconImg: /images/americano.png
+                  optionIds: [1, 2, 3, 4]
+        "404":
+          description: 상품을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: Not Found
+                message: 상품을 찾을 수 없어요.
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /api/catalog/options:
+    get:
+      tags: [Catalog]
+      summary: 전체 옵션 목록 조회
+      description: |
+        전체 옵션 목록을 반환합니다. 옵션에는 3가지 타입이 있으며, 각 타입에 따라 UI를 다르게 구현해야 합니다.
+
+        | 타입 | 설명 | 필수 여부 | 선택 방식 |
+        |------|------|-----------|-----------|
+        | `grid` | 아이콘과 함께 그리드 형태로 노출 | **항상 필수** | 하나만 선택 |
+        | `select` | 셀렉트박스 + 바텀시트로 선택 | 선택 사항 | 하나만 선택 |
+        | `list` | 체크리스트 형태로 복수 선택 | `minCount` > 0이면 필수 | `minCount` ~ `maxCount`개 선택 |
+      operationId: getOptions
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  options:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/MenuOption"
+              example:
+                options:
+                  - id: 1
+                    name: 온도
+                    type: grid
+                    required: true
+                    col: 2
+                    labels: [HOT, ICE]
+                    icons: ["🔥", "🧊"]
+                    prices: [0, 0]
+                  - id: 3
+                    name: 진하기
+                    type: select
+                    required: false
+                    labels: [연하게, 보통, 진하게, 샷 추가]
+                    prices: [0, 0, 0, 500]
+                  - id: 4
+                    name: 추가옵션
+                    type: list
+                    required: false
+                    minCount: 0
+                    maxCount: 3
+                    labels: [바닐라 시럽, 헤이즐넛 시럽, 카라멜 시럽, 휘핑크림, 오트밀크]
+                    prices: [300, 300, 300, 500, 500]
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /api/orders:
+    post:
+      tags: [Orders]
+      summary: 주문 생성
+      description: |
+        새 주문을 생성합니다. 서버에서 옵션 유효성, 필수 옵션, 선택 개수, 총 금액을 검증합니다.
+
+        ### 에러 발생 조건 (400)
+        - `items` 배열이 비어 있는 경우
+        - `customerName`이 없는 경우
+        - 상품에 적용 가능한 옵션이 아닌 경우
+        - 필수 옵션(`required: true`)인데 적용이 안된 경우
+        - 옵션에 적용된 선택의 개수가 유효하지 않은 경우 (list의 minCount/maxCount)
+        - grid/select에 2개 이상 선택한 경우
+        - 수량이 1~99 범위를 벗어난 경우
+        - `totalPrice`와 계산된 총합이 일치하지 않는 경우
+      operationId: createOrder
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateOrderRequest"
+            example:
+              totalPrice: 5500
+              customerName: 김민수
+              items:
+                - itemId: menu-001
+                  quantity: 1
+                  options:
+                    - optionId: 1
+                      labels: [HOT]
+                    - optionId: 2
+                      labels: [Medium]
+                    - optionId: 3
+                      labels: [샷 추가]
+      responses:
+        "201":
+          description: 주문 생성 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orderId:
+                    type: string
+                    description: 생성된 주문 ID
+              example:
+                orderId: bd29d8550930876e209fe97d
+        "400":
+          description: 잘못된 주문
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                invalidOrder:
+                  summary: 잘못된 주문
+                  value:
+                    error: Bad Request
+                    message: 잘못된 주문이에요.
+                invalidPrice:
+                  summary: 주문금액 불일치
+                  value:
+                    error: Bad Request
+                    message: 주문금액이 잘못되었어요.
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+    get:
+      tags: [Orders]
+      summary: 주문 목록 조회
+      description: 내 주문 목록을 반환합니다.
+      operationId: getOrders
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  orders:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/Order"
+              example:
+                orders:
+                  - id: ord-001
+                    totalPrice: 11000
+                    items:
+                      - itemId: menu-001
+                        title: 아메리카노
+                        quantity: 2
+                        basePrice: 4500
+                        options:
+                          - optionId: 1
+                            labels: [ICE]
+                          - optionId: 2
+                            labels: [Medium]
+                          - optionId: 3
+                            labels: [샷 추가]
+                        unitPrice: 5500
+                    status: completed
+                    customerName: 김민수
+                    createdAt: "2026-04-08T09:15:00Z"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /api/orders/{orderId}:
+    get:
+      tags: [Orders]
+      summary: 주문 상세 조회
+      description: 특정 주문의 상세 정보를 반환합니다.
+      operationId: getOrderById
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: 주문 ID
+          schema:
+            type: string
+            example: ord-001
+      responses:
+        "200":
+          description: 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  order:
+                    $ref: "#/components/schemas/Order"
+              example:
+                order:
+                  id: ord-001
+                  totalPrice: 11000
+                  items:
+                    - itemId: menu-001
+                      title: 아메리카노
+                      quantity: 2
+                      basePrice: 4500
+                      options:
+                        - optionId: 1
+                          labels: [ICE]
+                        - optionId: 2
+                          labels: [Medium]
+                        - optionId: 3
+                          labels: [샷 추가]
+                      unitPrice: 5500
+                  status: completed
+                  customerName: 김민수
+                  createdAt: "2026-04-08T09:15:00Z"
+        "404":
+          description: 주문을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: Not Found
+                message: 주문을 찾을 수 없어요.
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+  /api/orders/{orderId}/cancel:
+    patch:
+      tags: [Orders]
+      summary: 주문 취소
+      description: |
+        주문을 취소합니다. **이미 완료되거나 취소된 주문은 취소할 수 없습니다.**
+
+        ### 주문 상태
+        | 상태 | 설명 | 취소 가능 |
+        |------|------|-----------|
+        | `pending` | 주문 접수됨 | O |
+        | `preparing` | 준비 중 | O |
+        | `completed` | 완료 | X |
+        | `cancelled` | 취소됨 | X |
+      operationId: cancelOrder
+      parameters:
+        - name: orderId
+          in: path
+          required: true
+          description: 주문 ID
+          schema:
+            type: string
+            example: ord-001
+      responses:
+        "200":
+          description: 취소 성공
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: 주문이 취소되었습니다.
+        "404":
+          description: 주문을 찾을 수 없음
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              example:
+                error: Not Found
+                message: 주문을 찾을 수 없어요.
+        "409":
+          description: 이미 완료/취소된 주문
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+              examples:
+                completed:
+                  summary: 이미 완료된 주문
+                  value:
+                    error: Conflict
+                    message: 이미 완료된 주문은 취소할 수 없습니다.
+                cancelled:
+                  summary: 이미 취소된 주문
+                  value:
+                    error: Conflict
+                    message: 이미 취소된 주문입니다.
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+        "503":
+          $ref: "#/components/responses/ServiceUnavailable"
+
+components:
+  schemas:
+    MenuCategory:
+      type: string
+      enum: [커피, 음료, 디저트]
+      description: 메뉴 카테고리
+
+    MenuItem:
+      type: object
+      required: [id, category, title, description, price, iconImg, optionIds]
+      properties:
+        id:
+          type: string
+          description: 메뉴 ID
+          example: menu-001
+        category:
+          $ref: "#/components/schemas/MenuCategory"
+        title:
+          type: string
+          description: 메뉴 이름
+          example: 아메리카노
+        description:
+          type: string
+          description: 메뉴 설명
+          example: 깊고 진한 에스프레소에 물을 더한 클래식 커피
+        price:
+          type: integer
+          description: 기본 가격 (원)
+          example: 4500
+        iconImg:
+          type: string
+          description: 메뉴 아이콘 이미지 경로
+          example: /images/americano.png
+        optionIds:
+          type: array
+          items:
+            type: integer
+          description: 적용 가능한 옵션 ID 목록
+          example: [1, 2, 3, 4]
+
+    MenuOption:
+      type: object
+      required: [id, name, type, required, labels, prices]
+      description: |
+        메뉴 옵션. `type`에 따라 추가 필드가 달라집니다.
+        - `grid`: `col`, `icons` 추가
+        - `select`: 추가 필드 없음
+        - `list`: `minCount`, `maxCount` 추가
+      properties:
+        id:
+          type: integer
+          description: 옵션 ID
+          example: 1
+        name:
+          type: string
+          description: 옵션 이름
+          example: 온도
+        type:
+          type: string
+          enum: [grid, select, list]
+          description: |
+            옵션 타입
+            - `grid`: 그리드 형태, 아이콘 포함, 항상 필수, 단일 선택
+            - `select`: 셀렉트박스 + 바텀시트, 선택 사항, 단일 선택
+            - `list`: 체크리스트, minCount > 0이면 필수, 복수 선택
+        required:
+          type: boolean
+          description: 필수 여부 (grid는 항상 true)
+        col:
+          type: integer
+          description: 그리드 컬럼 수 (grid 타입에만 존재)
+          example: 2
+        icons:
+          type: array
+          items:
+            type: string
+          description: 아이콘 목록 (grid 타입에만 존재)
+          example: ["🔥", "🧊"]
+        labels:
+          type: array
+          items:
+            type: string
+          description: 선택지 라벨 목록
+          example: [HOT, ICE]
+        prices:
+          type: array
+          items:
+            type: integer
+          description: 각 선택지의 추가 금액 (labels와 1:1 대응)
+          example: [0, 0]
+        minCount:
+          type: integer
+          description: 최소 선택 개수 (list 타입에만 존재)
+          example: 0
+        maxCount:
+          type: integer
+          description: 최대 선택 개수 (list 타입에만 존재)
+          example: 3
+
+    OptionSelection:
+      type: object
+      required: [optionId, labels]
+      properties:
+        optionId:
+          type: integer
+          description: 옵션 ID
+          example: 1
+        labels:
+          type: array
+          items:
+            type: string
+          description: 선택한 라벨 목록 (grid/select는 1개, list는 여러 개)
+          example: [HOT]
+
+    OrderItem:
+      type: object
+      required: [itemId, title, quantity, basePrice, options, unitPrice]
+      properties:
+        itemId:
+          type: string
+          description: 메뉴 ID
+          example: menu-001
+        title:
+          type: string
+          description: 메뉴 이름
+          example: 아메리카노
+        quantity:
+          type: integer
+          description: 수량
+          minimum: 1
+          maximum: 99
+          example: 2
+        basePrice:
+          type: integer
+          description: 기본 가격
+          example: 4500
+        options:
+          type: array
+          items:
+            $ref: "#/components/schemas/OptionSelection"
+        unitPrice:
+          type: integer
+          description: 옵션 포함 단가
+          example: 5500
+
+    OrderStatus:
+      type: string
+      enum: [pending, preparing, completed, cancelled]
+      description: |
+        주문 상태
+        - `pending`: 주문 접수됨 (취소 가능)
+        - `preparing`: 준비 중 (취소 가능)
+        - `completed`: 완료 (취소 불가)
+        - `cancelled`: 취소됨 (취소 불가)
+
+    Order:
+      type: object
+      required: [id, totalPrice, items, status, customerName, createdAt]
+      properties:
+        id:
+          type: string
+          description: 주문 ID
+          example: ord-001
+        totalPrice:
+          type: integer
+          description: 총 주문 금액
+          example: 11000
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/OrderItem"
+        status:
+          $ref: "#/components/schemas/OrderStatus"
+        customerName:
+          type: string
+          description: 주문자 이름
+          example: 김민수
+        createdAt:
+          type: string
+          format: date-time
+          description: 주문 생성 시각 (ISO 8601)
+          example: "2026-04-08T09:15:00Z"
+
+    CreateOrderRequest:
+      type: object
+      required: [totalPrice, customerName, items]
+      properties:
+        totalPrice:
+          type: integer
+          description: 총 주문 금액 (서버에서 검증)
+          example: 5500
+        customerName:
+          type: string
+          description: 주문자 이름
+          example: 김민수
+        items:
+          type: array
+          minItems: 1
+          items:
+            type: object
+            required: [itemId, quantity, options]
+            properties:
+              itemId:
+                type: string
+                description: 메뉴 ID
+                example: menu-001
+              quantity:
+                type: integer
+                description: 수량 (1~99)
+                minimum: 1
+                maximum: 99
+                example: 1
+              options:
+                type: array
+                items:
+                  $ref: "#/components/schemas/OptionSelection"
+
+    ErrorResponse:
+      type: object
+      required: [error, message]
+      properties:
+        error:
+          type: string
+          description: 에러 타입
+          example: Bad Request
+        message:
+          type: string
+          description: 에러 메시지
+          example: 잘못된 주문이에요.
+
+  responses:
+    InternalServerError:
+      description: 서버 내부 오류 (10% 확률로 랜덤 발생)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: Internal Server Error
+            message: 서버 내부 오류가 발생했습니다. 잠시 후 다시 시도해주세요.
+
+    ServiceUnavailable:
+      description: 서버 일시적 과부하 (10% 확률로 랜덤 발생)
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ErrorResponse"
+          example:
+            error: Service Temporarily Unavailable
+            message: 서버가 일시적으로 과부하 상태입니다. 잠시 후 다시 시도해주세요.

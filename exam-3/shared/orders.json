@@ -1,0 +1,151 @@
+[
+  {
+    "id": "ord-001",
+    "totalPrice": 11000,
+    "items": [
+      {
+        "itemId": "menu-001",
+        "title": "아메리카노",
+        "quantity": 2,
+        "basePrice": 4500,
+        "options": [
+          { "optionId": 1, "labels": ["ICE"] },
+          { "optionId": 2, "labels": ["Medium"] },
+          { "optionId": 3, "labels": ["샷 추가"] }
+        ],
+        "unitPrice": 5500
+      }
+    ],
+    "status": "completed",
+    "customerName": "김민수",
+    "createdAt": "2026-04-08T09:15:00Z"
+  },
+  {
+    "id": "ord-002",
+    "totalPrice": 10000,
+    "items": [
+      {
+        "itemId": "menu-002",
+        "title": "카페라떼",
+        "quantity": 1,
+        "basePrice": 5000,
+        "options": [
+          { "optionId": 1, "labels": ["HOT"] },
+          { "optionId": 2, "labels": ["Large"] },
+          { "optionId": 4, "labels": ["오트밀크"] }
+        ],
+        "unitPrice": 6500
+      },
+      {
+        "itemId": "menu-013",
+        "title": "크로와상",
+        "quantity": 1,
+        "basePrice": 3500,
+        "options": [
+          { "optionId": 6, "labels": ["버터"] }
+        ],
+        "unitPrice": 3500
+      }
+    ],
+    "status": "preparing",
+    "customerName": "이지은",
+    "createdAt": "2026-04-08T10:30:00Z"
+  },
+  {
+    "id": "ord-003",
+    "totalPrice": 7300,
+    "items": [
+      {
+        "itemId": "menu-005",
+        "title": "카라멜 마키아또",
+        "quantity": 1,
+        "basePrice": 5500,
+        "options": [
+          { "optionId": 1, "labels": ["ICE"] },
+          { "optionId": 2, "labels": ["Large"] },
+          { "optionId": 4, "labels": ["휘핑크림", "카라멜 시럽"] }
+        ],
+        "unitPrice": 7300
+      }
+    ],
+    "status": "completed",
+    "customerName": "박서준",
+    "createdAt": "2026-04-08T11:00:00Z"
+  },
+  {
+    "id": "ord-004",
+    "totalPrice": 12500,
+    "items": [
+      {
+        "itemId": "menu-009",
+        "title": "녹차 라떼",
+        "quantity": 1,
+        "basePrice": 5500,
+        "options": [
+          { "optionId": 1, "labels": ["ICE"] },
+          { "optionId": 2, "labels": ["Medium"] }
+        ],
+        "unitPrice": 6000
+      },
+      {
+        "itemId": "menu-014",
+        "title": "치즈케이크",
+        "quantity": 1,
+        "basePrice": 6500,
+        "options": [],
+        "unitPrice": 6500
+      }
+    ],
+    "status": "cancelled",
+    "customerName": "최유진",
+    "createdAt": "2026-04-08T11:45:00Z"
+  },
+  {
+    "id": "ord-005",
+    "totalPrice": 27000,
+    "items": [
+      {
+        "itemId": "menu-006",
+        "title": "콜드브루",
+        "quantity": 3,
+        "basePrice": 5000,
+        "options": [
+          { "optionId": 2, "labels": ["Large"] }
+        ],
+        "unitPrice": 6000
+      },
+      {
+        "itemId": "menu-015",
+        "title": "초코 브라우니",
+        "quantity": 2,
+        "basePrice": 4500,
+        "options": [],
+        "unitPrice": 4500
+      }
+    ],
+    "status": "preparing",
+    "customerName": "김민수",
+    "createdAt": "2026-04-08T13:20:00Z"
+  },
+  {
+    "id": "ord-006",
+    "totalPrice": 6000,
+    "items": [
+      {
+        "itemId": "menu-004",
+        "title": "바닐라 라떼",
+        "quantity": 1,
+        "basePrice": 5500,
+        "options": [
+          { "optionId": 1, "labels": ["HOT"] },
+          { "optionId": 2, "labels": ["Small"] },
+          { "optionId": 4, "labels": ["휘핑크림"] }
+        ],
+        "unitPrice": 6000
+      }
+    ],
+    "status": "pending",
+    "customerName": "이지은",
+    "createdAt": "2026-04-08T14:00:00Z"
+  }
+]

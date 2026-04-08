@@ -1,0 +1,110 @@
+[
+  {
+    "id": "menu-001",
+    "category": "커피",
+    "title": "아메리카노",
+    "description": "깊고 진한 에스프레소에 물을 더한 클래식 커피",
+    "price": 4500,
+    "iconImg": "/images/americano.png",
+    "optionIds": [1, 2, 3, 4]
+  },
+  {
+    "id": "menu-002",
+    "category": "커피",
+    "title": "화이트 아메리카노",
+    "description": "부드러운 우유와 에스프레소의 조화로운 만남",
+    "price": 5000,
+    "iconImg": "/images/white-americano.png",
+    "optionIds": [1, 2, 3, 4]
+  },
+  {
+    "id": "menu-003",
+    "category": "커피",
+    "title": "칠린 라떼",
+    "description": "시원하고 부드러운 에스프레소 라떼",
+    "price": 5500,
+    "iconImg": "/images/chillinlatte.png",
+    "optionIds": [1, 2, 3, 4]
+  },
+  {
+    "id": "menu-004",
+    "category": "커피",
+    "title": "바닐라 라떼",
+    "description": "달콤한 바닐라 시럽이 들어간 카페라떼",
+    "price": 5500,
+    "iconImg": "/images/vanilla-latte.png",
+    "optionIds": [1, 2, 4]
+  },
+  {
+    "id": "menu-005",
+    "category": "음료",
+    "title": "아이스티",
+    "description": "상큼하고 시원한 과일향 아이스티",
+    "price": 4500,
+    "iconImg": "/images/icetea.png",
+    "optionIds": [5, 7]
+  },
+  {
+    "id": "menu-006",
+    "category": "음료",
+    "title": "리프티",
+    "description": "찻잎을 우려낸 깊은 풍미의 전통차",
+    "price": 5000,
+    "iconImg": "/images/leaf-tea.png",
+    "optionIds": [1, 5, 7]
+  },
+  {
+    "id": "menu-007",
+    "category": "음료",
+    "title": "딸기 우유",
+    "description": "신선한 딸기와 우유의 달콤한 조합",
+    "price": 5500,
+    "iconImg": "/images/strawberrymilk.png",
+    "optionIds": [5, 4]
+  },
+  {
+    "id": "menu-008",
+    "category": "디저트",
+    "title": "블루베리 치즈케이크",
+    "description": "새콤달콤한 블루베리와 부드러운 치즈크림의 조화",
+    "price": 6500,
+    "iconImg": "/images/blueberry-cheesecake.png",
+    "optionIds": []
+  },
+  {
+    "id": "menu-009",
+    "category": "디저트",
+    "title": "쿠키",
+    "description": "겉은 바삭 속은 촉촉한 수제 쿠키",
+    "price": 3500,
+    "iconImg": "/images/cookie.png",
+    "optionIds": [6]
+  },
+  {
+    "id": "menu-010",
+    "category": "디저트",
+    "title": "크로플",
+    "description": "크로와상 반죽으로 만든 바삭한 와플",
+    "price": 5000,
+    "iconImg": "/images/croffle.png",
+    "optionIds": [6]
+  },
+  {
+    "id": "menu-011",
+    "category": "디저트",
+    "title": "레어 치즈케이크",
+    "description": "입안에서 사르르 녹는 부드러운 레어 치즈케이크",
+    "price": 6500,
+    "iconImg": "/images/rarecheesecake.png",
+    "optionIds": []
+  },
+  {
+    "id": "menu-012",
+    "category": "디저트",
+    "title": "티라미수",
+    "description": "에스프레소를 적신 부드러운 마스카포네 디저트",
+    "price": 6000,
+    "iconImg": "/images/tiramisu.png",
+    "optionIds": []
+  }
+]

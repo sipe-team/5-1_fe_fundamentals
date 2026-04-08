@@ -1,0 +1,78 @@
+[
+  {
+    "id": 1,
+    "name": "온도",
+    "type": "grid",
+    "required": true,
+    "col": 2,
+    "labels": ["HOT", "ICE"],
+    "icons": ["🔥", "🧊"],
+    "prices": [0, 0]
+  },
+  {
+    "id": 2,
+    "name": "사이즈",
+    "type": "grid",
+    "required": true,
+    "col": 3,
+    "labels": ["Small", "Medium", "Large"],
+    "icons": ["S", "M", "L"],
+    "prices": [0, 500, 1000]
+  },
+  {
+    "id": 3,
+    "name": "진하기",
+    "type": "select",
+    "required": false,
+    "labels": ["연하게", "보통", "진하게", "샷 추가"],
+    "prices": [0, 0, 0, 500]
+  },
+  {
+    "id": 4,
+    "name": "추가옵션",
+    "type": "list",
+    "required": false,
+    "minCount": 0,
+    "maxCount": 3,
+    "labels": ["바닐라 시럽", "헤이즐넛 시럽", "카라멜 시럽", "휘핑크림", "오트밀크"],
+    "prices": [300, 300, 300, 500, 500]
+  },
+  {
+    "id": 5,
+    "name": "사이즈",
+    "type": "grid",
+    "required": true,
+    "col": 2,
+    "labels": ["Medium", "Large"],
+    "icons": ["M", "L"],
+    "prices": [0, 500]
+  },
+  {
+    "id": 6,
+    "name": "토핑",
+    "type": "list",
+    "required": false,
+    "minCount": 0,
+    "maxCount": 2,
+    "labels": ["버터", "잼", "초콜릿소스", "아이스크림"],
+    "prices": [0, 0, 300, 1000]
+  },
+  {
+    "id": 7,
+    "name": "당도",
+    "type": "select",
+    "required": false,
+    "labels": ["덜 달게", "보통", "달게"],
+    "prices": [0, 0, 0]
+  },
+  {
+    "id": 8,
+    "name": "샷",
+    "type": "grid",
+    "required": true,
+    "col": 2,
+    "labels": ["싱글", "더블"],
+    "icons": ["1", "2"],
+    "prices": [0, 500]
+  }
+]
