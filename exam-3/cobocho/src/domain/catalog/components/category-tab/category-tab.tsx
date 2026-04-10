@@ -1,7 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { cn } from '@/shared/lib/cn';
 import { catalogQuery, type MenuCategory } from '../../api';
-import { HStack } from '@/shared/components/layout';
+import { SegmentControl } from '@/shared/components/segment-control';
 
 interface CategoryTabProps {
 	value: MenuCategory;
@@ -13,24 +12,18 @@ export function CategoryTab({ value, onSelect }: CategoryTabProps) {
 	const categories = data.categories;
 
 	return (
-		<HStack>
+		<SegmentControl.Root
+			value={value}
+			onSelect={(v) => onSelect(v as MenuCategory)}
+		>
 			{categories.map((category) => (
-				<button
+				<SegmentControl.Item
 					key={category}
-					role="tab"
-					type="button"
-					aria-selected={value === category}
-					className={cn(
-						'rounded-full px-4 py-2 text-sm font-medium transition-colors',
-						value === category
-							? 'bg-black text-white'
-							: 'bg-gray-100 text-gray-600 hover:bg-gray-200',
-					)}
-					onClick={() => onSelect(category)}
+					value={category}
 				>
 					{category}
-				</button>
+				</SegmentControl.Item>
 			))}
-		</HStack>
+		</SegmentControl.Root>
 	);
 }

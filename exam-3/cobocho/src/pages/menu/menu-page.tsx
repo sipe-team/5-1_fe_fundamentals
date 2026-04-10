@@ -6,7 +6,7 @@ export function MenuPage() {
 	const [category, setCategory] = useQueryState('category');
 
 	return (
-		<div>
+		<div className="p-4">
 			<CategoryTab
 				value={category as MenuCategory}
 				onSelect={setCategory}

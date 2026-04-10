@@ -4,7 +4,6 @@ import App from './App';
 import { DevToolPanel } from './DevToolPanel';
 import { initializeMockStorage } from './mocks/storage';
 import './index.css';
-import './styles/reset.css';
 
 async function enableMocking() {
 	const { worker } = await import('./mocks/browser');
