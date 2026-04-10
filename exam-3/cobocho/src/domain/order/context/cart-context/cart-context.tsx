@@ -12,6 +12,8 @@ import {
 	addItemToCart,
 	calcTotalPrice,
 	calcTotalQuantity,
+	cartItemKey,
+	updateQuantityInCart,
 } from './cart-context.lib';
 
 export interface CartItem {
@@ -29,7 +31,8 @@ interface CartContextValue {
 		options: OptionSelection[],
 		quantity: number,
 	) => void;
-	removeItem: (itemId: string) => void;
+	removeItem: (key: string) => void;
+	updateQuantity: (key: string, quantity: number) => void;
 	clear: () => void;
 	totalPrice: number;
 	totalQuantity: number;
@@ -55,9 +58,29 @@ export function CartProvider({ children }: { children: ReactNode }) {
 		[items],
 	);
 
-	const removeItem = useCallback((itemId: string) => {
-		setItems((prev) => prev.filter((ci) => ci.item.id !== itemId));
+	const removeItem = useCallback((key: string) => {
+		setItems((prev) =>
+			prev.filter((ci) => cartItemKey(ci.item.id, ci.options) !== key),
+		);
 	}, []);
+
+	const updateQuantity = useCallback(
+		(key: string, quantity: number) => {
+			if (quantity <= 0) {
+				removeItem(key);
+				return;
+			}
+
+			const newItems = updateQuantityInCart({
+				prev: items,
+				key,
+				quantity,
+			});
+
+			setItems(newItems);
+		},
+		[items, removeItem],
+	);
 
 	const clear = useCallback(() => {
 		setItems([]);
@@ -68,7 +91,15 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 	return (
 		<CartContext.Provider
-			value={{ items, addItem, removeItem, clear, totalPrice, totalQuantity }}
+			value={{
+				items,
+				addItem,
+				removeItem,
+				updateQuantity,
+				clear,
+				totalPrice,
+				totalQuantity,
+			}}
 		>
 			{children}
 		</CartContext.Provider>

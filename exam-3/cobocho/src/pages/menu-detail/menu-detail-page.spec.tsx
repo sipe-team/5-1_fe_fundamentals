@@ -11,8 +11,6 @@ import { MenuDetailError } from './components/menu-detail-error';
 import { TestProvider } from '@/test/test-provider';
 import { MenuDetailPage } from './menu-detail-page';
 
-// ── Mocks ──
-
 const mockNavigate = vi.fn();
 
 vi.mock('react-router-dom', async () => {

@@ -104,6 +104,30 @@ function mergeQuantity(
 	});
 }
 
+interface UpdateQuantityParams {
+	prev: CartItem[];
+	key: string;
+	quantity: number;
+}
+
+export function updateQuantityInCart({
+	prev,
+	key,
+	quantity,
+}: UpdateQuantityParams): CartItem[] {
+	return prev.map((cartItem) => {
+		if (cartItemKey(cartItem.item.id, cartItem.options) !== key) {
+			return cartItem;
+		}
+
+		return {
+			...cartItem,
+			quantity,
+			totalPrice: cartItem.unitPrice * quantity,
+		};
+	});
+}
+
 /**
  * 장바구니 전체 금액을 계산합니다.
  */
