@@ -3,6 +3,7 @@ import { MenuList } from '@/domain/catalog/components/menu-list';
 import { useCategoryContext } from '@/domain/catalog/context/category-context';
 import { VStack } from '@/shared/components/layout';
 import { useNavigate } from 'react-router-dom';
+import { CartButton } from './components/cart-button';
 
 export function MenuPage() {
 	const navigate = useNavigate();
@@ -10,7 +11,7 @@ export function MenuPage() {
 	const { category, setCategory } = useCategoryContext();
 
 	return (
-		<VStack className="p-4">
+		<VStack className="p-4 pb-10">
 			<CategoryTab
 				value={category}
 				onSelect={setCategory}
@@ -19,6 +20,7 @@ export function MenuPage() {
 				category={category}
 				onClickMenu={(item) => navigate(`/menu/${item.id}`)}
 			/>
+			<CartButton />
 		</VStack>
 	);
 }
