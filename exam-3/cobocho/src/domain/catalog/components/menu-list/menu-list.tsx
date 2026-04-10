@@ -1,8 +1,9 @@
+import { useMemo } from 'react';
 import { useSuspenseQuery } from '@tanstack/react-query';
+
 import { catalogQuery, type MenuItem } from '../../api';
 import { Grid } from '@/shared/components/layout';
 import { MenuCard } from '../menu-card';
-import { useMemo } from 'react';
 
 interface MenuListProps {
 	category: MenuItem['category'];

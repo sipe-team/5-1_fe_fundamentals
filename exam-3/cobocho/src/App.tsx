@@ -13,7 +13,10 @@ function App() {
 			<NuqsAdapter>
 				<RouterProvider router={router} />
 			</NuqsAdapter>
-			<Toaster position="top-center" richColors />
+			<Toaster
+				position="top-center"
+				richColors
+			/>
 			<ReactQueryDevtools />
 		</QueryClientProvider>
 	);

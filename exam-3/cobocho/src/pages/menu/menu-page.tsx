@@ -1,8 +1,9 @@
+import { useNavigate } from 'react-router-dom';
+
 import { CategoryTab } from '@/domain/catalog/components/category-tab/category-tab';
 import { MenuList } from '@/domain/catalog/components/menu-list';
 import { useCategoryContext } from '@/domain/catalog/context/category-context';
 import { VStack } from '@/shared/components/layout';
-import { useNavigate } from 'react-router-dom';
 import { CartButton } from './components/cart-button';
 
 export function MenuPage() {
