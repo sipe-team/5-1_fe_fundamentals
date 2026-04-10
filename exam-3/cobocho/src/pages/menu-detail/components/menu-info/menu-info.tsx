@@ -1,11 +1,11 @@
-import type { MenuItem } from '../../api';
+import type { MenuItem } from '@/domain/catalog/api';
 import { VStack } from '@/shared/components/layout';
 
-interface MenuDetailProps {
+interface MenuInfoProps {
 	item: MenuItem;
 }
 
-export function MenuDetail({ item }: MenuDetailProps) {
+export function MenuInfo({ item }: MenuInfoProps) {
 	return (
 		<VStack
 			gap={3}
