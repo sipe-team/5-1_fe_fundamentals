@@ -27,15 +27,10 @@ const gridVariants = cva('grid', {
 	},
 });
 
-type GridProps = ComponentProps<'div'> & VariantProps<typeof gridVariants>;
+export type GridProps = ComponentProps<'div'> &
+	VariantProps<typeof gridVariants>;
 
-export function Grid({
-	cols,
-	rows,
-	gap,
-	className,
-	...props
-}: GridProps) {
+export function Grid({ cols, rows, gap, className, ...props }: GridProps) {
 	return (
 		<div
 			className={gridVariants({ cols, rows, gap, className })}
