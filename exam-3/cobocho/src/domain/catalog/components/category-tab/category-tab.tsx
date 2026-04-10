@@ -3,28 +3,24 @@ import { catalogQuery, type MenuItem } from '../../api';
 import { SegmentControl } from '@/shared/components/segment-control';
 
 interface CategoryTabProps {
-	value?: MenuItem['category'] | null;
+	value: MenuItem['category'];
 	onSelect?: (category: MenuItem['category']) => void;
 }
 
 export function CategoryTab({ value, onSelect }: CategoryTabProps) {
 	const { data } = useSuspenseQuery(catalogQuery.categories());
-	const categories = data.categories;
-
-	const resolvedValue =
-		value && categories.includes(value) ? value : categories[0];
 
 	return (
 		<SegmentControl.Root
-			value={resolvedValue}
+			value={value}
 			onSelect={(v) => onSelect?.(v)}
 		>
-			{categories.map((category) => (
+			{data.categories.map((c) => (
 				<SegmentControl.Item
-					key={category}
-					value={category}
+					key={c}
+					value={c}
 				>
-					{category}
+					{c}
 				</SegmentControl.Item>
 			))}
 		</SegmentControl.Root>

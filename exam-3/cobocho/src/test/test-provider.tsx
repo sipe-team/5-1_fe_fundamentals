@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NuqsTestingAdapter } from 'nuqs/adapters/testing';
 import { Suspense, type ReactNode } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
@@ -18,7 +19,9 @@ export function TestProvider({ children }: TestProviderProps) {
 	return (
 		<QueryClientProvider client={queryClient}>
 			<MemoryRouter>
-				<Suspense>{children}</Suspense>
+				<NuqsTestingAdapter>
+					<Suspense>{children}</Suspense>
+				</NuqsTestingAdapter>
 			</MemoryRouter>
 		</QueryClientProvider>
 	);

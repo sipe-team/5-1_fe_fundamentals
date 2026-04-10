@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 import { NuqsAdapter } from 'nuqs/adapters/react-router/v7';
 import { RouterProvider } from 'react-router-dom';
 import { router } from './router';
@@ -11,6 +12,7 @@ function App() {
 			<NuqsAdapter>
 				<RouterProvider router={router} />
 			</NuqsAdapter>
+			<ReactQueryDevtools />
 		</QueryClientProvider>
 	);
 }
