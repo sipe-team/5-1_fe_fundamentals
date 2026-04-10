@@ -3,7 +3,7 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { cn } from '@/shared/lib/cn';
 
 const rootVariants = cva(
-	'inline-flex items-center rounded-lg bg-gray-100 p-1',
+	'inline-flex items-center rounded-lg bg-gray-100 p-1 w-fit',
 	{
 		variants: {
 			size: {
@@ -81,7 +81,10 @@ function Root({
 }: RootProps) {
 	return (
 		<SegmentContext.Provider value={{ value, onSelect, size, fullWidth }}>
-			<div role="tablist" className={cn(rootVariants({ size, fullWidth }), className)}>
+			<div
+				role="tablist"
+				className={cn(rootVariants({ size, fullWidth }), className)}
+			>
 				{children}
 			</div>
 		</SegmentContext.Provider>

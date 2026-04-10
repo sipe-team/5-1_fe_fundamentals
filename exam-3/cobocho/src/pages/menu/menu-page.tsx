@@ -1,15 +1,24 @@
 import { CategoryTab } from '@/domain/catalog/components/category-tab/category-tab';
+import { MenuList } from '@/domain/catalog/components/menu-list';
 import { useCategoryContext } from '@/domain/catalog/context/category-context';
+import { VStack } from '@/shared/components/layout';
+import { useNavigate } from 'react-router-dom';
 
 export function MenuPage() {
+	const navigate = useNavigate();
+
 	const { category, setCategory } = useCategoryContext();
 
 	return (
-		<div className="p-4">
+		<VStack className="p-4">
 			<CategoryTab
 				value={category}
 				onSelect={setCategory}
 			/>
-		</div>
+			<MenuList
+				category={category}
+				onClickMenu={(item) => navigate(`/menu/${item.id}`)}
+			/>
+		</VStack>
 	);
 }
