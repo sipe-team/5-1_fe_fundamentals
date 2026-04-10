@@ -23,22 +23,8 @@ import { VStack } from '@/shared/components/layout';
 import { Button } from '@/shared/components/button';
 import { CtaArea } from '@/shared/components/cta-area';
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { Suspense } from 'react';
-import { QueryErrorBoundary } from '@/shared/components/query-error-boundary';
-import { MenuDetailError } from './components/menu-detail-error';
-import { MenuDetailSkeleton } from './components/menu-detail-skeleton';
 
 export function MenuDetailPage() {
-	return (
-		<QueryErrorBoundary fallback={<MenuDetailError />}>
-			<Suspense fallback={<MenuDetailSkeleton />}>
-				<MenuDetailContent />
-			</Suspense>
-		</QueryErrorBoundary>
-	);
-}
-
-function MenuDetailContent() {
 	const { itemId } = useParams<{ itemId: string }>();
 
 	if (!itemId) {

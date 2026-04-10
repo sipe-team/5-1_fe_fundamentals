@@ -3,9 +3,16 @@ import { Skeleton } from '@/shared/components/skeleton';
 
 export function MenuDetailSkeleton() {
 	return (
-		<VStack gap={6} className="pb-24 p-4">
+		<VStack
+			gap={6}
+			className="pb-24 p-4"
+		>
 			{/* 메뉴 정보 */}
-			<VStack gap={3} align="center" className="pt-4">
+			<VStack
+				gap={3}
+				align="center"
+				className="pt-4"
+			>
 				<Skeleton className="aspect-square w-full rounded-xl" />
 				<Skeleton className="h-6 w-28" />
 				<Skeleton className="h-4 w-40" />
@@ -38,7 +45,10 @@ export function MenuDetailSkeleton() {
 			</VStack>
 
 			{/* 수량 */}
-			<HStack justify="between" className="py-2">
+			<HStack
+				justify="between"
+				className="py-2"
+			>
 				<Skeleton className="h-4 w-10" />
 				<Skeleton className="h-8 w-24 rounded-full" />
 			</HStack>
