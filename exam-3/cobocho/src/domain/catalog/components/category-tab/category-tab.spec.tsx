@@ -123,6 +123,46 @@ describe('CategoryTab', () => {
 		);
 	});
 
+	it('value가 없으면 첫 번째 카테고리가 선택된다', async () => {
+		render(
+			<TestProvider>
+				<CategoryTab />
+			</TestProvider>,
+		);
+
+		expect(
+			await screen.findByRole('tab', { name: '커피' }),
+		).toHaveAttribute('aria-selected', 'true');
+	});
+
+	it('onSelect가 없어도 렌더링된다', async () => {
+		const user = userEvent.setup();
+		render(
+			<TestProvider>
+				<CategoryTab value="커피" />
+			</TestProvider>,
+		);
+
+		await user.click(await screen.findByRole('tab', { name: '음료' }));
+
+		expect(screen.getByRole('tab', { name: '음료' })).toBeInTheDocument();
+	});
+
+	it('유효하지 않은 카테고리가 전달되면 첫 번째 카테고리가 선택된다', async () => {
+		render(
+			<TestProvider>
+				<CategoryTab
+					value={'invalid' as MenuCategory}
+					onSelect={vi.fn()}
+				/>
+			</TestProvider>,
+		);
+
+		expect(
+			await screen.findByRole('tab', { name: '커피' }),
+		).toHaveAttribute('aria-selected', 'true');
+	});
+
 	it('외부에서 value가 변경되면 활성 카테고리가 업데이트된다', async () => {
 		const { rerender } = render(
 			<TestProvider>

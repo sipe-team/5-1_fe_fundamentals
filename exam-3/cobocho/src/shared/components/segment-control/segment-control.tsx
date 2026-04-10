@@ -81,7 +81,7 @@ function Root({
 }: RootProps) {
 	return (
 		<SegmentContext.Provider value={{ value, onSelect, size, fullWidth }}>
-			<div className={cn(rootVariants({ size, fullWidth }), className)}>
+			<div role="tablist" className={cn(rootVariants({ size, fullWidth }), className)}>
 				{children}
 			</div>
 		</SegmentContext.Provider>
@@ -101,7 +101,9 @@ function Item({ value, className, children }: ItemProps) {
 
 	return (
 		<button
+			role="tab"
 			type="button"
+			aria-selected={selected === value}
 			className={cn(
 				itemVariants({ size, fullWidth, active: selected === value }),
 				className,
