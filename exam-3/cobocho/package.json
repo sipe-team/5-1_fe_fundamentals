@@ -13,20 +13,25 @@
   },
   "dependencies": {
     "@tanstack/react-query": "^5.97.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "ky": "^2.0.0",
     "react": "^19.2.4",
     "react-dom": "^19.2.4",
     "react-router-dom": "^7.14.0",
+    "tailwind-merge": "^3.5.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.8",
+    "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-query-devtools": "^5.97.0",
     "@types/node": "^25.5.0",
     "@types/react": "^19.2.14",
     "@types/react-dom": "^19.2.3",
     "@vitejs/plugin-react": "^6.0.1",
     "msw": "^2.12.14",
+    "tailwindcss": "^4.2.2",
     "typescript": "~5.9.3",
     "vite": "^8.0.1"
   },

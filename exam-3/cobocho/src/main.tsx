@@ -3,22 +3,23 @@ import ReactDOM from 'react-dom/client';
 import App from './App';
 import { DevToolPanel } from './DevToolPanel';
 import { initializeMockStorage } from './mocks/storage';
+import './index.css';
 import './styles/reset.css';
 
 async function enableMocking() {
-  const { worker } = await import('./mocks/browser');
-  return worker.start({
-    onUnhandledRequest: 'bypass',
-  });
+	const { worker } = await import('./mocks/browser');
+	return worker.start({
+		onUnhandledRequest: 'bypass',
+	});
 }
 
 initializeMockStorage();
 
 enableMocking().then(() => {
-  ReactDOM.createRoot(document.getElementById('root')!).render(
-    <React.StrictMode>
-      <DevToolPanel />
-      <App />
-    </React.StrictMode>,
-  );
+	ReactDOM.createRoot(document.getElementById('root')!).render(
+		<React.StrictMode>
+			<DevToolPanel />
+			<App />
+		</React.StrictMode>,
+	);
 });
