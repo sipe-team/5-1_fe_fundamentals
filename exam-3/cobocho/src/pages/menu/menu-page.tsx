@@ -1,7 +1,16 @@
+import { useQueryState } from 'nuqs';
+import type { MenuCategory } from '@/domain/catalog/api';
+import { CategoryTab } from '@/domain/catalog/components/category-tab/category-tab';
+
 export function MenuPage() {
+	const [category, setCategory] = useQueryState('category');
+
 	return (
 		<div>
-			<h1>메뉴판</h1>
+			<CategoryTab
+				value={category as MenuCategory}
+				onSelect={setCategory}
+			/>
 		</div>
 	);
 }

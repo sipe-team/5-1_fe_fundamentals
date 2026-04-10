@@ -12,7 +12,7 @@ export const api = ky.create({
 	headers: {
 		'Content-Type': 'application/json',
 	},
-	baseUrl: '/api',
+	prefix: '/api',
 	hooks: {
 		afterResponse: [
 			async ({ response }) => {
