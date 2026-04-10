@@ -2,11 +2,19 @@ import { HStack } from '@/shared/components/layout';
 
 interface QuantitySelectorProps {
 	quantity: number;
+	min?: number;
+	max?: number;
 	onChange: (quantity: number) => void;
 }
 
+const DEFAULT_MAX_QUANTITY = 99;
+
+const DEFAULT_MIN_QUANTITY = 1;
+
 export function QuantitySelector({
 	quantity,
+	min = DEFAULT_MIN_QUANTITY,
+	max = DEFAULT_MAX_QUANTITY,
 	onChange,
 }: QuantitySelectorProps) {
 	return (
@@ -19,7 +27,7 @@ export function QuantitySelector({
 				<button
 					type="button"
 					className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 disabled:opacity-30"
-					disabled={quantity <= 1}
+					disabled={quantity <= min}
 					onClick={() => onChange(quantity - 1)}
 				>
 					-
@@ -28,7 +36,7 @@ export function QuantitySelector({
 				<button
 					type="button"
 					className="flex h-8 w-8 items-center justify-center rounded-full border border-gray-300 text-gray-600 disabled:opacity-30"
-					disabled={quantity >= 99}
+					disabled={quantity >= max}
 					onClick={() => onChange(quantity + 1)}
 				>
 					+

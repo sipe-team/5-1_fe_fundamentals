@@ -23,18 +23,22 @@ import { VStack } from '@/shared/components/layout';
 import { Button } from '@/shared/components/button';
 import { CtaArea } from '@/shared/components/cta-area';
 import { useSuspenseQuery } from '@tanstack/react-query';
+import { Suspense } from 'react';
 import { QueryErrorBoundary } from '@/shared/components/query-error-boundary';
 import { MenuDetailError } from './components/menu-detail-error';
+import { MenuDetailSkeleton } from './components/menu-detail-skeleton';
 
 export function MenuDetailPage() {
 	return (
 		<QueryErrorBoundary fallback={<MenuDetailError />}>
-			<MenuDetailContent_ />
+			<Suspense fallback={<MenuDetailSkeleton />}>
+				<MenuDetailContent />
+			</Suspense>
 		</QueryErrorBoundary>
 	);
 }
 
-function MenuDetailContent_() {
+function MenuDetailContent() {
 	const { itemId } = useParams<{ itemId: string }>();
 
 	if (!itemId) {
@@ -151,45 +155,5 @@ function MenuOptions({
 				</Button>
 			</CtaArea>
 		</VStack>
-	);
-}
-
-function MenuDetailError() {
-	const { reset, error } = useErrorBoundaryFallbackProps();
-	const navigate = useNavigate();
-
-	if (error instanceof NotFoundError) {
-		return (
-			<ErrorContent>
-				<ErrorContent.Title>메뉴를 찾을 수 없습니다.</ErrorContent.Title>
-				<ErrorContent.Message>
-					요청하신 메뉴를 찾을 수 없습니다.
-				</ErrorContent.Message>
-				<ErrorContent.GoBack onClick={() => navigate('/')}>
-					메뉴 페이지로 이동
-				</ErrorContent.GoBack>
-			</ErrorContent>
-		);
-	}
-
-	if (
-		error instanceof InternalServerError ||
-		error instanceof ServiceUnavailableError
-	) {
-		return (
-			<ErrorContent>
-				<ErrorContent.Title>오류가 발생했습니다.</ErrorContent.Title>
-				<ErrorContent.Message>{error.message}</ErrorContent.Message>
-				<ErrorContent.Retry onRetry={reset} />
-			</ErrorContent>
-		);
-	}
-
-	return (
-		<ErrorContent>
-			<ErrorContent.Title>오류가 발생했습니다.</ErrorContent.Title>
-			<ErrorContent.Message>{error.message}</ErrorContent.Message>
-			<ErrorContent.Retry onRetry={reset} />
-		</ErrorContent>
 	);
 }
