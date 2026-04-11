@@ -1,44 +1,59 @@
 import { useState } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { toast } from 'sonner';
-import type { MenuItem, MenuOption } from '@/domain/catalog/api';
+import {
+	type MenuItem,
+	type MenuOption,
+	catalogQuery,
+} from '@/domain/catalog/api';
 import { useCartContext } from '@/domain/order/context/cart-context';
-import { MenuInfo } from './components/menu-info';
-import { MenuGridOption } from './components/menu-grid-option';
-import { MenuSelectOption } from './components/menu-select-option';
-import { MenuListOption } from './components/menu-list-option';
+import { useQueryClient } from '@tanstack/react-query';
+import { Button } from '@/shared/components/button';
+import { CtaArea } from '@/shared/components/cta-area';
+import { HStack, VStack } from '@/shared/components/layout';
 import { NumericInput } from '@/shared/components/numeric-input';
-import { useMenuOptions } from './hooks/use-menu-options';
+import { Scaffold } from '@/shared/components/scaffold';
+import { MenuDetailError } from './components/menu-detail-error';
+import { MenuDetailSkeleton } from './components/menu-detail-skeleton';
+import { MenuGridOption } from './components/menu-grid-option';
+import { MenuListOption } from './components/menu-list-option';
+import { MenuSelectOption } from './components/menu-select-option';
+import { MenuInfo } from './components/menu-info';
 import {
 	useOptionContext,
 	OptionProvider,
 	validateSelections,
 	flattenSelections,
 } from './context/option-context';
-import { HStack, VStack } from '@/shared/components/layout';
-import { Button } from '@/shared/components/button';
-import { CtaArea } from '@/shared/components/cta-area';
-export function MenuDetailPage() {
-	const { itemId } = useParams<{ itemId: string }>();
+import { useMenuOptions } from './hooks/use-menu-options';
 
-	if (!itemId) {
-		throw new Error('메뉴 ID가 존재하지 않습니다.');
-	}
+export const MenuDetailPage = Scaffold.with(
+	{
+		error: <MenuDetailError />,
+		fallback: <MenuDetailSkeleton />,
+	},
+	() => {
+		const { itemId } = useParams<{ itemId: string }>();
 
-	const { item, options } = useMenuOptions(itemId);
+		if (!itemId) {
+			throw new Error('메뉴 ID가 존재하지 않습니다.');
+		}
 
-	return (
-		<div className="pb-24 p-4">
-			<MenuInfo item={item} />
-			<OptionProvider options={options}>
-				<MenuOptions
-					item={item}
-					itemOptions={options}
-				/>
-			</OptionProvider>
-		</div>
-	);
-}
+		const { item, options } = useMenuOptions(itemId);
+
+		return (
+			<div className="pb-24 p-4">
+				<MenuInfo item={item} />
+				<OptionProvider options={options}>
+					<MenuOptions
+						item={item}
+						itemOptions={options}
+					/>
+				</OptionProvider>
+			</div>
+		);
+	},
+);
 
 function MenuOptions({
 	item,
@@ -119,7 +134,10 @@ function MenuOptions({
 				}
 			})}
 
-			<HStack justify="between" className="py-2">
+			<HStack
+				justify="between"
+				className="py-2"
+			>
 				<span className="text-sm font-medium text-gray-700">수량</span>
 				<NumericInput
 					value={quantity}

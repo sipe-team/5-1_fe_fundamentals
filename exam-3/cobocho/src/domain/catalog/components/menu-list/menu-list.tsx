@@ -7,10 +7,9 @@ import { MenuCard } from '../menu-card';
 
 interface MenuListProps {
 	category: MenuItem['category'];
-	onClickMenu?: (item: MenuItem) => void;
 }
 
-export function MenuList({ category, onClickMenu }: MenuListProps) {
+export function MenuList({ category }: MenuListProps) {
 	const { data } = useSuspenseQuery(catalogQuery.items());
 
 	const filtered = useMemo(() => {
@@ -23,7 +22,6 @@ export function MenuList({ category, onClickMenu }: MenuListProps) {
 				<MenuCard
 					key={item.id}
 					item={item}
-					onClick={onClickMenu}
 				/>
 			))}
 		</Grid>

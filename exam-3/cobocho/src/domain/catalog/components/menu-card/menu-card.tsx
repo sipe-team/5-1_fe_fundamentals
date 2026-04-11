@@ -1,17 +1,17 @@
+import { Link } from 'react-router-dom';
+
 import type { MenuItem } from '../../api';
 import { VStack } from '@/shared/components/layout';
 
 interface MenuCardProps {
 	item: MenuItem;
-	onClick?: (item: MenuItem) => void;
 }
 
-export function MenuCard({ item, onClick }: MenuCardProps) {
+export function MenuCard({ item }: MenuCardProps) {
 	return (
-		<button
-			type="button"
+		<Link
+			to={`/menu/${item.id}`}
 			className="block w-full text-left"
-			onClick={() => onClick?.(item)}
 		>
 			<VStack
 				gap={2}
@@ -27,6 +27,6 @@ export function MenuCard({ item, onClick }: MenuCardProps) {
 					{item.price.toLocaleString()}원
 				</span>
 			</VStack>
-		</button>
+		</Link>
 	);
 }
