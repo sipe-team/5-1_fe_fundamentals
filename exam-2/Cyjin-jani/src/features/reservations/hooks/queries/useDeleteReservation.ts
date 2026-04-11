@@ -24,7 +24,9 @@ export function useDeleteReservation(
 
   return useMutation<{ message: string }, HTTPError, string, DeleteReservationContext>({
     mutationFn: (id) => deleteReservation(id),
-    onMutate: async (id) => {
+    onMutate: async (id, mutationContext) => {
+      await options?.onMutate?.(id, mutationContext);
+
       const reservationListQueries = queryClient.getQueriesData<ReservationsResponse>({
         queryKey: ['reservations'],
       });
@@ -65,7 +67,7 @@ export function useDeleteReservation(
 
       return { previousReservations, date, previousMyReservations };
     },
-    onError: (_error, _id, context) => {
+    onError: (error, id, context, mutationContext) => {
       if (context?.previousReservations && context.date) {
         queryClient.setQueryData(
           reservationsQueryKeys.allByDate(context.date),
@@ -75,8 +77,10 @@ export function useDeleteReservation(
       if (context?.previousMyReservations) {
         queryClient.setQueryData(myQueryKeys.reservations(), context.previousMyReservations);
       }
+      options?.onError?.(error, id, context, mutationContext);
     },
-    onSettled: (_data, _error, id, context) => {
+    onSuccess: options?.onSuccess,
+    onSettled: (data, error, id, context, mutationContext) => {
       if (context?.date) {
         queryClient.invalidateQueries({
           queryKey: reservationsQueryKeys.allByDate(context.date),
@@ -84,7 +88,7 @@ export function useDeleteReservation(
       }
       queryClient.invalidateQueries({ queryKey: myQueryKeys.reservations() });
       queryClient.removeQueries({ queryKey: reservationsQueryKeys.detailById(id) });
+      options?.onSettled?.(data, error, id, context, mutationContext);
     },
-    ...options,
   });
 }
