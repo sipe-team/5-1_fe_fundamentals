@@ -75,7 +75,7 @@ export function MainPage() {
             onReset={reset}
             FallbackComponent={QueryErrorFallback}
           >
-            <Suspense key={selectedDate} fallback={<LoadingFallback />}>
+            <Suspense fallback={<LoadingFallback />}>
               <TimelineTable
                 date={selectedDate}
                 capacity={selectedCapacity}
