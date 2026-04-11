@@ -11,6 +11,7 @@ import { reservationsQueryKeys } from '@/features/reservations/hooks/queries/que
 import type { ConflictError } from '@/features/reservations/types';
 import { reservationFormSchema } from '../components/create/reservationFormSchema';
 import type { ReservationFormValues } from '../components/create/reservationFormSchema';
+import { myQueryKeys } from '@/features/my/hooks/queries/querykeys';
 
 interface UseReservationFormParams {
   defaultRoomId: string;
@@ -32,6 +33,7 @@ export function useReservationForm({
       queryClient.invalidateQueries({
         queryKey: reservationsQueryKeys.allByDate(data.reservation.date),
       });
+      queryClient.invalidateQueries({ queryKey: myQueryKeys.reservations() });
       toast.success('예약이 생성되었습니다.');
       navigate(`/?date=${data.reservation.date}`);
     },

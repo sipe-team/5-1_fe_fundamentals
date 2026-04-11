@@ -28,7 +28,7 @@ export function useDeleteReservation(
       await options?.onMutate?.(id, mutationContext);
 
       const reservationListQueries = queryClient.getQueriesData<ReservationsResponse>({
-        queryKey: ['reservations'],
+        queryKey: reservationsQueryKeys.all(),
       });
 
       const targetEntry = reservationListQueries.find(([, data]) =>
@@ -39,19 +39,22 @@ export function useDeleteReservation(
       let date: string | undefined;
 
       if (targetEntry) {
-        const [queryKey, snapshot] = targetEntry;
-        date = (queryKey as string[])[1];
+        const [, snapshot] = targetEntry;
+        const targetReservation = snapshot?.reservations.find((r) => r.id === id);
+        date = targetReservation?.date;
         previousReservations = snapshot;
 
-        await queryClient.cancelQueries({ queryKey: reservationsQueryKeys.allByDate(date) });
+        if (date) {
+          await queryClient.cancelQueries({ queryKey: reservationsQueryKeys.allByDate(date) });
 
-        queryClient.setQueryData<ReservationsResponse>(
-          reservationsQueryKeys.allByDate(date),
-          (old) => {
-            if (!old) return old;
-            return { ...old, reservations: old.reservations.filter((r) => r.id !== id) };
-          },
-        );
+          queryClient.setQueryData<ReservationsResponse>(
+            reservationsQueryKeys.allByDate(date),
+            (old) => {
+              if (!old) return old;
+              return { ...old, reservations: old.reservations.filter((r) => r.id !== id) };
+            },
+          );
+        }
       }
 
       await queryClient.cancelQueries({ queryKey: myQueryKeys.reservations() });
