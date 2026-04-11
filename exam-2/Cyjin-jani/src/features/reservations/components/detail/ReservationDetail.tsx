@@ -6,8 +6,8 @@ import { CalendarIcon, ClockIcon, UserIcon, UsersIcon, BuildingIcon } from 'luci
 import { Button } from '@/shared/components/ui/button';
 import { useReservation } from '@/features/reservations/hooks/queries/useReservation';
 import { useDeleteReservation } from '@/features/reservations/hooks/queries/useDeleteReservation';
-import { useRoomName } from '@/features/rooms/hooks/useRoomName';
 import { ReservationCancelDialog } from './ReservationCancelDialog';
+import { useRooms } from '@/features/rooms/hooks/queries/useRooms';
 
 interface ReservationDetailProps {
   id: string;
@@ -18,7 +18,8 @@ export function ReservationDetail({ id }: ReservationDetailProps) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const { data: reservation } = useReservation(id);
-  const roomName = useRoomName(reservation.roomId);
+  const { data: rooms } = useRooms();
+  const roomName = rooms.find((room) => room.id === reservation.roomId)?.name ?? reservation.roomId;
 
   const { mutate: deleteReservation, isPending } = useDeleteReservation({
     onSuccess: () => {

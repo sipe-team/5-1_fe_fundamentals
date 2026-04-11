@@ -2,18 +2,16 @@ import { useNavigate } from 'react-router-dom';
 import { CalendarIcon, ClockIcon, BuildingIcon } from 'lucide-react';
 
 import { useMyReservations } from '@/features/my/hooks/queries/useMyReservations';
-import { useRoomName } from '@/features/rooms/hooks/useRoomName';
+import { useRooms } from '@/features/rooms/hooks/queries/useRooms';
 import { Button } from '@/shared/components/ui/button';
 import type { Reservation } from '@/features/reservations/types';
-
-interface MyReservationItemProps {
-  reservation: Reservation;
-  onClick: () => void;
-}
 
 export function MyReservationList() {
   const navigate = useNavigate();
   const { data: reservations } = useMyReservations();
+  const { data: rooms } = useRooms();
+
+  const roomNameMap = Object.fromEntries(rooms.map((room) => [room.id, room.name]));
 
   const isEmpty = reservations.length === 0;
 
@@ -37,6 +35,7 @@ export function MyReservationList() {
         <MyReservationItem
           key={reservation.id}
           reservation={reservation}
+          roomName={roomNameMap[reservation.roomId] ?? reservation.roomId}
           onClick={() => navigate(`/reservations/${reservation.id}`)}
         />
       ))}
@@ -44,9 +43,13 @@ export function MyReservationList() {
   );
 }
 
-function MyReservationItem({ reservation, onClick }: MyReservationItemProps) {
-  const roomName = useRoomName(reservation.roomId);
+interface MyReservationItemProps {
+  reservation: Reservation;
+  roomName: string;
+  onClick: () => void;
+}
 
+function MyReservationItem({ reservation, roomName, onClick }: MyReservationItemProps) {
   return (
     <li>
       <button
