@@ -54,9 +54,7 @@ export function MainPage() {
   };
 
   return (
-    <main className="flex flex-col items-center w-full h-dvh overflow-hidden mx-auto max-w-[1600px] px-6 py-6">
-      <h1 className="mb-6 text-2xl font-bold">회의실 예약 현황</h1>
-
+    <main className="flex flex-col items-center w-full flex-1 overflow-hidden mx-auto max-w-[1600px] px-6 py-6">
       <DateNavigator date={selectedDate} onDateChange={handleDateChange} onMove={moveDate} />
 
       <div className="mb-4 w-full flex justify-center">
