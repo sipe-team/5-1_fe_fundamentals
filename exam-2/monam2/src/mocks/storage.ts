@@ -1,11 +1,11 @@
-import type { Reservation, Room } from '@/types/reservation';
-import { initialReservations, initialRooms } from './data';
+import type { Reservation, Room } from "@/shared/types/reservation";
+import { initialReservations, initialRooms } from "./data";
 
-const ROOMS_KEY = 'exam-2:mock:rooms';
-const RESERVATIONS_KEY = 'exam-2:mock:reservations';
-const CONTROLS_KEY = 'exam-2:mock:controls';
+const ROOMS_KEY = "exam-2:mock:rooms";
+const RESERVATIONS_KEY = "exam-2:mock:reservations";
+const CONTROLS_KEY = "exam-2:mock:controls";
 
-export const MOCK_STORAGE_EVENT = 'exam-2:mock-storage-updated';
+export const MOCK_STORAGE_EVENT = "exam-2:mock-storage-updated";
 
 export interface MockControls {
   forceError: boolean;
@@ -18,7 +18,7 @@ const defaultControls: MockControls = {
 };
 
 function isBrowser() {
-  return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  return typeof window !== "undefined" && typeof localStorage !== "undefined";
 }
 
 function parseJson<T>(value: string | null, fallback: T): T {
@@ -141,10 +141,10 @@ export function subscribeMockStorage(callback: () => void) {
   const listener = () => callback();
 
   window.addEventListener(MOCK_STORAGE_EVENT, listener);
-  window.addEventListener('storage', listener);
+  window.addEventListener("storage", listener);
 
   return () => {
     window.removeEventListener(MOCK_STORAGE_EVENT, listener);
-    window.removeEventListener('storage', listener);
+    window.removeEventListener("storage", listener);
   };
 }

@@ -1,8 +1,8 @@
 export type Equipment =
-  | 'monitor'
-  | 'whiteboard'
-  | 'video_conference'
-  | 'projector';
+  | "monitor"
+  | "whiteboard"
+  | "video_conference"
+  | "projector";
 
 export interface Room {
   id: string;
@@ -47,7 +47,7 @@ export interface CreateReservationRequest {
 }
 
 export interface ConflictError {
-  error: 'Conflict';
+  error: "Conflict";
   message: string;
   conflictWith: {
     id: string;
