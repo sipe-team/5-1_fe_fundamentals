@@ -22,15 +22,17 @@ export function MenuDetailPage() {
   }
 
   return (
-    <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary onReset={reset} FallbackComponent={ErrorFallback}>
-          <MenuDetailGnb onReturnToMenu={() => setLocation('/')} />
-          <Suspense fallback={<MenuDetailSkeleton />}>
-            <MenuDetailContent itemId={itemId} />
-          </Suspense>
-        </ErrorBoundary>
-      )}
-    </QueryErrorResetBoundary>
+    <>
+      <MenuDetailGnb onReturnToMenu={() => setLocation('/')} />
+      <QueryErrorResetBoundary>
+        {({ reset }) => (
+          <ErrorBoundary onReset={reset} FallbackComponent={ErrorFallback}>
+            <Suspense fallback={<MenuDetailSkeleton />}>
+              <MenuDetailContent key={itemId} itemId={itemId} />
+            </Suspense>
+          </ErrorBoundary>
+        )}
+      </QueryErrorResetBoundary>
+    </>
   );
 }

@@ -22,7 +22,7 @@ export function MenuDetailContent({ itemId }: MenuDetailContentProps) {
   const addItem = useAddCartItem();
 
   const { data: item } = useMenuDetail(itemId);
-  const { data: allOptions } = useOptions();
+  const { data: allOptions } = useOptions({ refetchOnMount: 'always' });
   const availableOptions = getOptionsForMenuItem(item, allOptions);
 
   const [quantity, setQuantity] = useState(1);
