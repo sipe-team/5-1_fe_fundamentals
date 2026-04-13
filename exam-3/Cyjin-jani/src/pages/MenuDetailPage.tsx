@@ -4,9 +4,9 @@ import { ErrorBoundary } from 'react-error-boundary';
 import { useLocation, useRoute } from 'wouter';
 
 import { MenuDetailContent } from '@/features/menu/components/MenuDetailContent';
+import { MenuDetailErrorFallback } from '@/features/menu/components/MenuDetailErrorFallback';
 import { MenuDetailGnb } from '@/features/menu/components/MenuDetailGnb';
 import { MenuDetailSkeleton } from '@/features/menu/components/MenuDetailSkeleton';
-import { ErrorFallback } from '@/shared/components/ErrorFallback';
 
 export function MenuDetailPage() {
   const [, params] = useRoute('/menu/:itemId');
@@ -26,7 +26,10 @@ export function MenuDetailPage() {
       <MenuDetailGnb onReturnToMenu={() => setLocation('/')} />
       <QueryErrorResetBoundary>
         {({ reset }) => (
-          <ErrorBoundary onReset={reset} FallbackComponent={ErrorFallback}>
+          <ErrorBoundary
+            onReset={reset}
+            fallbackRender={(props) => <MenuDetailErrorFallback {...props} />}
+          >
             <Suspense fallback={<MenuDetailSkeleton />}>
               <MenuDetailContent key={itemId} itemId={itemId} />
             </Suspense>

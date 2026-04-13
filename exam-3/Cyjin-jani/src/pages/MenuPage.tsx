@@ -7,6 +7,7 @@ import { MenuMainGnb } from '@/features/menu/components/MenuMainGnb';
 import { MenuList } from '@/features/menu/components/MenuList';
 import { MenuListSkeleton } from '@/features/menu/components/MenuListSkeleton';
 import { useCategories } from '@/features/menu/hooks/queries/useCategories';
+import { useCartTotalPrice, useCartTotalQuantity } from '@/features/cart/store/useCartStore';
 import { ErrorFallback } from '@/shared/components/ErrorFallback';
 import { LoadingFallback } from '@/shared/components/LoadingFallback';
 import { BottomCTA } from '@/shared/components/BottomCTA';
@@ -16,6 +17,13 @@ function MenuPageContent() {
   const { data: categories } = useCategories();
   const [selectedCategory, setSelectedCategory] = useState<MenuCategory>(categories[0]);
   const [_, navigate] = useLocation();
+  const totalQuantity = useCartTotalQuantity();
+  const totalPrice = useCartTotalPrice();
+
+  const ctaLabel =
+    totalQuantity === 0
+      ? '장바구니 보기'
+      : `총 ${totalQuantity}개 · ${totalPrice.toLocaleString()}원 | 장바구니`;
 
   return (
     <>
@@ -32,7 +40,7 @@ function MenuPageContent() {
         <MenuList selectedCategory={selectedCategory} />
       </Suspense>
 
-      <BottomCTA label="장바구니 보기" onClick={() => navigate('/cart')} />
+      <BottomCTA label={ctaLabel} onClick={() => navigate('/cart')} />
     </>
   );
 }
