@@ -15,7 +15,7 @@ import type { MenuCategory } from '@/features/menu/types';
 
 function MenuPageContent() {
   const { data: categories } = useCategories();
-  const [selectedCategory, setSelectedCategory] = useState<MenuCategory>(categories[0]);
+  const [selectedCategory, setSelectedCategory] = useState<MenuCategory>(categories[0]); // TODO: 다른 방식으로 초기값 세팅 설정 필요
   const [_, navigate] = useLocation();
   const totalQuantity = useCartTotalQuantity();
   const totalPrice = useCartTotalPrice();
