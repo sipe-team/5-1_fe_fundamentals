@@ -1,28 +1,25 @@
 interface ErrorFallbackProps {
   message?: string;
-  onRetry?: () => void;
+  onReset: () => void;
 }
 
 export function ErrorFallback({
-  message = '문제가 발생했습니다.',
-  onRetry,
+  message = '데이터를 불러오는데 실패했습니다. 잠시 후 다시 시도해주세요.',
+  onReset,
 }: ErrorFallbackProps) {
   return (
-    <section
-      className="flex flex-col items-center justify-center gap-4 py-16"
+    <div
+      className="flex flex-col items-center justify-center gap-4 py-24"
       role="alert"
-      aria-live="assertive"
     >
-      <p className="text-sm text-gray-600">{message}</p>
-      {onRetry && (
-        <button
-          type="button"
-          onClick={onRetry}
-          className="rounded-lg bg-amber-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-amber-700 active:bg-amber-800"
-        >
-          다시 시도
-        </button>
-      )}
-    </section>
+      <p className="text-sm text-gray-500">{message}</p>
+      <button
+        type="button"
+        onClick={onReset}
+        className="rounded-lg bg-blue-500 px-5 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-600 active:bg-blue-700"
+      >
+        다시 시도
+      </button>
+    </div>
   );
 }

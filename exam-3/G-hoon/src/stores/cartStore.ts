@@ -27,13 +27,11 @@ interface CartState {
     quantity: number,
   ) => void;
   clearCart: () => void;
-  getTotalCount: () => number;
-  getTotalPrice: () => number;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
-    (set, get) => ({
+    (set) => ({
       items: [],
 
       addItem: (item) =>
@@ -84,14 +82,20 @@ export const useCartStore = create<CartState>()(
         }),
 
       clearCart: () => set({ items: [] }),
-
-      getTotalCount: () => get().items.reduce((sum, i) => sum + i.quantity, 0),
-
-      getTotalPrice: () =>
-        get().items.reduce((sum, i) => sum + i.unitPrice * i.quantity, 0),
     }),
     {
       name: 'exam-3/g-hoon:cart',
     },
   ),
 );
+
+export function selectCartTotalCount(state: CartState): number {
+  return state.items.reduce((sum, item) => sum + item.quantity, 0);
+}
+
+export function selectCartTotalPrice(state: CartState): number {
+  return state.items.reduce(
+    (sum, item) => sum + item.unitPrice * item.quantity,
+    0,
+  );
+}

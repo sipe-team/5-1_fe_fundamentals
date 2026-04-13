@@ -11,7 +11,7 @@ export function LoadingSpinner({
       role="status"
       aria-label={message}
     >
-      <div className="h-8 w-8 animate-spin rounded-full border-3 border-gray-200 border-t-amber-600" />
+      <div className="h-8 w-8 animate-spin rounded-full border-3 border-gray-200 border-t-blue-500" />
       <p className="text-sm text-gray-500">{message}</p>
     </div>
   );

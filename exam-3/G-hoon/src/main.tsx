@@ -6,14 +6,14 @@ import App from './App';
 import { ApiError } from './api/error';
 import { DevToolPanel } from './DevToolPanel';
 import { initializeMockStorage } from './mocks/storage';
-import './styles/reset.css';
+import './main.css';
 
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       retry: (failureCount, error) => {
         if (error instanceof ApiError && error.status < 500) return false;
-        return failureCount < 2;
+        return failureCount < 1;
       },
     },
   },
