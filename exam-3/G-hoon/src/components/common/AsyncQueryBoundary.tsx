@@ -6,7 +6,7 @@ import { ErrorFallback } from './ErrorFallback';
 interface AsyncQueryBoundaryProps {
   children: ReactNode;
   fallback: ReactNode;
-  errorFallback?: (reset: () => void) => ReactNode;
+  errorFallback?: (reset: () => void, error: unknown) => ReactNode;
 }
 
 export function AsyncQueryBoundary({
@@ -19,8 +19,8 @@ export function AsyncQueryBoundary({
       {({ reset }) => (
         <ErrorBoundary
           onReset={reset}
-          fallbackRender={({ resetErrorBoundary }) =>
-            errorFallback?.(resetErrorBoundary) ?? (
+          fallbackRender={({ error, resetErrorBoundary }) =>
+            errorFallback?.(resetErrorBoundary, error) ?? (
               <ErrorFallback onReset={resetErrorBoundary} />
             )
           }

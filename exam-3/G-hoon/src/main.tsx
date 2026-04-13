@@ -34,7 +34,7 @@ enableMocking().then(() => {
       <QueryClientProvider client={queryClient}>
         <DevToolPanel />
         <App />
-        <Toaster position="bottom-center" richColors />
+        <Toaster position="bottom-center" richColors mobileOffset={{ bottom: '80px' }} offset={{ bottom: '80px' }} />
       </QueryClientProvider>
     </React.StrictMode>,
   );
