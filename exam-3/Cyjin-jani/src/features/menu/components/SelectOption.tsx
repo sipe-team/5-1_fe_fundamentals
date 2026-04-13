@@ -2,7 +2,7 @@ import { ChevronDownIcon } from 'lucide-react';
 import { useState } from 'react';
 import { Sheet, SheetTrigger } from '@/shared/components/ui/sheet';
 import { cn } from '@/shared/lib/utils';
-import type { SelectOption as SelectOptionData } from '@/types/order';
+import type { SelectOption as SelectOptionData } from '@/features/menu/types';
 
 import { SelectOptionSheetContent } from './SelectOptionSheetContent';
 

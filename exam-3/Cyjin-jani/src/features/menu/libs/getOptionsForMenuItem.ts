@@ -1,4 +1,4 @@
-import type { MenuItem, MenuOption } from '@/types/order';
+import type { MenuItem, MenuOption } from '@/features/menu/types';
 
 export function getOptionsForMenuItem(item: MenuItem, allOptions: MenuOption[]): MenuOption[] {
   const optionById = new Map<number, MenuOption>(allOptions.map((option) => [option.id, option]));

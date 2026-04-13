@@ -1,4 +1,4 @@
-import type { MenuOption } from '@/types/order';
+import type { MenuOption } from '@/features/menu/types';
 
 import { GridOption } from './GridOption';
 import { ListOption } from './ListOption';

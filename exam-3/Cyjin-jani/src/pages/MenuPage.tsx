@@ -10,7 +10,7 @@ import { useCategories } from '@/features/menu/hooks/queries/useCategories';
 import { ErrorFallback } from '@/shared/components/ErrorFallback';
 import { LoadingFallback } from '@/shared/components/LoadingFallback';
 import { BottomCTA } from '@/shared/components/BottomCTA';
-import type { MenuCategory } from '@/types/order';
+import type { MenuCategory } from '@/features/menu/types';
 
 function MenuPageContent() {
   const { data: categories } = useCategories();

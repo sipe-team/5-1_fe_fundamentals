@@ -1,4 +1,4 @@
-import type { OptionSelection } from '@/types/order';
+import type { OptionSelection } from '@/features/menu/types';
 
 function compareOptionId(a: OptionSelection, b: OptionSelection): number {
   return a.optionId - b.optionId;

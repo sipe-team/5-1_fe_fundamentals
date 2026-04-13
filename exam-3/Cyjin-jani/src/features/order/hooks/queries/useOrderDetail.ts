@@ -1,7 +1,7 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 
 import { getOrderDetail } from '@/features/order/api/order';
-import type { Order, OrderResponse } from '@/types/order';
+import type { Order, OrderResponse } from '@/features/order/types';
 
 import { orderQueryKeys } from './queryKeys';
 

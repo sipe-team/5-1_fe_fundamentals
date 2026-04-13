@@ -1,11 +1,10 @@
 import { delay, HttpResponse, http } from 'msw';
+import type { MenuCategory, MenuOption } from '@/features/menu/types';
 import type {
   CreateOrderRequest,
-  MenuCategory,
-  MenuOption,
   Order,
   OrderItem,
-} from '@/types/order';
+} from '@/features/order/types';
 import { initialOrders } from './data';
 import {
   getMockControls,

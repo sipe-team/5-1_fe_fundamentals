@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react';
 
-import type { OptionSelection } from '@/types/order';
+import type { OptionSelection } from '@/features/menu/types';
 
 export function useMenuDetailSelections() {
   const [optionSelections, setOptionSelections] = useState<OptionSelection[]>(

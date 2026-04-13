@@ -1,5 +1,5 @@
 import { cn } from '@/shared/lib/utils';
-import type { GridOption as GridOptionData } from '@/types/order';
+import type { GridOption as GridOptionData } from '@/features/menu/types';
 
 const GRID_COLS_CLASS: Record<number, string> = {
   1: 'grid-cols-1',

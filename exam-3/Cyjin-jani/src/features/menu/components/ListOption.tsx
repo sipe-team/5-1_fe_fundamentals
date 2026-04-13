@@ -1,7 +1,7 @@
 import { toast } from 'sonner';
 
 import { cn } from '@/shared/lib/utils';
-import type { ListOption as ListOptionData } from '@/types/order';
+import type { ListOption as ListOptionData } from '@/features/menu/types';
 
 interface ListOptionProps {
   option: ListOptionData;

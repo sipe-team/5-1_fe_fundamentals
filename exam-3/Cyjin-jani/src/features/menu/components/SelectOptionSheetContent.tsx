@@ -1,6 +1,6 @@
 import { SheetContent, SheetHeader, SheetTitle } from '@/shared/components/ui/sheet';
 import { cn } from '@/shared/lib/utils';
-import type { SelectOption as SelectOptionData } from '@/types/order';
+import type { SelectOption as SelectOptionData } from '@/features/menu/types';
 
 const optionRowClass = (selected: boolean) =>
   cn(

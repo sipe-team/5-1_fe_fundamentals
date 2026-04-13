@@ -9,7 +9,7 @@ import {
   type CreateOrderResponse,
   createOrder,
 } from '@/features/order/api/order';
-import type { CreateOrderRequest } from '@/types/order';
+import type { CreateOrderRequest } from '@/features/order/types';
 
 export function useCreateOrder(
   options?: UseMutationOptions<

@@ -4,7 +4,7 @@ import type {
   MenuItem,
   MenuItemResponse,
   OptionsResponse,
-} from '@/types/order';
+} from '@/features/menu/types';
 
 export interface MenuItemsResponse {
   items: MenuItem[];

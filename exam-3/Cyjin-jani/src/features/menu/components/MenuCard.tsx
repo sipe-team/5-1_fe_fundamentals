@@ -1,5 +1,5 @@
 import { Link } from 'wouter';
-import type { MenuItem } from '@/types/order';
+import type { MenuItem } from '@/features/menu/types';
 
 interface MenuCardProps {
   item: MenuItem;

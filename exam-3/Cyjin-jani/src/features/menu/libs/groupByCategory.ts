@@ -1,4 +1,4 @@
-import type { MenuCategory, MenuItem } from '@/types/order';
+import type { MenuCategory, MenuItem } from '@/features/menu/types';
 
 export function groupByCategory(items: MenuItem[]): Record<MenuCategory, MenuItem[]> {
   return items.reduce<Record<MenuCategory, MenuItem[]>>(

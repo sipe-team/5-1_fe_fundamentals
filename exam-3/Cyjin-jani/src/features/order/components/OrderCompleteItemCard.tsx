@@ -1,4 +1,4 @@
-import type { OrderItem } from '@/types/order';
+import type { OrderItem } from '@/features/order/types';
 
 interface OrderCompleteItemCardProps {
   item: OrderItem;

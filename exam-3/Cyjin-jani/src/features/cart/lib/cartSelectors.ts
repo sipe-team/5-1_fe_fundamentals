@@ -1,4 +1,4 @@
-import type { CartItem } from '@/types/order';
+import type { CartItem } from '@/features/cart/types';
 
 export function selectTotalQuantity(items: CartItem[]): number {
   return items.reduce((sum, item) => sum + item.quantity, 0);

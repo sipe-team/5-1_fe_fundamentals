@@ -1,4 +1,4 @@
-import type { MenuOption, OptionSelection } from '@/types/order';
+import type { MenuOption, OptionSelection } from '@/features/menu/types';
 
 export function getOptionExtraPrice(option: MenuOption, selectedLabels: string[]): number {
   let sum = 0;

@@ -1,4 +1,4 @@
-import type { MenuOption, OptionSelection } from '@/types/order';
+import type { MenuOption, OptionSelection } from '@/features/menu/types';
 
 export type ValidateMenuSelectionsResult = { ok: true } | { ok: false; message: string };
 

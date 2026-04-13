@@ -1,5 +1,6 @@
 import { selectTotalPrice } from '@/features/cart/lib/cartSelectors';
-import type { CartItem, CreateOrderRequest } from '@/types/order';
+import type { CartItem } from '@/features/cart/types';
+import type { CreateOrderRequest } from '@/features/order/types';
 
 export function buildCreateOrderRequestFromCart(
   items: CartItem[],

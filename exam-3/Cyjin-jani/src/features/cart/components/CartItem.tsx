@@ -5,7 +5,7 @@ import { useRemoveCartItem, useUpdateCartItemQuantity } from '@/features/cart/st
 import { QuantityControl } from '@/shared/components/QuantityControl';
 import { Button } from '@/shared/components/ui/button';
 import { cn } from '@/shared/lib/utils';
-import type { CartItem as CartItemEntity } from '@/types/order';
+import type { CartItem as CartItemEntity } from '@/features/cart/types';
 import { MIN_CART_ITEM_QUANTITY, MAX_CART_ITEM_QUANTITY } from '../lib/cartItemQuantity';
 
 interface CartItemProps {

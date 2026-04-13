@@ -1,4 +1,4 @@
-import type { OrderStatus } from '@/types/order';
+import type { OrderStatus } from '@/features/order/types';
 
 const LABELS: Record<OrderStatus, string> = {
   pending: '접수 완료',

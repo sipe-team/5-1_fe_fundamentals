@@ -1,5 +1,5 @@
 import { cn } from '@/shared/lib/utils';
-import type { MenuCategory } from '@/types/order';
+import type { MenuCategory } from '@/features/menu/types';
 
 interface CategoryTabsProps {
   categories: MenuCategory[];

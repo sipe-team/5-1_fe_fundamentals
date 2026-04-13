@@ -1,4 +1,4 @@
-import type { MenuCategory } from '@/types/order';
+import type { MenuCategory } from '@/features/menu/types';
 import { useMenuItems } from '@/features/menu/hooks/queries/useMenuItems';
 import { groupByCategory } from '@/features/menu/libs/groupByCategory';
 import { MenuCard } from './MenuCard';

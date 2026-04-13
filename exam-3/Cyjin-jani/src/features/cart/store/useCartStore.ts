@@ -7,7 +7,7 @@ import {
   normalizeCartItemQuantity,
 } from '@/features/cart/lib/cartItemQuantity';
 import { selectTotalPrice, selectTotalQuantity } from '@/features/cart/lib/cartSelectors';
-import type { CartItem } from '@/types/order';
+import type { CartItem } from '@/features/cart/types';
 
 export const CART_STORAGE_KEY = 'coffee-order-cart';
 

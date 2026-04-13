@@ -1,6 +1,6 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { getMenuDetail } from '@/features/menu/api/menu';
-import type { MenuItem, MenuItemResponse } from '@/types/order';
+import type { MenuItem, MenuItemResponse } from '@/features/menu/types';
 import { menuQueryKeys } from './queryKeys';
 
 export function useMenuDetail(itemId: string) {

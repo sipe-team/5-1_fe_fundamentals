@@ -1,5 +1,5 @@
 import { api } from '@/shared/lib/ky';
-import type { CreateOrderRequest, OrderResponse } from '@/types/order';
+import type { CreateOrderRequest, OrderResponse } from '@/features/order/types';
 
 export interface CreateOrderResponse {
   orderId: string;
