@@ -17,15 +17,25 @@ function cartItemKey(itemId: string, options: OptionSelection[]): string {
   return `${itemId}::${sortedOptions}`;
 }
 
+type AddCartItem = Omit<CartItem, 'id'>;
+type StoredCartItem = AddCartItem & Partial<Pick<CartItem, 'id'>>;
+
+function getCartItemId(item: StoredCartItem): string {
+  return item.id ?? cartItemKey(item.itemId, item.options);
+}
+
+function withCartItemId(item: AddCartItem): CartItem {
+  return {
+    ...item,
+    id: cartItemKey(item.itemId, item.options),
+  };
+}
+
 interface CartState {
   items: CartItem[];
-  addItem: (item: CartItem) => void;
-  removeItem: (itemId: string, options: OptionSelection[]) => void;
-  updateQuantity: (
-    itemId: string,
-    options: OptionSelection[],
-    quantity: number,
-  ) => void;
+  addItem: (item: AddCartItem) => void;
+  removeItem: (id: string) => void;
+  updateQuantity: (id: string, quantity: number) => void;
   clearCart: () => void;
 }
 
@@ -38,7 +48,7 @@ export const useCartStore = create<CartState>()(
         set((state) => {
           const key = cartItemKey(item.itemId, item.options);
           const existing = state.items.findIndex(
-            (i) => cartItemKey(i.itemId, i.options) === key,
+            (i) => getCartItemId(i) === key,
           );
           if (existing !== -1) {
             const updated = [...state.items];
@@ -53,30 +63,27 @@ export const useCartStore = create<CartState>()(
           return {
             items: [
               ...state.items,
-              { ...item, quantity: clampQuantity(item.quantity) },
+              withCartItemId({
+                ...item,
+                quantity: clampQuantity(item.quantity),
+              }),
             ],
           };
         }),
 
-      removeItem: (itemId, options) =>
+      removeItem: (id) =>
         set((state) => {
-          const key = cartItemKey(itemId, options);
           return {
-            items: state.items.filter(
-              (i) => cartItemKey(i.itemId, i.options) !== key,
-            ),
+            items: state.items.filter((i) => getCartItemId(i) !== id),
           };
         }),
 
-      updateQuantity: (itemId, options, quantity) =>
+      updateQuantity: (id, quantity) =>
         set((state) => {
-          const key = cartItemKey(itemId, options);
           const nextQuantity = clampQuantity(quantity);
           return {
             items: state.items.map((i) =>
-              cartItemKey(i.itemId, i.options) === key
-                ? { ...i, quantity: nextQuantity }
-                : i,
+              getCartItemId(i) === id ? { ...i, quantity: nextQuantity } : i,
             ),
           };
         }),
@@ -85,6 +92,20 @@ export const useCartStore = create<CartState>()(
     }),
     {
       name: 'exam-3/g-hoon:cart',
+      version: 1,
+      migrate: (persistedState) => {
+        const state = (persistedState ?? {}) as Partial<{
+          items: StoredCartItem[];
+        }>;
+
+        return {
+          ...state,
+          items: (state.items ?? []).map((item) => ({
+            ...item,
+            id: getCartItemId(item),
+          })),
+        };
+      },
     },
   ),
 );

@@ -2,6 +2,7 @@ interface QuantitySelectorProps {
   value: number;
   min?: number;
   max?: number;
+  disabled?: boolean;
   onChange: (value: number) => void;
 }
 
@@ -9,17 +10,20 @@ export function QuantitySelector({
   value,
   min = 1,
   max = 99,
+  disabled = false,
   onChange,
 }: QuantitySelectorProps) {
   const currentValue = clamp(value, min, max);
-  const canDecrease = currentValue > min;
-  const canIncrease = currentValue < max;
+  const canDecrease = !disabled && currentValue > min;
+  const canIncrease = !disabled && currentValue < max;
 
   const handleDecrease = () => {
+    if (disabled) return;
     onChange(clamp(currentValue - 1, min, max));
   };
 
   const handleIncrease = () => {
+    if (disabled) return;
     onChange(clamp(currentValue + 1, min, max));
   };
 

@@ -14,11 +14,11 @@ import { useMenuItemDetail } from '@/hooks/useMenuItemDetail';
 import { useMenuItemOptions } from '@/hooks/useMenuItemOptions';
 import { useOptionSelections } from '@/hooks/useOptionSelections';
 import { useOrderPrice } from '@/hooks/useOrderPrice';
+import { toCartOptionSelections } from '@/lib/cartOptions';
 import { formatPrice } from '@/lib/formatters';
 import { validateOptionSelections } from '@/lib/optionValidation';
 import { useCartStore } from '@/stores/cartStore';
 import type { MenuOption } from '@/types/order';
-
 
 export function OrderDetailPage() {
   const { itemId } = useParams<{ itemId: string }>();
@@ -93,7 +93,7 @@ function OrderDetailContent({ itemId }: { itemId: string }) {
       itemId: item.id,
       title: item.title,
       basePrice: item.price,
-      options: currentSelections,
+      options: toCartOptionSelections(currentSelections, itemOptions),
       quantity,
       unitPrice,
     });

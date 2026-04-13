@@ -44,6 +44,10 @@ export interface OptionSelection {
   labels: string[];
 }
 
+export interface CartOptionSelection extends OptionSelection {
+  name?: string;
+}
+
 export interface OrderItem {
   itemId: string;
   title: string;
@@ -65,10 +69,11 @@ export interface Order {
 }
 
 export interface CartItem {
+  id: string;
   itemId: string;
   title: string;
   basePrice: number;
-  options: OptionSelection[];
+  options: CartOptionSelection[];
   quantity: number;
   unitPrice: number;
 }
