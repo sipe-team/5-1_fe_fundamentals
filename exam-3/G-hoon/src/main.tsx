@@ -13,8 +13,13 @@ const queryClient = new QueryClient({
     queries: {
       retry: (failureCount, error) => {
         if (error instanceof ApiError && error.status < 500) return false;
-        return failureCount < 1;
+        return failureCount < 2;
       },
+      retryDelay: (attempt) => Math.min(1000 * 2 ** attempt, 4000),
+      staleTime: 60_000,
+    },
+    mutations: {
+      retry: 0,
     },
   },
 });

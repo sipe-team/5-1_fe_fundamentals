@@ -1,6 +1,7 @@
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { type ReactNode, Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { ApiError } from '@/api/error';
 import { ErrorFallback } from './ErrorFallback';
 
 interface AsyncQueryBoundaryProps {
@@ -21,7 +22,10 @@ export function AsyncQueryBoundary({
           onReset={reset}
           fallbackRender={({ error, resetErrorBoundary }) =>
             errorFallback?.(resetErrorBoundary, error) ?? (
-              <ErrorFallback onReset={resetErrorBoundary} />
+              <ErrorFallback
+                onReset={resetErrorBoundary}
+                message={error instanceof ApiError ? error.message : undefined}
+              />
             )
           }
         >

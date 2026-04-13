@@ -1,8 +1,6 @@
 import { ChevronLeft } from 'lucide-react';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { toast } from 'sonner';
-import { ApiError } from '@/api/error';
 import { CartItemCard } from '@/components/cart/CartItemCard';
 import { OrderPendingOverlay } from '@/components/cart/OrderPendingOverlay';
 import { BottomCTA, BottomCTASpacer } from '@/components/common/BottomCTA';
@@ -53,13 +51,6 @@ export function CartPage() {
         onSuccess: (data) => {
           clearCart();
           navigate(`/orders/${data.orderId}`);
-        },
-        onError: (error) => {
-          const message =
-            error instanceof ApiError
-              ? error.message
-              : '주문에 실패했습니다. 다시 시도해주세요.';
-          toast.error(message);
         },
       },
     );
