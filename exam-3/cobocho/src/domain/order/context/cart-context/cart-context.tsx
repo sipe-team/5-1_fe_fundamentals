@@ -6,36 +6,29 @@ import {
 	useState,
 	type ReactNode,
 } from 'react';
-import type { MenuItem } from '@/domain/catalog/api';
 import type { OptionSelection } from '../../api';
 import {
 	addItemToCart,
-	calcTotalPrice,
 	calcTotalQuantity,
 	cartItemKey,
-	updateQuantityInCart,
 } from './cart-context.lib';
 
 export interface CartItem {
-	item: MenuItem;
+	itemId: string;
 	options: OptionSelection[];
 	quantity: number;
-	unitPrice: number;
-	totalPrice: number;
 }
 
 interface CartContextValue {
 	items: CartItem[];
 	addItem: (
-		item: MenuItem,
+		itemId: string,
 		options: OptionSelection[],
 		quantity: number,
-		unitPrice: number,
 	) => void;
 	removeItem: (key: string) => void;
 	updateQuantity: (key: string, quantity: number) => void;
 	clear: () => void;
-	totalPrice: number;
 	totalQuantity: number;
 }
 
@@ -45,13 +38,12 @@ export function CartProvider({ children }: { children: ReactNode }) {
 	const [items, setItems] = useState<CartItem[]>([]);
 
 	const addItem = useCallback(
-		(item: MenuItem, options: OptionSelection[], quantity: number, unitPrice: number) => {
+		(itemId: string, options: OptionSelection[], quantity: number) => {
 			const newItems = addItemToCart({
 				prev: items,
-				item,
+				itemId,
 				options,
 				quantity,
-				unitPrice,
 			});
 
 			setItems(newItems);
@@ -61,7 +53,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
 	const removeItem = useCallback((key: string) => {
 		setItems((prev) =>
-			prev.filter((ci) => cartItemKey(ci.item.id, ci.options) !== key),
+			prev.filter((ci) => cartItemKey(ci.itemId, ci.options) !== key),
 		);
 	}, []);
 
@@ -72,22 +64,21 @@ export function CartProvider({ children }: { children: ReactNode }) {
 				return;
 			}
 
-			const newItems = updateQuantityInCart({
-				prev: items,
-				key,
-				quantity,
-			});
-
-			setItems(newItems);
+			setItems((prev) =>
+				prev.map((ci) =>
+					cartItemKey(ci.itemId, ci.options) === key
+						? { ...ci, quantity }
+						: ci,
+				),
+			);
 		},
-		[items, removeItem],
+		[removeItem],
 	);
 
 	const clear = useCallback(() => {
 		setItems([]);
 	}, []);
 
-	const totalPrice = useMemo(() => calcTotalPrice(items), [items]);
 	const totalQuantity = useMemo(() => calcTotalQuantity(items), [items]);
 
 	return (
@@ -98,7 +89,6 @@ export function CartProvider({ children }: { children: ReactNode }) {
 				removeItem,
 				updateQuantity,
 				clear,
-				totalPrice,
 				totalQuantity,
 			}}
 		>

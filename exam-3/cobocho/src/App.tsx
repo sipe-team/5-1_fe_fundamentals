@@ -8,18 +8,15 @@ import { router } from './router';
 const queryClient = new QueryClient();
 
 function App() {
-	return (
-		<QueryClientProvider client={queryClient}>
-			<NuqsAdapter>
-				<RouterProvider router={router} />
-			</NuqsAdapter>
-			<Toaster
-				position="top-center"
-				richColors
-			/>
-			<ReactQueryDevtools />
-		</QueryClientProvider>
-	);
+  return (
+    <QueryClientProvider client={queryClient}>
+      <NuqsAdapter>
+        <RouterProvider router={router} />
+      </NuqsAdapter>
+      <Toaster position="top-center" richColors />
+      <ReactQueryDevtools />
+    </QueryClientProvider>
+  );
 }
 
 export default App;

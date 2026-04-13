@@ -1,12 +1,14 @@
 import type { MenuItem } from '@/domain/catalog/api/catalog.types';
+import type { MenuOption } from '@/types/order';
 import type { OptionSelection } from '../../api/order.types';
 import type { CartItem } from './cart-context';
 import {
 	isSameOptions,
 	cartItemKey,
 	addItemToCart,
-	calcTotalPrice,
 	calcTotalQuantity,
+	calcUnitPrice,
+	calcCartTotalPrice,
 } from './cart-context.lib';
 
 const mockItem: MenuItem = {
@@ -23,13 +25,32 @@ const hotOption: OptionSelection = { optionId: 1, labels: ['HOT'] };
 const iceOption: OptionSelection = { optionId: 1, labels: ['ICE'] };
 const sizeOption: OptionSelection = { optionId: 2, labels: ['Grande'] };
 
+const mockOptions: MenuOption[] = [
+	{
+		id: 1,
+		name: '온도',
+		type: 'grid',
+		required: true,
+		col: 2,
+		labels: ['HOT', 'ICE'],
+		icons: ['🔥', '🧊'],
+		prices: [0, 500],
+	},
+	{
+		id: 2,
+		name: '사이즈',
+		type: 'select',
+		required: false,
+		labels: ['Regular', 'Grande'],
+		prices: [0, 1000],
+	},
+];
+
 function createCartItem(overrides: Partial<CartItem> = {}): CartItem {
 	return {
-		item: mockItem,
+		itemId: mockItem.id,
 		options: [hotOption],
 		quantity: 1,
-		unitPrice: 3000,
-		totalPrice: 3000,
 		...overrides,
 	};
 }
@@ -84,31 +105,27 @@ describe('addItemToCart', () => {
 	it('빈 장바구니에 항목을 추가한다', () => {
 		const result = addItemToCart({
 			prev: [],
-			item: mockItem,
+			itemId: mockItem.id,
 			options: [hotOption],
 			quantity: 2,
-			unitPrice: 3000,
 		});
 
 		expect(result).toHaveLength(1);
 		expect(result[0].quantity).toBe(2);
-		expect(result[0].totalPrice).toBe(6000);
 	});
 
 	it('같은 메뉴+옵션이면 수량을 합산한다', () => {
-		const existing = createCartItem({ quantity: 1, totalPrice: 3000 });
+		const existing = createCartItem({ quantity: 1 });
 
 		const result = addItemToCart({
 			prev: [existing],
-			item: mockItem,
+			itemId: mockItem.id,
 			options: [hotOption],
 			quantity: 3,
-			unitPrice: 3000,
 		});
 
 		expect(result).toHaveLength(1);
 		expect(result[0].quantity).toBe(4);
-		expect(result[0].totalPrice).toBe(12000);
 	});
 
 	it('같은 메뉴라도 옵션이 다르면 별도 항목으로 추가한다', () => {
@@ -116,10 +133,9 @@ describe('addItemToCart', () => {
 
 		const result = addItemToCart({
 			prev: [existing],
-			item: mockItem,
+			itemId: mockItem.id,
 			options: [iceOption],
 			quantity: 1,
-			unitPrice: 3000,
 		});
 
 		expect(result).toHaveLength(2);
@@ -127,35 +143,20 @@ describe('addItemToCart', () => {
 
 	it('다른 항목은 변경하지 않는다', () => {
 		const other = createCartItem({
-			item: { ...mockItem, id: 'latte' },
+			itemId: 'latte',
 			options: [hotOption],
 		});
 		const existing = createCartItem({ options: [hotOption] });
 
 		const result = addItemToCart({
 			prev: [other, existing],
-			item: mockItem,
+			itemId: mockItem.id,
 			options: [hotOption],
 			quantity: 1,
-			unitPrice: 3000,
 		});
 
 		expect(result[0]).toBe(other);
 		expect(result[1].quantity).toBe(2);
-	});
-});
-
-describe('calcTotalPrice', () => {
-	it('빈 배열이면 0을 반환한다', () => {
-		expect(calcTotalPrice([])).toBe(0);
-	});
-
-	it('모든 항목의 totalPrice를 합산한다', () => {
-		const items = [
-			createCartItem({ totalPrice: 3000 }),
-			createCartItem({ totalPrice: 4500 }),
-		];
-		expect(calcTotalPrice(items)).toBe(7500);
 	});
 });
 
@@ -170,5 +171,91 @@ describe('calcTotalQuantity', () => {
 			createCartItem({ quantity: 3 }),
 		];
 		expect(calcTotalQuantity(items)).toBe(5);
+	});
+});
+
+describe('calcUnitPrice', () => {
+	it('옵션이 없으면 베이스 가격만 반환한다', () => {
+		expect(calcUnitPrice(mockItem, [], mockOptions)).toBe(3000);
+	});
+
+	it('추가 가격이 없는 옵션은 베이스 가격만 반환한다', () => {
+		expect(calcUnitPrice(mockItem, [hotOption], mockOptions)).toBe(3000);
+	});
+
+	it('추가 가격이 있는 옵션을 반영한다', () => {
+		// ICE는 500원 추가
+		expect(calcUnitPrice(mockItem, [iceOption], mockOptions)).toBe(3500);
+	});
+
+	it('여러 옵션의 추가 가격을 합산한다', () => {
+		// ICE(500) + Grande(1000)
+		expect(
+			calcUnitPrice(mockItem, [iceOption, sizeOption], mockOptions),
+		).toBe(4500);
+	});
+
+	it('카탈로그에 없는 옵션은 무시한다', () => {
+		const unknownOption: OptionSelection = { optionId: 999, labels: ['X'] };
+		expect(calcUnitPrice(mockItem, [unknownOption], mockOptions)).toBe(3000);
+	});
+});
+
+describe('calcCartTotalPrice', () => {
+	it('빈 장바구니이면 0을 반환한다', () => {
+		expect(calcCartTotalPrice([], [mockItem], mockOptions)).toBe(0);
+	});
+
+	it('단가 × 수량으로 총 금액을 계산한다', () => {
+		const items = [
+			createCartItem({ options: [iceOption], quantity: 2 }), // 3500 * 2
+			createCartItem({ options: [hotOption, sizeOption], quantity: 1 }), // 4000 * 1
+		];
+		expect(calcCartTotalPrice(items, [mockItem], mockOptions)).toBe(11000);
+	});
+
+	it('allItems에 없는 itemId는 합산에서 제외한다', () => {
+		const items = [
+			createCartItem({ options: [iceOption], quantity: 2 }),
+			createCartItem({ itemId: 'deleted', options: [hotOption], quantity: 5 }),
+		];
+		// deleted 항목은 제외되고 iceOption 항목만 계산
+		expect(calcCartTotalPrice(items, [mockItem], mockOptions)).toBe(7000);
+	});
+});
+
+describe('서버 가격 변동 시나리오', () => {
+	it('allOptions가 바뀌면 calcUnitPrice가 최신 옵션 가격을 반영한다', () => {
+		const before = calcUnitPrice(mockItem, [iceOption], mockOptions);
+		expect(before).toBe(3500); // 3000 + 500
+
+		const updatedOptions: MenuOption[] = mockOptions.map((opt) =>
+			opt.id === 1 ? { ...opt, prices: [0, 800] } : opt,
+		);
+
+		const after = calcUnitPrice(mockItem, [iceOption], updatedOptions);
+		expect(after).toBe(3800);
+	});
+
+	it('서버에서 메뉴 기본가가 바뀌면 calcCartTotalPrice가 자동으로 최신가를 반영한다', () => {
+		const items = [createCartItem({ options: [iceOption], quantity: 2 })];
+
+		// 기본가 3000 -> 3500 으로 변경된 상황
+		const updatedItems: MenuItem[] = [{ ...mockItem, price: 3500 }];
+
+		// (3500 + 500) * 2 = 8000
+		expect(calcCartTotalPrice(items, updatedItems, mockOptions)).toBe(8000);
+	});
+
+	it('allOptions가 바뀌면 calcCartTotalPrice도 재계산된다', () => {
+		const items = [createCartItem({ options: [iceOption], quantity: 2 })];
+
+		expect(calcCartTotalPrice(items, [mockItem], mockOptions)).toBe(7000);
+
+		const updatedOptions: MenuOption[] = mockOptions.map((opt) =>
+			opt.id === 1 ? { ...opt, prices: [0, 800] } : opt,
+		);
+
+		expect(calcCartTotalPrice(items, [mockItem], updatedOptions)).toBe(7600);
 	});
 });

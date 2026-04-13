@@ -71,7 +71,7 @@ function MenuOptions({
 			return;
 		}
 
-		addItem(item, flattenSelections(selections), quantity, unitPrice);
+		addItem(item.id, flattenSelections(selections), quantity);
 		navigate('/');
 	}
 

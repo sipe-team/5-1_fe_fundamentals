@@ -1,50 +1,77 @@
+import {
+  useMutation,
+  useQueryClient,
+  useSuspenseQuery,
+} from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { useMutation } from '@tanstack/react-query';
 import { toast } from 'sonner';
 
+import { catalogQuery } from '@/domain/catalog/api';
 import { orderService } from '@/domain/order/api';
 import { useCartContext } from '@/domain/order/context/cart-context';
+import {
+  calcCartTotalPrice,
+  calcUnitPrice,
+} from '@/domain/order/context/cart-context/cart-context.lib';
 import { Button } from '@/shared/components/button';
+import { BadRequestError } from '@/shared/lib/error';
 
 export function OrderButton() {
-	const navigate = useNavigate();
-	const { items, totalPrice, clear } = useCartContext();
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
-	const { mutate, isPending } = useMutation({
-		mutationFn: orderService.createOrder,
-		onSuccess: ({ orderId }) => {
-			clear();
-			navigate(`/orders/${orderId}`);
-		},
-		onError: (error) => {
-			const message =
-				error instanceof Error
-					? error.message
-					: '주문에 실패했습니다. 다시 시도해주세요.';
-			toast.error(message);
-		},
-	});
+  const { items, clear } = useCartContext();
+  const { data: optionsData } = useSuspenseQuery(catalogQuery.options());
+  const { data: itemsData } = useSuspenseQuery(catalogQuery.items());
 
-	function handleOrder() {
-		mutate({
-			totalPrice,
-			customerName: '고객',
-			items: items.map((ci) => ({
-				itemId: ci.item.id,
-				quantity: ci.quantity,
-				options: ci.options,
-			})),
-		});
-	}
+  const allOptions = optionsData.options;
+  const allItems = itemsData.items;
+  const itemMap = new Map(allItems.map((i) => [i.id, i]));
+  const totalPrice = calcCartTotalPrice(items, allItems, allOptions);
 
-	return (
-		<Button
-			fullWidth
-			size="lg"
-			disabled={isPending}
-			onClick={handleOrder}
-		>
-			{`${totalPrice.toLocaleString()}원 주문하기`}
-		</Button>
-	);
+  const { mutate, isPending } = useMutation({
+    mutationFn: orderService.createOrder,
+    onSuccess: ({ orderId }) => {
+      clear();
+      navigate(`/orders/${orderId}`);
+    },
+    onError: async (error) => {
+      if (error instanceof BadRequestError) {
+        await queryClient.invalidateQueries({
+          queryKey: catalogQuery.options().queryKey,
+        });
+        await queryClient.invalidateQueries({
+          queryKey: catalogQuery.items().queryKey,
+        });
+        toast.error(error.message);
+      }
+    },
+  });
+
+  function handleOrder() {
+    const orderItems = items.flatMap((ci) => {
+      const menuItem = itemMap.get(ci.itemId);
+      if (!menuItem) return [];
+      return [
+        {
+          itemId: ci.itemId,
+          quantity: ci.quantity,
+          options: ci.options,
+          unitPrice: calcUnitPrice(menuItem, ci.options, allOptions),
+        },
+      ];
+    });
+
+    mutate({
+      totalPrice,
+      customerName: '고객',
+      items: orderItems,
+    });
+  }
+
+  return (
+    <Button fullWidth size="lg" disabled={isPending} onClick={handleOrder}>
+      {`${totalPrice.toLocaleString()}원 주문하기`}
+    </Button>
+  );
 }

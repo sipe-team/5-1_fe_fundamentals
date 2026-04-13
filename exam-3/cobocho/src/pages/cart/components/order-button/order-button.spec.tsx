@@ -1,6 +1,7 @@
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { TestProvider } from '@/test/test-provider';
+import { BadRequestError, InternalServerError } from '@/shared/lib/error';
 import { OrderButton } from './order-button';
 
 const mockNavigate = vi.fn();
@@ -21,24 +22,59 @@ vi.mock('@/domain/order/api', () => ({
 	},
 }));
 
+const mockInvalidateQueries = vi.fn();
+
+const mockMenuItem = {
+	id: 'americano',
+	category: '커피' as const,
+	title: '아메리카노',
+	description: '',
+	price: 4500,
+	iconImg: '',
+	optionIds: [1],
+};
+
+const mockOption = {
+	id: 1,
+	name: '온도',
+	type: 'grid',
+	required: true,
+	col: 2,
+	labels: ['HOT', 'ICE'],
+	icons: ['🔥', '🧊'],
+	prices: [0, 500],
+};
+
+vi.mock('@tanstack/react-query', async () => {
+	const actual = await vi.importActual('@tanstack/react-query');
+	return {
+		...actual,
+		useSuspenseQuery: (opts: { queryKey: readonly unknown[] }) => {
+			const key = opts.queryKey;
+			if (key.includes('items')) {
+				return { data: { items: [mockMenuItem] } };
+			}
+			return { data: { options: [mockOption] } };
+		},
+		useQueryClient: () => ({
+			invalidateQueries: mockInvalidateQueries,
+		}),
+	};
+});
+
+const mockToastError = vi.fn();
+vi.mock('sonner', () => ({
+	toast: { error: (...args: unknown[]) => mockToastError(...args) },
+}));
+
 import { useCartContext } from '@/domain/order/context/cart-context';
 import { orderService } from '@/domain/order/api';
 
 const mockItems = [
 	{
-		item: {
-			id: 'americano',
-			category: '커피' as const,
-			title: '아메리카노',
-			description: '',
-			price: 4500,
-			iconImg: '',
-			optionIds: [1],
-		},
+		itemId: 'americano',
 		options: [{ optionId: 1, labels: ['HOT'] }],
 		quantity: 2,
-		unitPrice: 4500,
-		totalPrice: 9000,
 	},
 ];
 
@@ -50,7 +86,6 @@ function mockCart() {
 		updateQuantity: vi.fn(),
 		clear: mockClear,
 		totalQuantity: 2,
-		totalPrice: 9000,
 	});
 }
 
@@ -114,6 +149,97 @@ describe('OrderButton', () => {
 		});
 		expect(mockNavigate).not.toHaveBeenCalled();
 		expect(mockClear).not.toHaveBeenCalled();
+	});
+
+	it('주문 시 최신 옵션 기준의 totalPrice와 unitPrice를 서버로 전송한다', async () => {
+		mockCart();
+		vi.mocked(orderService.createOrder).mockResolvedValue({
+			orderId: 'order-xyz',
+		});
+
+		const user = userEvent.setup();
+
+		render(
+			<TestProvider>
+				<OrderButton />
+			</TestProvider>,
+		);
+
+		await user.click(screen.getByRole('button'));
+
+		await waitFor(() => {
+			expect(orderService.createOrder).toHaveBeenCalledTimes(1);
+		});
+
+		// 아메리카노(4500) + HOT(+0) = 4500, quantity=2 => total 9000
+		const payload = vi.mocked(orderService.createOrder).mock.calls[0][0];
+		expect(payload).toEqual(
+			expect.objectContaining({
+				totalPrice: 9000,
+				customerName: '고객',
+				items: [
+					expect.objectContaining({
+						itemId: 'americano',
+						quantity: 2,
+						unitPrice: 4500,
+						options: [{ optionId: 1, labels: ['HOT'] }],
+					}),
+				],
+			}),
+		);
+	});
+
+	it('400 에러 응답 시 options/items 쿼리를 invalidate 하고 toast로 에러 메시지를 표시한다', async () => {
+		mockCart();
+		vi.mocked(orderService.createOrder).mockRejectedValue(
+			new BadRequestError('주문금액이 잘못되었어요.'),
+		);
+
+		const user = userEvent.setup();
+
+		render(
+			<TestProvider>
+				<OrderButton />
+			</TestProvider>,
+		);
+
+		await user.click(screen.getByRole('button'));
+
+		await waitFor(() => {
+			expect(mockToastError).toHaveBeenCalledWith('주문금액이 잘못되었어요.');
+		});
+
+		// options, items 두 쿼리 모두 invalidate
+		expect(mockInvalidateQueries).toHaveBeenCalledWith({
+			queryKey: ['catalog', 'options'],
+		});
+		expect(mockInvalidateQueries).toHaveBeenCalledWith({
+			queryKey: ['catalog', 'items'],
+		});
+	});
+
+	it('400 이외의 에러에서는 invalidate 및 toast가 호출되지 않는다', async () => {
+		mockCart();
+		vi.mocked(orderService.createOrder).mockRejectedValue(
+			new InternalServerError('서버 내부 오류'),
+		);
+
+		const user = userEvent.setup();
+
+		render(
+			<TestProvider>
+				<OrderButton />
+			</TestProvider>,
+		);
+
+		await user.click(screen.getByRole('button'));
+
+		await waitFor(() => {
+			expect(screen.getByRole('button')).not.toBeDisabled();
+		});
+
+		expect(mockInvalidateQueries).not.toHaveBeenCalled();
+		expect(mockToastError).not.toHaveBeenCalled();
 	});
 
 	it('주문 중 버튼이 비활성화된다', async () => {

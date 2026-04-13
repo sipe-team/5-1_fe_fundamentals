@@ -171,7 +171,7 @@ describe('MenuDetailPage', () => {
 		await user.click(screen.getByText(/담기/));
 
 		expect(mockAddItem).toHaveBeenCalledWith(
-			mockItem,
+			mockItem.id,
 			expect.arrayContaining([
 				expect.objectContaining({ optionId: 1, labels: ['HOT'] }),
 			]),
