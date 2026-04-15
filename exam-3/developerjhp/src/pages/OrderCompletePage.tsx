@@ -75,8 +75,7 @@ function OrderSummary({ order }: { order: Order }) {
               )}
             </div>
             <ItemPrice>
-              {(item.unitPrice * item.quantity).toLocaleString()}원 ×{' '}
-              {item.quantity}
+              {item.unitPrice.toLocaleString()}원 × {item.quantity}
             </ItemPrice>
           </ItemRow>
         ))}
