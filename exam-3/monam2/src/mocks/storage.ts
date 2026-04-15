@@ -1,4 +1,4 @@
-import type { MenuItem, MenuOption, Order } from '@/types/order';
+import type { MenuItem, MenuOption, Order } from '@/shared/types';
 import { initialMenu, initialOptions, initialOrders } from './data';
 
 const MENU_KEY = 'exam-3:mock:menu';
