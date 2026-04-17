@@ -63,8 +63,8 @@ function CartPageContent() {
       });
 
       toast.success('주문이 완료되었어요.');
-      clearCart();
       setLocation(`/orders/${orderId}`);
+      clearCart();
     } catch {
       toast.error('주문에 실패했어요. 잠시 후 다시 시도해 주세요.');
     } finally {
