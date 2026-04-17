@@ -35,9 +35,7 @@ export function QuantityControl({
 
   function applyInputTextOnBlur() {
     const parsed = Number.parseInt(inputText, 10);
-    const nextQuantity = Number.isNaN(parsed)
-      ? min
-      : clampQuantity(parsed, min, max);
+    const nextQuantity = Number.isNaN(parsed) ? min : clampQuantity(parsed, min, max);
     setInputText(String(nextQuantity));
     onChange(nextQuantity);
   }
@@ -66,6 +64,12 @@ export function QuantityControl({
         value={inputText}
         onChange={handleQuantityInputChange}
         onBlur={applyInputTextOnBlur}
+        onKeyDown={(e) => {
+          if (e.key === 'Enter') {
+            e.preventDefault();
+            applyInputTextOnBlur();
+          }
+        }}
         className={cn(
           'h-9 w-14 rounded-lg border border-border bg-background text-center text-sm font-medium',
           '[appearance:textfield] [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none',
