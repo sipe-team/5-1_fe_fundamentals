@@ -1,35 +1,25 @@
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
 import { useLocation, useRoute } from 'wouter';
 
 import { MenuDetailContent } from '@/features/menu/components/MenuDetailContent';
-import { MenuDetailErrorFallback } from '@/features/menu/components/MenuDetailErrorFallback';
-import { MenuDetailGnb } from '@/features/menu/components/MenuDetailGnb';
+import { Gnb } from '@/shared/components/Gnb';
 import { MenuDetailSkeleton } from '@/features/menu/components/MenuDetailSkeleton';
+import { MenuItemNotFound } from '@/features/menu/components/MenuItemNotFound';
+import { HttpStatusErrorFallback } from '@/shared/components/HttpStatusErrorFallback';
 
 export function MenuDetailPage() {
   const [, params] = useRoute('/menu/:itemId');
-  const itemId = params?.itemId;
+  const itemId = params!.itemId;
   const [, setLocation] = useLocation();
-
-  if (!itemId) {
-    return (
-      <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-        메뉴를 찾을 수 없어요.
-      </div>
-    );
-  }
 
   return (
     <>
-      <MenuDetailGnb onReturnToMenu={() => setLocation('/')} />
+      <Gnb variant="back" title="메뉴 상세" onLeftClick={() => setLocation('/')} />
       <QueryErrorResetBoundary>
         {({ reset }) => (
-          <ErrorBoundary
-            onReset={reset}
-            fallbackRender={(props) => <MenuDetailErrorFallback {...props} />}
-          >
+          <ErrorBoundary onReset={reset} FallbackComponent={MenuDetailPageErrorFallback}>
             <Suspense fallback={<MenuDetailSkeleton />}>
               <MenuDetailContent key={itemId} itemId={itemId} />
             </Suspense>
@@ -38,4 +28,8 @@ export function MenuDetailPage() {
       </QueryErrorResetBoundary>
     </>
   );
+}
+
+function MenuDetailPageErrorFallback(props: FallbackProps) {
+  return <HttpStatusErrorFallback {...props} httpStatusFallbacks={{ 404: <MenuItemNotFound /> }} />;
 }

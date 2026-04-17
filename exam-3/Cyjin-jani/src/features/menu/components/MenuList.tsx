@@ -10,7 +10,7 @@ interface MenuListProps {
 export function MenuList({ selectedCategory }: MenuListProps) {
   const { data: items } = useMenuItems();
   const groupedItems = groupByCategory(items);
-  const filteredItems = groupedItems[selectedCategory];
+  const filteredItems = groupedItems[selectedCategory] ?? [];
   const isEmpty = filteredItems.length === 0;
 
   if (isEmpty) {

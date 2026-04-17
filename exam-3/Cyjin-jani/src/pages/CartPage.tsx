@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 import { useLocation } from 'wouter';
 
 import { CartEmpty } from '@/features/cart/components/CartEmpty';
-import { CartGnb } from '@/features/cart/components/CartGnb';
+import { Gnb } from '@/shared/components/Gnb';
 import { CartItem } from '@/features/cart/components/CartItem';
 import { buildCartItemKey } from '@/features/cart/lib/buildCartItemKey';
 import {
@@ -44,7 +44,7 @@ function CartPageContent() {
   if (items.length === 0) {
     return (
       <>
-        <CartGnb onReturnToMenu={() => setLocation('/')} />
+        <Gnb variant="back" title="장바구니" onLeftClick={() => setLocation('/')} />
         <CartEmpty />
       </>
     );
@@ -63,8 +63,8 @@ function CartPageContent() {
       });
 
       toast.success('주문이 완료되었어요.');
-      clearCart();
       setLocation(`/orders/${orderId}`);
+      clearCart();
     } catch {
       toast.error('주문에 실패했어요. 잠시 후 다시 시도해 주세요.');
     } finally {
@@ -75,7 +75,7 @@ function CartPageContent() {
   return (
     <>
       <div aria-busy={isCreatingOrder}>
-        <CartGnb onReturnToMenu={() => setLocation('/')} />
+        <Gnb variant="back" title="장바구니" onLeftClick={() => setLocation('/')} />
 
         <div className="flex flex-col gap-3 px-4 pb-4 pt-2">
           {items.map((item) => (

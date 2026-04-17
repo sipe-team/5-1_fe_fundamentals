@@ -11,7 +11,7 @@ import type { CartItem } from '@/features/cart/types';
 
 export const CART_STORAGE_KEY = 'coffee-order-cart';
 
-export interface ICartStore {
+export interface CartStore {
   items: CartItem[];
 
   addItem: (item: CartItem) => void;
@@ -20,7 +20,7 @@ export interface ICartStore {
   clear: () => void;
 }
 
-export const useCartStore = create<ICartStore>()(
+export const useCartStore = create<CartStore>()(
   persist(
     (set) => ({
       items: [],
@@ -100,12 +100,12 @@ export const useCartTotalQuantity = (): number =>
 export const useCartTotalPrice = (): number =>
   useCartStore((state) => selectTotalPrice(state.items));
 
-export const useAddCartItem = (): ICartStore['addItem'] => useCartStore((state) => state.addItem);
+export const useAddCartItem = (): CartStore['addItem'] => useCartStore((state) => state.addItem);
 
-export const useRemoveCartItem = (): ICartStore['removeItem'] =>
+export const useRemoveCartItem = (): CartStore['removeItem'] =>
   useCartStore((state) => state.removeItem);
 
-export const useUpdateCartItemQuantity = (): ICartStore['updateQuantity'] =>
+export const useUpdateCartItemQuantity = (): CartStore['updateQuantity'] =>
   useCartStore((state) => state.updateQuantity);
 
-export const useClearCart = (): ICartStore['clear'] => useCartStore((state) => state.clear);
+export const useClearCart = (): CartStore['clear'] => useCartStore((state) => state.clear);
