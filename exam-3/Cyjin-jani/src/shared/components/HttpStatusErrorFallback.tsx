@@ -18,5 +18,5 @@ export function HttpStatusErrorFallback({
     if (statusFallback != null) return statusFallback;
   }
 
-  return <ErrorFallback resetErrorBoundary={resetErrorBoundary} />;
+  return <ErrorFallback error={error} resetErrorBoundary={resetErrorBoundary} />;
 }
