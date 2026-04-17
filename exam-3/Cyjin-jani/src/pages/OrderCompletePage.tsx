@@ -12,12 +12,10 @@ import { LoadingFallback } from '@/shared/components/LoadingFallback';
 
 export function OrderCompletePage() {
   const [, params] = useRoute('/orders/:orderId');
-  const orderId = params?.orderId;
+  const orderId = params!.orderId;
   const [, setLocation] = useLocation();
 
   const goMenu = () => setLocation('/');
-
-  if (!orderId) return null;
 
   return (
     <>

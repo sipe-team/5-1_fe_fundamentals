@@ -11,16 +11,8 @@ import { HttpStatusErrorFallback } from '@/shared/components/HttpStatusErrorFall
 
 export function MenuDetailPage() {
   const [, params] = useRoute('/menu/:itemId');
-  const itemId = params?.itemId;
+  const itemId = params!.itemId;
   const [, setLocation] = useLocation();
-
-  if (!itemId) {
-    return (
-      <div className="px-4 py-8 text-center text-sm text-muted-foreground">
-        메뉴를 찾을 수 없어요.
-      </div>
-    );
-  }
 
   return (
     <>
