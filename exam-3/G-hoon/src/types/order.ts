@@ -39,9 +39,14 @@ export interface MenuItem {
   optionIds: number[];
 }
 
+// grid/select: labels.length === 1, list: minCount <= labels.length <= maxCount
 export interface OptionSelection {
   optionId: number;
   labels: string[];
+}
+
+export interface CartOptionSelection extends OptionSelection {
+  name?: string;
 }
 
 export interface OrderItem {
@@ -65,10 +70,11 @@ export interface Order {
 }
 
 export interface CartItem {
+  id: string;
   itemId: string;
   title: string;
   basePrice: number;
-  options: OptionSelection[];
+  options: CartOptionSelection[];
   quantity: number;
   unitPrice: number;
 }
