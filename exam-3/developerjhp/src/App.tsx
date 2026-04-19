@@ -1,39 +1,34 @@
-function App() {
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { BrowserRouter, Route, Routes } from 'react-router';
+import { Toaster } from 'sonner';
+import { CartPage } from '@/pages/CartPage';
+import { MenuDetailPage } from '@/pages/MenuDetailPage';
+import { MenuPage } from '@/pages/MenuPage';
+import { OrderCompletePage } from '@/pages/OrderCompletePage';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: false,
+    },
+    mutations: {
+      retry: false,
+    },
+  },
+});
+
+export function App() {
   return (
-    <div>
-      <h1>Exam 3: 커피 주문 앱</h1>
-      <p>여기서부터 시작하세요! 이 파일을 자유롭게 수정해주세요.</p>
-      <p>
-        <code>pnpm dev</code> 실행 후 아래 API로 테스트할 수 있습니다.
-      </p>
-      <ul>
-        <li>
-          <code>GET /api/catalog/categories</code> — 카테고리 목록
-        </li>
-        <li>
-          <code>GET /api/catalog/items</code> — 전체 메뉴 목록
-        </li>
-        <li>
-          <code>GET /api/catalog/items/:itemId</code> — 메뉴 상세
-        </li>
-        <li>
-          <code>GET /api/catalog/options</code> — 옵션 목록
-        </li>
-        <li>
-          <code>POST /api/orders</code> — 주문 생성
-        </li>
-        <li>
-          <code>GET /api/orders</code> — 내 주문 목록
-        </li>
-        <li>
-          <code>GET /api/orders/:orderId</code> — 주문 상세
-        </li>
-        <li>
-          <code>PATCH /api/orders/:orderId/cancel</code> — 주문 취소
-        </li>
-      </ul>
-    </div>
+    <QueryClientProvider client={queryClient}>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<MenuPage />} />
+          <Route path="/menu/:itemId" element={<MenuDetailPage />} />
+          <Route path="/cart" element={<CartPage />} />
+          <Route path="/orders/:orderId" element={<OrderCompletePage />} />
+        </Routes>
+      </BrowserRouter>
+      <Toaster position="top-center" richColors />
+    </QueryClientProvider>
   );
 }
-
-export default App;
