@@ -1,18 +1,23 @@
-import type { Level, Member, ProblemTypeChip, Proficiency } from '@/types';
+import type {
+  Level,
+  Member,
+  ProblemTypeChip,
+  Proficiency,
+} from "@/shared/types";
 import {
   initialLevels,
   initialMembers,
   initialProblemTypes,
   initialProficiency,
-} from './data';
+} from "./data";
 
-const MEMBERS_KEY = 'sipe-study:mock:members';
-const LEVELS_KEY = 'sipe-study:mock:levels';
-const PROBLEM_TYPES_KEY = 'sipe-study:mock:problem-types';
-const PROFICIENCY_KEY = 'sipe-study:mock:proficiency';
-const CONTROLS_KEY = 'sipe-study:mock:controls';
+const MEMBERS_KEY = "sipe-study:mock:members";
+const LEVELS_KEY = "sipe-study:mock:levels";
+const PROBLEM_TYPES_KEY = "sipe-study:mock:problem-types";
+const PROFICIENCY_KEY = "sipe-study:mock:proficiency";
+const CONTROLS_KEY = "sipe-study:mock:controls";
 
-export const MOCK_STORAGE_EVENT = 'sipe-study:mock-storage-updated';
+export const MOCK_STORAGE_EVENT = "sipe-study:mock-storage-updated";
 
 export interface MockControls {
   forceError: boolean;
@@ -28,7 +33,7 @@ const emptyProblemTypes: Record<string, ProblemTypeChip[]> = {};
 const emptyProficiency: Record<string, Proficiency[]> = {};
 
 function isBrowser() {
-  return typeof window !== 'undefined' && typeof localStorage !== 'undefined';
+  return typeof window !== "undefined" && typeof localStorage !== "undefined";
 }
 
 function parseJson<T>(value: string | null, fallback: T): T {
@@ -176,10 +181,10 @@ export function subscribeMockStorage(callback: () => void) {
   const listener = () => callback();
 
   window.addEventListener(MOCK_STORAGE_EVENT, listener);
-  window.addEventListener('storage', listener);
+  window.addEventListener("storage", listener);
 
   return () => {
     window.removeEventListener(MOCK_STORAGE_EVENT, listener);
-    window.removeEventListener('storage', listener);
+    window.removeEventListener("storage", listener);
   };
 }
