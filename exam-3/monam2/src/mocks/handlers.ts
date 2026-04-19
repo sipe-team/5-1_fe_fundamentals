@@ -5,7 +5,7 @@ import type {
   MenuOption,
   Order,
   OrderItem,
-} from '@/types/order';
+} from '@/shared/types';
 import { initialOrders } from './data';
 import {
   getMockControls,
