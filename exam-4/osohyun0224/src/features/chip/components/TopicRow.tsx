@@ -1,5 +1,6 @@
 import { type CSSProperties, memo, useCallback, useMemo } from 'react';
 import type { TopicRow as TopicRowType } from '@/types';
+import { collectAllChips, getCheckState } from '../utils/checkState';
 import { Chip } from './Chip';
 
 interface TopicRowProps {
@@ -15,8 +16,6 @@ const DIFFICULTY_LABELS: Record<string, string> = {
   hard: '어려움',
 };
 
-type CheckState = 'checked' | 'unchecked' | 'indeterminate';
-
 export const TopicRow = memo(function TopicRow({
   topic,
   selectedChipIds,
@@ -30,27 +29,35 @@ export const TopicRow = memo(function TopicRow({
   ];
 
   const { checkState, selected, total } = useMemo(() => {
-    const allChips = [...topic.easy, ...topic.medium, ...topic.hard];
+    const allChips = collectAllChips([topic]);
     const totalCount = allChips.length;
     const selectedCount = allChips.filter((chip) =>
       selectedChipIds.has(chip.chipId),
     ).length;
-    const state: CheckState =
-      selectedCount === 0
-        ? 'unchecked'
-        : selectedCount === totalCount
-          ? 'checked'
-          : 'indeterminate';
-    return { checkState: state, selected: selectedCount, total: totalCount };
+    return {
+      checkState: getCheckState(selectedCount, totalCount),
+      selected: selectedCount,
+      total: totalCount,
+    };
   }, [topic, selectedChipIds]);
+
+  const handleCheckboxRef = useCallback(
+    (el: HTMLInputElement | null) => {
+      if (el) el.indeterminate = checkState === 'indeterminate';
+    },
+    [checkState],
+  );
 
   return (
     <div style={rowStyle}>
       <div style={topicHeaderStyle}>
-        <TopicCheckbox
-          topicId={topic.topicId}
-          checkState={checkState}
-          onToggle={onToggleTopicChips}
+        <input
+          ref={handleCheckboxRef}
+          type="checkbox"
+          checked={checkState === 'checked'}
+          onChange={() => onToggleTopicChips(topic.topicId)}
+          style={checkboxStyle}
+          aria-label="주제 전체 선택"
         />
         <span style={topicNameStyle}>{topic.topicName}</span>
         <span style={topicCountStyle}>
@@ -75,34 +82,6 @@ export const TopicRow = memo(function TopicRow({
         ))}
       </div>
     </div>
-  );
-});
-
-const TopicCheckbox = memo(function TopicCheckbox({
-  topicId,
-  checkState,
-  onToggle,
-}: {
-  topicId: number;
-  checkState: CheckState;
-  onToggle: (topicId: number) => void;
-}) {
-  const ref = useCallback(
-    (el: HTMLInputElement | null) => {
-      if (el) el.indeterminate = checkState === 'indeterminate';
-    },
-    [checkState],
-  );
-
-  return (
-    <input
-      ref={ref}
-      type="checkbox"
-      checked={checkState === 'checked'}
-      onChange={() => onToggle(topicId)}
-      style={checkboxStyle}
-      aria-label="주제 전체 선택"
-    />
   );
 });
 

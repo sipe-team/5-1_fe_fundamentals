@@ -4,6 +4,7 @@ import { ChipCounter } from '@/features/chip/components/ChipCounter';
 import { FilterPanel } from '@/features/chip/components/FilterPanel';
 import { LevelSelect } from '@/features/chip/components/LevelSelect';
 import { useChipDashboard } from '@/features/chip/hooks/useChipDashboard';
+import { hasActiveFilters } from '@/features/chip/utils/filterUtils';
 import { MemberList } from '@/features/member/components/MemberList';
 import { EmptyState } from '@/shared/components/EmptyState';
 
@@ -58,7 +59,7 @@ export function ChipDashboardContent() {
           {filteredTree.length === 0 ? (
             <EmptyState
               message={
-                filters.onlyFrequent || filters.selectedProficiencies.length > 0
+                hasActiveFilters(filters)
                   ? '필터 조건에 맞는 문제 유형이 없습니다.'
                   : '해당 학습 단계에 문제 유형이 없습니다.'
               }

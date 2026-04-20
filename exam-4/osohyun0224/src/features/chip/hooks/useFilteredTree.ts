@@ -5,6 +5,7 @@ import type {
   FilterState,
   ProficiencyLevel,
 } from '@/types';
+import { collectAllChips } from '../utils/checkState';
 
 export function useFilteredTree(
   chipTree: FieldSection[],
@@ -55,28 +56,21 @@ export function useFilteredTree(
       MASTERED: 0,
     };
 
-    for (const field of chipTree) {
-      for (const topic of field.topics) {
-        for (const chip of [...topic.easy, ...topic.medium, ...topic.hard]) {
-          if (filters.onlyFrequent && !chip.frequent) continue;
-          counts[chip.proficiency]++;
-        }
-      }
+    const allChips = collectAllChips(chipTree.flatMap((field) => field.topics));
+    for (const chip of allChips) {
+      if (filters.onlyFrequent && !chip.frequent) continue;
+      counts[chip.proficiency]++;
     }
 
     return counts;
   }, [chipTree, filters.onlyFrequent]);
 
   const selectedVisibleCount = useMemo(() => {
-    let count = 0;
-    for (const field of filteredTree) {
-      for (const topic of field.topics) {
-        for (const chip of [...topic.easy, ...topic.medium, ...topic.hard]) {
-          if (selectedChipIds.has(chip.chipId)) count++;
-        }
-      }
-    }
-    return count;
+    const visibleChips = collectAllChips(
+      filteredTree.flatMap((field) => field.topics),
+    );
+    return visibleChips.filter((chip) => selectedChipIds.has(chip.chipId))
+      .length;
   }, [filteredTree, selectedChipIds]);
 
   return { filteredTree, proficiencyCounts, selectedVisibleCount };

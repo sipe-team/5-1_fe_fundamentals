@@ -1,21 +1,6 @@
 import { useCallback, useState } from 'react';
-import type { ChipWithProficiency } from '@/types';
-
-function collectChipIds(
-  topics: {
-    easy: ChipWithProficiency[];
-    medium: ChipWithProficiency[];
-    hard: ChipWithProficiency[];
-  }[],
-): number[] {
-  const ids: number[] = [];
-  for (const topic of topics) {
-    for (const chip of [...topic.easy, ...topic.medium, ...topic.hard]) {
-      ids.push(chip.chipId);
-    }
-  }
-  return ids;
-}
+import type { FieldSection } from '@/types';
+import { collectAllChips } from '../utils/checkState';
 
 function toggleBulk(prev: Set<number>, chipIds: number[]): Set<number> {
   const allSelected = chipIds.every((id) => prev.has(id));
@@ -50,41 +35,21 @@ export function useChipSelection() {
   }, []);
 
   const toggleFieldChips = useCallback(
-    (
-      fieldId: number,
-      filteredFields: {
-        fieldId: number;
-        topics: {
-          easy: ChipWithProficiency[];
-          medium: ChipWithProficiency[];
-          hard: ChipWithProficiency[];
-        }[];
-      }[],
-    ) => {
+    (fieldId: number, filteredFields: FieldSection[]) => {
       const field = filteredFields.find((f) => f.fieldId === fieldId);
       if (!field) return;
-      const chipIds = collectChipIds(field.topics);
+      const chipIds = collectAllChips(field.topics).map((c) => c.chipId);
       setSelectedChipIds((prev) => toggleBulk(prev, chipIds));
     },
     [],
   );
 
   const toggleTopicChips = useCallback(
-    (
-      topicId: number,
-      filteredFields: {
-        topics: {
-          topicId: number;
-          easy: ChipWithProficiency[];
-          medium: ChipWithProficiency[];
-          hard: ChipWithProficiency[];
-        }[];
-      }[],
-    ) => {
+    (topicId: number, filteredFields: FieldSection[]) => {
       for (const field of filteredFields) {
         const topic = field.topics.find((t) => t.topicId === topicId);
         if (!topic) continue;
-        const chipIds = collectChipIds([topic]);
+        const chipIds = collectAllChips([topic]).map((c) => c.chipId);
         setSelectedChipIds((prev) => toggleBulk(prev, chipIds));
         return;
       }

@@ -1,5 +1,10 @@
 import { type CSSProperties, memo, useCallback } from 'react';
 import type { FieldSection } from '@/types';
+import {
+  type CheckState,
+  collectAllChips,
+  getCheckState,
+} from '../utils/checkState';
 import { TopicRow } from './TopicRow';
 
 interface ChipAccordionProps {
@@ -12,27 +17,16 @@ interface ChipAccordionProps {
   onToggleTopicChips: (topicId: number) => void;
 }
 
-type CheckState = 'checked' | 'unchecked' | 'indeterminate';
-
 function getFieldCheckState(
   field: FieldSection,
   selectedChipIds: Set<number>,
 ): { state: CheckState; selected: number; total: number } {
-  let total = 0;
-  let selected = 0;
-  for (const topic of field.topics) {
-    for (const chip of [...topic.easy, ...topic.medium, ...topic.hard]) {
-      total++;
-      if (selectedChipIds.has(chip.chipId)) selected++;
-    }
-  }
-  const state: CheckState =
-    selected === 0
-      ? 'unchecked'
-      : selected === total
-        ? 'checked'
-        : 'indeterminate';
-  return { state, selected, total };
+  const allChips = collectAllChips(field.topics);
+  const total = allChips.length;
+  const selected = allChips.filter((chip) =>
+    selectedChipIds.has(chip.chipId),
+  ).length;
+  return { state: getCheckState(selected, total), selected, total };
 }
 
 export const ChipAccordion = memo(function ChipAccordion({
@@ -57,10 +51,11 @@ export const ChipAccordion = memo(function ChipAccordion({
         return (
           <div key={field.fieldId} style={sectionStyle}>
             <div style={headerRowStyle}>
-              <FieldCheckbox
-                fieldId={field.fieldId}
+              <IndeterminateCheckbox
+                id={field.fieldId}
                 checkState={fieldCheck}
                 onToggle={onToggleFieldChips}
+                ariaLabel="분야 전체 선택"
               />
               <button
                 type="button"
@@ -96,14 +91,16 @@ export const ChipAccordion = memo(function ChipAccordion({
   );
 });
 
-const FieldCheckbox = memo(function FieldCheckbox({
-  fieldId,
+const IndeterminateCheckbox = memo(function IndeterminateCheckbox({
+  id,
   checkState,
   onToggle,
+  ariaLabel,
 }: {
-  fieldId: number;
+  id: number;
   checkState: CheckState;
-  onToggle: (fieldId: number) => void;
+  onToggle: (id: number) => void;
+  ariaLabel: string;
 }) {
   const ref = useCallback(
     (el: HTMLInputElement | null) => {
@@ -117,9 +114,9 @@ const FieldCheckbox = memo(function FieldCheckbox({
       ref={ref}
       type="checkbox"
       checked={checkState === 'checked'}
-      onChange={() => onToggle(fieldId)}
+      onChange={() => onToggle(id)}
       style={checkboxStyle}
-      aria-label="분야 전체 선택"
+      aria-label={ariaLabel}
     />
   );
 });

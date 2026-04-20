@@ -1,5 +1,6 @@
 import { type CSSProperties, memo } from 'react';
 import type { FilterState, ProficiencyLevel } from '@/types';
+import { hasActiveFilters } from '../utils/filterUtils';
 
 const PROFICIENCY_LEVELS: { key: ProficiencyLevel; label: string }[] = [
   { key: 'UNSEEN', label: '미도전' },
@@ -24,8 +25,7 @@ export const FilterPanel = memo(function FilterPanel({
   onToggleProficiency,
   onReset,
 }: FilterPanelProps) {
-  const hasActiveFilter =
-    filters.onlyFrequent || filters.selectedProficiencies.length > 0;
+  const hasActiveFilter = hasActiveFilters(filters);
 
   return (
     <div style={containerStyle}>
