@@ -12,20 +12,27 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.99.2",
+    "ky": "^2.0.1",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-error-boundary": "^6.1.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.8",
+    "@tailwindcss/vite": "^4.2.2",
     "@types/node": "^22.10.2",
     "@types/react": "^18.3.1",
     "@types/react-dom": "^18.3.1",
     "@vitejs/plugin-react": "^4.3.1",
     "msw": "^2.6.4",
+    "tailwindcss": "^4.2.2",
     "typescript": "^5.5.3",
     "vite": "^5.4.1"
   },
   "msw": {
-    "workerDirectory": ["public"]
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
