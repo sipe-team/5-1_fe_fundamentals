@@ -1,10 +1,5 @@
 import { queryOptions } from '@tanstack/react-query';
-import {
-  fetchLevels,
-  fetchMembers,
-  fetchProblemTypes,
-  fetchProficiency,
-} from '@/data/api';
+import { fetchLevels, fetchMembers, fetchProblemTypes, fetchProficiency } from '@/api';
 import type { LevelKey } from '@/types';
 
 export function getMembersQueryOptions() {
@@ -29,10 +24,7 @@ export function getProblemTypesQueryOptions(levelKey: LevelKey) {
   });
 }
 
-export function getProficiencyQueryOptions(
-  memberId: number,
-  levelKey: LevelKey,
-) {
+export function getProficiencyQueryOptions(memberId: number, levelKey: LevelKey) {
   return queryOptions({
     queryKey: ['proficiency', memberId, levelKey] as const,
     queryFn: () => fetchProficiency(memberId, levelKey),

@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from 'react';
 import { ChipBadge } from '@/components/dashboard/chipField/ChipBadge';
-import { useGroupSelection } from '@/components/dashboard/hooks/useGroupSelection';
-import { getTopicChipIds } from '@/components/dashboard/utils/chipSelection';
+import { useGroupSelection } from '@/hooks/useGroupSelection';
+import { getTopicChipIds } from '@/lib/chip';
 import type { ChipWithProficiency, TopicRow } from '@/types';
 
 interface TopicDifficultyRowProps {
@@ -10,8 +10,9 @@ interface TopicDifficultyRowProps {
 
 export function TopicDifficultyRow({ topic }: TopicDifficultyRowProps) {
   const chipIds = getTopicChipIds(topic);
-  const { totalCount, selectedCount, checked, indeterminate, setGroupSelected } =
-    useGroupSelection({ chipIds });
+  const { totalCount, selectedCount, checked, indeterminate, setGroupSelected } = useGroupSelection(
+    { chipIds },
+  );
   const checkboxRef = useRef<HTMLInputElement>(null);
   const checkboxId = useId();
 

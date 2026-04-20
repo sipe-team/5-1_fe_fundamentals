@@ -1,8 +1,8 @@
 import { useEffect, useId, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { TopicDifficultyRow } from '@/components/dashboard/chipField/TopicDifficultyRow';
-import { useGroupSelection } from '@/components/dashboard/hooks/useGroupSelection';
-import { getFieldChipIds } from '@/components/dashboard/utils/chipSelection';
+import { useGroupSelection } from '@/hooks/useGroupSelection';
+import { getFieldChipIds } from '@/lib/chip';
 import type { FieldSection as FieldSectionModel } from '@/types';
 
 interface FieldSectionProps {
@@ -13,8 +13,9 @@ interface FieldSectionProps {
 
 export function FieldSection({ section, isOpen, onToggle }: FieldSectionProps) {
   const chipIds = getFieldChipIds(section);
-  const { totalCount, selectedCount, checked, indeterminate, setGroupSelected } =
-    useGroupSelection({ chipIds });
+  const { totalCount, selectedCount, checked, indeterminate, setGroupSelected } = useGroupSelection(
+    { chipIds },
+  );
   const checkboxRef = useRef<HTMLInputElement>(null);
   const checkboxId = useId();
   const panelId = `field-section-panel-${section.fieldId}`;

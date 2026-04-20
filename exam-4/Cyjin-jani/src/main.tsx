@@ -3,7 +3,7 @@ import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { DevToolPanel } from './DevToolPanel';
-import { queryClient } from './data/queryClient';
+import { queryClient } from './api/queryClient';
 import { initializeMockStorage } from './mocks/storage';
 import './styles/index.css';
 

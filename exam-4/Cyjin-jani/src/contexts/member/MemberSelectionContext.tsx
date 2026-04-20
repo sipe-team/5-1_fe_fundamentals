@@ -6,17 +6,17 @@ import {
   type ReactNode,
 } from 'react';
 
-type MemberSelectionContextValue = {
+interface MemberSelectionContextValue {
   selectedMemberId: number | null;
   setSelectedMemberId: (memberId: number) => void;
-};
+}
 
 const MemberSelectionContext =
   createContext<MemberSelectionContextValue | null>(null);
 
-type MemberSelectionProviderProps = {
+interface MemberSelectionProviderProps {
   children: ReactNode;
-};
+}
 
 export function MemberSelectionProvider({
   children,

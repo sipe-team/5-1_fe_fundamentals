@@ -1,11 +1,11 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
 import { useEffect } from 'react';
-import { getMembersQueryOptions } from '@/data/queries';
+import { getMembersQueryOptions } from '@/api/queryOptions';
 
-type MemberListProps = {
+interface MemberListProps {
   selectedId: number | null;
   onSelect: (memberId: number) => void;
-};
+}
 
 export function MemberList({ selectedId, onSelect }: MemberListProps) {
   const { data: members } = useSuspenseQuery(getMembersQueryOptions());

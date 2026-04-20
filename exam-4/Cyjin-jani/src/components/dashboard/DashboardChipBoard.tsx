@@ -1,29 +1,54 @@
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import { ChipBoard } from '@/components/dashboard/chipField/ChipBoard';
-import { useChipSelectionState } from '@/contexts/ChipSelectionContext';
+import { FieldSectionList } from '@/components/dashboard/chipField/FieldSectionList';
+import { DashboardFilters } from '@/components/dashboard/DashboardFilters';
+import { useChipSelectionState } from '@/contexts/dashboard/ChipSelectionContext';
 import {
   DashboardChipBoardErrorFallback,
   DashboardChipBoardLoadingFallback,
 } from '@/components/dashboard/DashboardFallbacks';
-import { useChipBoardData } from '@/components/dashboard/hooks/useChipBoardData';
-import { useExpandedFields } from '@/components/dashboard/hooks/useExpandedFields';
-import { countVisibleSelectedChips } from '@/components/dashboard/utils/chipSelection';
-import type { LevelKey } from '@/types';
+import { useChipBoardData } from '@/hooks/useChipBoardData';
+import { useExpandedFields } from '@/hooks/useExpandedFields';
+import { countSelectedFromVisibleSet } from '@/lib/chip';
+import type { LevelKey, ProficiencyLevel } from '@/types';
 
-type DashboardChipBoardProps = {
+interface DashboardChipBoardProps {
   memberId: number;
   levelKey: LevelKey;
-};
+  frequentOnly: boolean;
+  selectedProficiencies: ReadonlySet<ProficiencyLevel>;
+  expandSeed: number;
+  onToggleFrequent: () => void;
+  onToggleProficiency: (proficiency: ProficiencyLevel) => void;
+  onResetFilters: () => void;
+}
 
-export function DashboardChipBoard({ memberId, levelKey }: DashboardChipBoardProps) {
+export function DashboardChipBoard({
+  memberId,
+  levelKey,
+  frequentOnly,
+  selectedProficiencies,
+  expandSeed,
+  onToggleFrequent,
+  onToggleProficiency,
+  onResetFilters,
+}: DashboardChipBoardProps) {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
         <ErrorBoundary onReset={reset} FallbackComponent={DashboardChipBoardErrorFallback}>
           <Suspense fallback={<DashboardChipBoardLoadingFallback />}>
-            <DashboardChipBoardContent memberId={memberId} levelKey={levelKey} />
+            <DashboardChipBoardContent
+              memberId={memberId}
+              levelKey={levelKey}
+              frequentOnly={frequentOnly}
+              selectedProficiencies={selectedProficiencies}
+              expandSeed={expandSeed}
+              onToggleFrequent={onToggleFrequent}
+              onToggleProficiency={onToggleProficiency}
+              onResetFilters={onResetFilters}
+            />
           </Suspense>
         </ErrorBoundary>
       )}
@@ -31,21 +56,46 @@ export function DashboardChipBoard({ memberId, levelKey }: DashboardChipBoardPro
   );
 }
 
-function DashboardChipBoardContent({ memberId, levelKey }: DashboardChipBoardProps) {
-  const chipBoardDataTree = useChipBoardData({ memberId, levelKey });
-  const { expandedFieldIds, toggleField } = useExpandedFields({ chipBoardDataTree });
+function DashboardChipBoardContent({
+  memberId,
+  levelKey,
+  frequentOnly,
+  selectedProficiencies,
+  expandSeed,
+  onToggleFrequent,
+  onToggleProficiency,
+  onResetFilters,
+}: DashboardChipBoardProps) {
+  const { tree, visibleChipIds, proficiencyCounts } = useChipBoardData({
+    memberId,
+    levelKey,
+    frequentOnly,
+    selectedProficiencies,
+  });
+  const { expandedFieldIds, toggleField } = useExpandedFields({
+    chipBoardDataTree: tree,
+    resetSeed: expandSeed,
+  });
   const { selectedChipIds } = useChipSelectionState();
 
   const visibleSelectedCount = useMemo(
-    () => countVisibleSelectedChips(chipBoardDataTree, selectedChipIds),
-    [chipBoardDataTree, selectedChipIds],
+    () => countSelectedFromVisibleSet(visibleChipIds, selectedChipIds),
+    [visibleChipIds, selectedChipIds],
   );
 
   return (
     <>
-      <section className="h-full min-h-0 overflow-y-auto rounded-lg border border-neutral-200 bg-white p-4">
-        <ChipBoard
-          tree={chipBoardDataTree}
+      <DashboardFilters
+        frequentOnly={frequentOnly}
+        selectedProficiencies={selectedProficiencies}
+        proficiencyCounts={proficiencyCounts}
+        onToggleFrequent={onToggleFrequent}
+        onToggleProficiency={onToggleProficiency}
+        onResetFilters={onResetFilters}
+      />
+      <section className="h-full min-h-0 overflow-y-auto rounded-lg border border-neutral-200 bg-white p-4 pb-28">
+        <FieldSectionList
+          fieldSections={tree}
           expandedFieldIds={expandedFieldIds}
           onToggleField={toggleField}
         />
@@ -55,9 +105,9 @@ function DashboardChipBoardContent({ memberId, levelKey }: DashboardChipBoardPro
   );
 }
 
-type CTAToolbarProps = {
+interface CTAToolbarProps {
   visibleSelectedCount: number;
-};
+}
 
 function CTAToolbar({ visibleSelectedCount }: CTAToolbarProps) {
   return (

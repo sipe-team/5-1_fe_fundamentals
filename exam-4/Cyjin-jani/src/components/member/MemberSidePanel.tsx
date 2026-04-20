@@ -1,8 +1,8 @@
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { ErrorBoundary, type FallbackProps } from 'react-error-boundary';
-import { MemberList } from '@/components/MemberList';
-import { useMemberSelection } from '@/contexts/MemberSelectionContext';
+import { MemberList } from '@/components/member/MemberList';
+import { useMemberSelection } from '@/contexts/member/MemberSelectionContext';
 
 export function MemberSidePanel() {
   const { selectedMemberId, setSelectedMemberId } = useMemberSelection();

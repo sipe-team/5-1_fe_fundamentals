@@ -1,37 +1,25 @@
-import {
-  QueryErrorResetBoundary,
-  useSuspenseQuery,
-} from '@tanstack/react-query';
+import { QueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import {
   DashboardLevelSelectorErrorFallback,
   DashboardLevelSelectorLoadingFallback,
 } from '@/components/dashboard/DashboardFallbacks';
-import { getLevelsQueryOptions } from '@/data/queries';
+import { getLevelsQueryOptions } from '@/api/queryOptions';
 import type { LevelKey } from '@/types';
 
-type DashboardLevelSelectorProps = {
+interface DashboardLevelSelectorProps {
   levelKey: LevelKey;
   onLevelChange: (levelKey: LevelKey) => void;
-};
+}
 
-export function DashboardLevelSelector({
-  levelKey,
-  onLevelChange,
-}: DashboardLevelSelectorProps) {
+export function DashboardLevelSelector({ levelKey, onLevelChange }: DashboardLevelSelectorProps) {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
-        <ErrorBoundary
-          onReset={reset}
-          FallbackComponent={DashboardLevelSelectorErrorFallback}
-        >
+        <ErrorBoundary onReset={reset} FallbackComponent={DashboardLevelSelectorErrorFallback}>
           <Suspense fallback={<DashboardLevelSelectorLoadingFallback />}>
-            <DashboardLevelSelectorContent
-              levelKey={levelKey}
-              onLevelChange={onLevelChange}
-            />
+            <DashboardLevelSelectorContent levelKey={levelKey} onLevelChange={onLevelChange} />
           </Suspense>
         </ErrorBoundary>
       )}
@@ -39,19 +27,13 @@ export function DashboardLevelSelector({
   );
 }
 
-function DashboardLevelSelectorContent({
-  levelKey,
-  onLevelChange,
-}: DashboardLevelSelectorProps) {
+function DashboardLevelSelectorContent({ levelKey, onLevelChange }: DashboardLevelSelectorProps) {
   const { data: levels } = useSuspenseQuery(getLevelsQueryOptions());
 
   return (
     <section className="rounded-lg border border-neutral-200 bg-white p-4">
       <div className="flex items-center gap-3">
-        <label
-          htmlFor="level-select"
-          className="text-sm font-medium text-neutral-700"
-        >
+        <label htmlFor="level-select" className="text-sm font-medium text-neutral-700">
           학습 단계
         </label>
         <select

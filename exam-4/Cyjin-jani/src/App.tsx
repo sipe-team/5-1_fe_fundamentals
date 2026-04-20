@@ -1,6 +1,6 @@
 import { Dashboard } from '@/components/dashboard/Dashboard';
-import { MemberSidePanel } from '@/components/MemberSidePanel';
-import { MemberSelectionProvider } from '@/contexts/MemberSelectionContext';
+import { MemberSidePanel } from '@/components/member/MemberSidePanel';
+import { MemberSelectionProvider } from '@/contexts/member/MemberSelectionContext';
 
 function App() {
   return (

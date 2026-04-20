@@ -7,22 +7,22 @@ import {
   type ReactNode,
 } from 'react';
 
-type ChipSelectionState = {
+interface ChipSelectionState {
   selectedChipIds: Set<number>;
-};
+}
 
-type ChipSelectionActions = {
+interface ChipSelectionActions {
   toggleChipSelection: (chipId: number) => void;
   setChipSelection: (chipIds: number[], shouldSelect: boolean) => void;
   resetSelection: () => void;
-};
+}
 
 const ChipSelectionStateContext = createContext<ChipSelectionState | null>(null);
 const ChipSelectionActionsContext = createContext<ChipSelectionActions | null>(null);
 
-type ChipSelectionProviderProps = {
+interface ChipSelectionProviderProps {
   children: ReactNode;
-};
+}
 
 export function ChipSelectionProvider({ children }: ChipSelectionProviderProps) {
   const [selectedChipIds, setSelectedChipIds] = useState<Set<number>>(new Set());

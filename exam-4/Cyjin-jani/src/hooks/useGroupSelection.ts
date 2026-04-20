@@ -1,6 +1,9 @@
 import { useCallback, useMemo } from 'react';
-import { countSelectedChips } from '@/components/dashboard/utils/chipSelection';
-import { useChipSelectionActions, useChipSelectionState } from '@/contexts/ChipSelectionContext';
+import { countSelectedChips } from '@/lib/chip';
+import {
+  useChipSelectionActions,
+  useChipSelectionState,
+} from '@/contexts/dashboard/ChipSelectionContext';
 
 interface UseGroupSelectionParams {
   chipIds: number[];

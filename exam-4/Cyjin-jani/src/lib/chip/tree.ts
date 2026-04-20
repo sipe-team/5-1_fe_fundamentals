@@ -1,24 +1,7 @@
-import type {
-  ChipWithProficiency,
-  ProblemTypeChip,
-  ProblemTypeTree,
-  Proficiency,
-  ProficiencyLevel,
-  TopicRow,
-} from '@/types';
+import type { ChipWithProficiency, ProblemTypeTree, TopicRow } from '@/types';
 
-export function buildProficiencyMap(rows: Proficiency[]): Map<number, ProficiencyLevel> {
-  return new Map(rows.map((row) => [row.chipId, row.proficiency]));
-}
-
-export function mergeChipsWithProficiency(
-  problemTypes: ProblemTypeChip[],
-  proficiencyMap: Map<number, ProficiencyLevel>,
-): ChipWithProficiency[] {
-  return problemTypes.map((chip) => ({
-    ...chip,
-    proficiency: proficiencyMap.get(chip.chipId) ?? 'UNSEEN',
-  }));
+export function buildVisibleChipIdSet(chips: ChipWithProficiency[]): Set<number> {
+  return new Set(chips.map((chip) => chip.chipId));
 }
 
 export function buildProblemTypeTree(chips: ChipWithProficiency[]): ProblemTypeTree {

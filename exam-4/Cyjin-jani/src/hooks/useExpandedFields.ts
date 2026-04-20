@@ -1,11 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import type { ProblemTypeTree } from '@/types';
 
-type UseExpandedFieldsParams = {
+interface UseExpandedFieldsParams {
   chipBoardDataTree: ProblemTypeTree;
-};
+  resetSeed?: number;
+}
 
-export function useExpandedFields({ chipBoardDataTree }: UseExpandedFieldsParams) {
+export function useExpandedFields({
+  chipBoardDataTree,
+  resetSeed,
+}: UseExpandedFieldsParams) {
   const [expandedFieldIds, setExpandedFieldIds] = useState<Set<number>>(new Set());
   const isHydratedRef = useRef(false);
 
@@ -25,6 +29,11 @@ export function useExpandedFields({ chipBoardDataTree }: UseExpandedFieldsParams
       return next;
     });
   }, [chipBoardDataTree]);
+
+  useEffect(() => {
+    if (resetSeed == null) return;
+    setExpandedFieldIds(new Set(chipBoardDataTree.map((section) => section.fieldId)));
+  }, [chipBoardDataTree, resetSeed]);
 
   const toggleField = (fieldId: number) => {
     setExpandedFieldIds((prev) => {
