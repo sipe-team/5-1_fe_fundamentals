@@ -12,6 +12,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@suspensive/react": "^3.20.3",
+    "@suspensive/react-query": "^3.20.3",
+    "@tanstack/react-query": "^5.99.2",
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
@@ -26,6 +29,8 @@
     "vite": "^5.4.1"
   },
   "msw": {
-    "workerDirectory": ["public"]
+    "workerDirectory": [
+      "public"
+    ]
   }
 }

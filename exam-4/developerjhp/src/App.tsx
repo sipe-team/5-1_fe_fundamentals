@@ -1,25 +1,34 @@
-function App() {
+import { useState } from 'react';
+import { MemberPanel } from './MemberPanel';
+import { Dashboard } from '@/dashboard/Dashboard';
+import type { Member } from '@/types';
+import styles from './App.module.css';
+
+interface AppProps {
+  members: Member[];
+}
+
+function App({ members }: AppProps) {
+  const [selectedMember, setSelectedMember] = useState<Member | null>(
+    () => members[0] ?? null,
+  );
+
+  if (members.length === 0) {
+    return (
+      <div className={styles.emptyMembers}>등록된 스터디원이 없습니다.</div>
+    );
+  }
+
   return (
-    <div>
-      <h1>SIPE Study Case</h1>
-      <p>여기서부터 시작하세요! 이 파일을 자유롭게 수정해주세요.</p>
-      <p>
-        <code>pnpm dev</code> 실행 후 아래 API로 테스트할 수 있습니다.
-      </p>
-      <ul>
-        <li>
-          <code>GET /api/members</code> — 스터디원 목록
-        </li>
-        <li>
-          <code>GET /api/levels</code> — 학습 단계 목록
-        </li>
-        <li>
-          <code>GET /api/problem-types?levelKey=...</code> — 문제 유형 목록
-        </li>
-        <li>
-          <code>GET /api/proficiency?memberId=...&levelKey=...</code> — 숙련도 목록
-        </li>
-      </ul>
+    <div className={styles.layout}>
+      <MemberPanel
+        members={members}
+        selectedId={selectedMember?.id ?? members[0].id}
+        onSelect={setSelectedMember}
+      />
+      {selectedMember && (
+        <Dashboard key={selectedMember.id} memberId={selectedMember.id} />
+      )}
     </div>
   );
 }
