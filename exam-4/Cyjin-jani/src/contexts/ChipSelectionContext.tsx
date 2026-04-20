@@ -13,6 +13,7 @@ type ChipSelectionState = {
 
 type ChipSelectionActions = {
   toggleChipSelection: (chipId: number) => void;
+  setChipSelection: (chipIds: number[], shouldSelect: boolean) => void;
   resetSelection: () => void;
 };
 
@@ -35,6 +36,33 @@ export function ChipSelectionProvider({ children }: ChipSelectionProviderProps) 
     });
   }, []);
 
+  const setChipSelection = useCallback((chipIds: number[], shouldSelect: boolean) => {
+    setSelectedChipIds((prev) => {
+      if (chipIds.length === 0) return prev;
+
+      let hasChanged = false;
+      const next = new Set(prev);
+
+      if (shouldSelect) {
+        for (const chipId of chipIds) {
+          if (!next.has(chipId)) {
+            next.add(chipId);
+            hasChanged = true;
+          }
+        }
+      } else {
+        for (const chipId of chipIds) {
+          if (next.has(chipId)) {
+            next.delete(chipId);
+            hasChanged = true;
+          }
+        }
+      }
+
+      return hasChanged ? next : prev;
+    });
+  }, []);
+
   const resetSelection = useCallback(() => {
     setSelectedChipIds(new Set());
   }, []);
@@ -49,9 +77,10 @@ export function ChipSelectionProvider({ children }: ChipSelectionProviderProps) 
   const actionsValue = useMemo(
     () => ({
       toggleChipSelection,
+      setChipSelection,
       resetSelection,
     }),
-    [resetSelection, toggleChipSelection],
+    [resetSelection, setChipSelection, toggleChipSelection],
   );
 
   return (

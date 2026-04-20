@@ -1,19 +1,42 @@
+import { useEffect, useId, useRef } from 'react';
 import { ChipBadge } from '@/components/dashboard/chipField/ChipBadge';
-import type { TopicRow } from '@/types';
+import { useGroupSelection } from '@/components/dashboard/hooks/useGroupSelection';
+import { getTopicChipIds } from '@/components/dashboard/utils/chipSelection';
+import type { ChipWithProficiency, TopicRow } from '@/types';
 
-type TopicDifficultyRowProps = {
+interface TopicDifficultyRowProps {
   topic: TopicRow;
-};
+}
 
 export function TopicDifficultyRow({ topic }: TopicDifficultyRowProps) {
-  const totalCount = topic.easy.length + topic.medium.length + topic.hard.length;
+  const chipIds = getTopicChipIds(topic);
+  const { totalCount, selectedCount, checked, indeterminate, setGroupSelected } =
+    useGroupSelection({ chipIds });
+  const checkboxRef = useRef<HTMLInputElement>(null);
+  const checkboxId = useId();
+
+  useEffect(() => {
+    if (!checkboxRef.current) return;
+    checkboxRef.current.indeterminate = indeterminate;
+  }, [indeterminate]);
 
   return (
     <div className="rounded-md border border-neutral-200 bg-white p-3">
       <div className="mb-2 flex items-center gap-2">
-        <input type="checkbox" disabled aria-label={`${topic.topicName} 선택 체크박스 (준비 중)`} />
+        <input
+          id={checkboxId}
+          ref={checkboxRef}
+          type="checkbox"
+          checked={checked}
+          onChange={(event) => setGroupSelected(event.target.checked)}
+        />
         <p className="text-sm font-medium text-neutral-800">
-          {topic.topicName} <span className="text-neutral-500">0/{totalCount}</span>
+          <label htmlFor={checkboxId} className="cursor-pointer">
+            {topic.topicName}
+          </label>{' '}
+          <span className="text-neutral-500">
+            {selectedCount}/{totalCount}
+          </span>
         </p>
       </div>
 
@@ -26,10 +49,10 @@ export function TopicDifficultyRow({ topic }: TopicDifficultyRowProps) {
   );
 }
 
-type DifficultyColumnProps = {
+interface DifficultyColumnProps {
   label: string;
-  chips: TopicRow['easy'];
-};
+  chips: ChipWithProficiency[];
+}
 
 function DifficultyColumn({ label, chips }: DifficultyColumnProps) {
   return (
