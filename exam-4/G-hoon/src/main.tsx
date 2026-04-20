@@ -3,7 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import { DevToolPanel } from './DevToolPanel';
 import { initializeMockStorage } from './mocks/storage';
-import './styles/reset.css';
+import './main.css';
 
 async function enableMocking() {
   const { worker } = await import('./mocks/browser');
