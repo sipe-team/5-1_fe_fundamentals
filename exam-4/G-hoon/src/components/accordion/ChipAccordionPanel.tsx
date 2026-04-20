@@ -1,5 +1,5 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { problemTypesQueryOptions } from '@/api/problemTypes';
 import { proficiencyQueryOptions } from '@/api/proficiency';
 import { EmptyState } from '@/components/common/EmptyState';
@@ -16,26 +16,25 @@ import { FieldAccordion } from './FieldAccordion';
 interface ChipAccordionPanelProps {
   memberId: number;
   levelKey: string;
-  filter: FilterState;
-  onChangeFilter: (filter: FilterState) => void;
-  selectedChipIds: Set<number>;
-  onToggleChip: (chipId: number) => void;
-  openedFieldIds: Set<number>;
-  onToggleField: (fieldId: number) => void;
-  onRegisterFields: (fieldIds: number[]) => void;
 }
+
+const INITIAL_FILTER: FilterState = {
+  onlyFrequent: false,
+  selectedProficiencies: [],
+};
 
 export function ChipAccordionPanel({
   memberId,
   levelKey,
-  filter,
-  onChangeFilter,
-  selectedChipIds,
-  onToggleChip,
-  openedFieldIds,
-  onToggleField,
-  onRegisterFields,
 }: ChipAccordionPanelProps) {
+  const [filter, setFilter] = useState<FilterState>(INITIAL_FILTER);
+  const [selectedChipIds, setSelectedChipIds] = useState<Set<number>>(
+    () => new Set(),
+  );
+  const [openedFieldIds, setOpenedFieldIds] = useState<Set<number>>(
+    () => new Set(),
+  );
+
   const { data: chips } = useSuspenseQuery(problemTypesQueryOptions(levelKey));
   const { data: proficiencyList } = useSuspenseQuery(
     proficiencyQueryOptions(memberId, levelKey),
@@ -57,8 +56,36 @@ export function ChipAccordionPanel({
   );
 
   useEffect(() => {
-    onRegisterFields(fieldIds);
-  }, [fieldIds, onRegisterFields]);
+    setOpenedFieldIds(new Set(fieldIds));
+  }, [fieldIds]);
+
+  const handleToggleChip = useCallback((chipId: number) => {
+    setSelectedChipIds((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(chipId)) {
+        next.delete(chipId);
+      } else {
+        next.add(chipId);
+      }
+
+      return next;
+    });
+  }, []);
+
+  const handleToggleField = useCallback((fieldId: number) => {
+    setOpenedFieldIds((prev) => {
+      const next = new Set(prev);
+
+      if (next.has(fieldId)) {
+        next.delete(fieldId);
+      } else {
+        next.add(fieldId);
+      }
+
+      return next;
+    });
+  }, []);
 
   const proficiencyCounts = useMemo(
     () => countByProficiency(fullTree, filter.onlyFrequent),
@@ -79,7 +106,7 @@ export function ChipAccordionPanel({
     <div className="flex flex-col gap-4">
       <FilterBar
         filter={filter}
-        onChangeFilter={onChangeFilter}
+        onChangeFilter={setFilter}
         proficiencyCounts={proficiencyCounts}
       />
 
@@ -98,9 +125,9 @@ export function ChipAccordionPanel({
               key={field.fieldId}
               field={field}
               expanded={openedFieldIds.has(field.fieldId)}
-              onToggle={() => onToggleField(field.fieldId)}
+              onToggle={() => handleToggleField(field.fieldId)}
               selectedChipIds={selectedChipIds}
-              onToggleChip={onToggleChip}
+              onToggleChip={handleToggleChip}
             />
           ))}
         </div>

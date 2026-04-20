@@ -15,7 +15,15 @@ export function MemberList({
   const { data: members } = useSuspenseQuery(membersQueryOptions());
 
   useEffect(() => {
-    if (selectedMemberId === null && members.length > 0) {
+    if (members.length === 0) {
+      return;
+    }
+
+    const selectedMemberExists = members.some(
+      (member) => member.id === selectedMemberId,
+    );
+
+    if (!selectedMemberExists) {
       onSelectMember(members[0].id);
     }
   }, [members, selectedMemberId, onSelectMember]);

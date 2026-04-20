@@ -15,6 +15,8 @@
     "@tailwindcss/vite": "^4.2.2",
     "@tanstack/react-query": "^5.99.2",
     "ky": "^2.0.1",
+    "lucide-react": "^1.8.0",
+    "nuqs": "^2.8.9",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-error-boundary": "^6.1.1",

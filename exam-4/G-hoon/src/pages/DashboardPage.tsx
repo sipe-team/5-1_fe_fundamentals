@@ -1,80 +1,15 @@
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { Suspense, useCallback, useState } from 'react';
+import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
 import { ChipAccordionPanel } from '@/components/accordion/ChipAccordionPanel';
 import { ErrorFallback } from '@/components/common/ErrorFallback';
 import { MemberList } from '@/components/sidebar/MemberList';
 import { LevelSelector } from '@/components/toolbar/LevelSelector';
-import type { FilterState } from '@/types';
-
-const DEFAULT_LEVEL_KEY = 'basic';
-
-const INITIAL_FILTER: FilterState = {
-  onlyFrequent: false,
-  selectedProficiencies: [],
-};
+import { useDashboardSearchParams } from '@/hooks/useDashboardSearchParams';
 
 export function DashboardPage() {
-  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null);
-  const [selectedLevelKey, setSelectedLevelKey] = useState(DEFAULT_LEVEL_KEY);
-  const [selectedChipIds, setSelectedChipIds] = useState<Set<number>>(
-    new Set(),
-  );
-  const [openedFieldIds, setOpenedFieldIds] = useState<Set<number>>(new Set());
-  const [filter, setFilter] = useState<FilterState>(INITIAL_FILTER);
-
-  const handleSelectMember = useCallback((memberId: number) => {
-    setSelectedMemberId(memberId);
-    setSelectedLevelKey(DEFAULT_LEVEL_KEY);
-    setSelectedChipIds(new Set());
-    setOpenedFieldIds(new Set());
-    setFilter(INITIAL_FILTER);
-  }, []);
-
-  const handleChangeLevel = useCallback((levelKey: string) => {
-    setSelectedLevelKey(levelKey);
-    setSelectedChipIds(new Set());
-  }, []);
-
-  const handleToggleChip = useCallback((chipId: number) => {
-    setSelectedChipIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(chipId)) {
-        next.delete(chipId);
-      } else {
-        next.add(chipId);
-      }
-      return next;
-    });
-  }, []);
-
-  const handleToggleField = useCallback((fieldId: number) => {
-    setOpenedFieldIds((prev) => {
-      const next = new Set(prev);
-      if (next.has(fieldId)) {
-        next.delete(fieldId);
-      } else {
-        next.add(fieldId);
-      }
-      return next;
-    });
-  }, []);
-
-  const handleRegisterFields = useCallback((fieldIds: number[]) => {
-    setOpenedFieldIds((prev) => {
-      let changed = false;
-      const next = new Set(prev);
-
-      for (const fieldId of fieldIds) {
-        if (!next.has(fieldId)) {
-          next.add(fieldId);
-          changed = true;
-        }
-      }
-
-      return changed ? next : prev;
-    });
-  }, []);
+  const { selectedMemberId, selectedLevelKey, selectMember, changeLevel } =
+    useDashboardSearchParams();
 
   return (
     <div className="flex h-screen">
@@ -92,7 +27,7 @@ export function DashboardPage() {
               >
                 <MemberList
                   selectedMemberId={selectedMemberId}
-                  onSelectMember={handleSelectMember}
+                  onSelectMember={selectMember}
                 />
               </Suspense>
             </ErrorBoundary>
@@ -112,7 +47,7 @@ export function DashboardPage() {
                 >
                   <LevelSelector
                     selectedLevelKey={selectedLevelKey}
-                    onChangeLevel={handleChangeLevel}
+                    onChangeLevel={changeLevel}
                   />
                 </Suspense>
               </ErrorBoundary>
@@ -136,15 +71,9 @@ export function DashboardPage() {
                     }
                   >
                     <ChipAccordionPanel
+                      key={`${selectedMemberId}-${selectedLevelKey}`}
                       memberId={selectedMemberId}
                       levelKey={selectedLevelKey}
-                      filter={filter}
-                      onChangeFilter={setFilter}
-                      selectedChipIds={selectedChipIds}
-                      onToggleChip={handleToggleChip}
-                      openedFieldIds={openedFieldIds}
-                      onToggleField={handleToggleField}
-                      onRegisterFields={handleRegisterFields}
                     />
                   </Suspense>
                 </ErrorBoundary>
