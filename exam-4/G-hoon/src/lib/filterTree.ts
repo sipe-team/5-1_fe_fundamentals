@@ -6,6 +6,28 @@ import type {
   TopicRow,
 } from '@/types';
 
+const PROFICIENCY_LEVELS: ProficiencyLevel[] = [
+  'UNSEEN',
+  'FAILED',
+  'PARTIAL',
+  'PASSED',
+  'MASTERED',
+];
+
+function getTopicChips(topic: TopicRow): ChipWithProficiency[] {
+  return [...topic.easy, ...topic.medium, ...topic.hard];
+}
+
+function getTreeChips(tree: FieldSection[]): ChipWithProficiency[] {
+  return tree.flatMap((field) => field.topics.flatMap(getTopicChips));
+}
+
+function createEmptyProficiencyCounts(): Record<ProficiencyLevel, number> {
+  return Object.fromEntries(
+    PROFICIENCY_LEVELS.map((level) => [level, 0]),
+  ) as Record<ProficiencyLevel, number>;
+}
+
 function filterChips(
   chips: ChipWithProficiency[],
   filter: FilterState,
@@ -54,23 +76,11 @@ export function countByProficiency(
   tree: FieldSection[],
   onlyFrequent: boolean,
 ): Record<ProficiencyLevel, number> {
-  const counts: Record<ProficiencyLevel, number> = {
-    UNSEEN: 0,
-    FAILED: 0,
-    PARTIAL: 0,
-    PASSED: 0,
-    MASTERED: 0,
-  };
+  const counts = createEmptyProficiencyCounts();
 
-  for (const field of tree) {
-    for (const topic of field.topics) {
-      for (const chips of [topic.easy, topic.medium, topic.hard]) {
-        for (const chip of chips) {
-          if (onlyFrequent && !chip.frequent) continue;
-          counts[chip.proficiency]++;
-        }
-      }
-    }
+  for (const chip of getTreeChips(tree)) {
+    if (onlyFrequent && !chip.frequent) continue;
+    counts[chip.proficiency]++;
   }
 
   return counts;
@@ -80,15 +90,6 @@ export function countSelectedInTree(
   tree: FieldSection[],
   selectedChipIds: Set<number>,
 ): number {
-  let count = 0;
-  for (const field of tree) {
-    for (const topic of field.topics) {
-      for (const chips of [topic.easy, topic.medium, topic.hard]) {
-        for (const chip of chips) {
-          if (selectedChipIds.has(chip.chipId)) count++;
-        }
-      }
-    }
-  }
-  return count;
+  return getTreeChips(tree).filter((chip) => selectedChipIds.has(chip.chipId))
+    .length;
 }

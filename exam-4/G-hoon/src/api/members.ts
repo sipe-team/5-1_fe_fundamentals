@@ -1,6 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 import type { Member } from '@/types';
 import { api } from './client';
+import { queryKeys } from './queryKeys';
 
 function fetchMembers(): Promise<Member[]> {
   return api.get('members').json<Member[]>();
@@ -8,7 +9,7 @@ function fetchMembers(): Promise<Member[]> {
 
 export function membersQueryOptions() {
   return queryOptions({
-    queryKey: ['members'] as const,
+    queryKey: queryKeys.members(),
     queryFn: fetchMembers,
     staleTime: 5 * 60 * 1000,
   });

@@ -1,6 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 import type { Proficiency } from '@/types';
 import { api } from './client';
+import { queryKeys } from './queryKeys';
 
 function fetchProficiency(
   memberId: number,
@@ -13,7 +14,7 @@ function fetchProficiency(
 
 export function proficiencyQueryOptions(memberId: number, levelKey: string) {
   return queryOptions({
-    queryKey: ['proficiency', memberId, levelKey] as const,
+    queryKey: queryKeys.proficiency(memberId, levelKey),
     queryFn: () => fetchProficiency(memberId, levelKey),
   });
 }

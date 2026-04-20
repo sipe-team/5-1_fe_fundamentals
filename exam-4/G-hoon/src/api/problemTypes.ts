@@ -1,6 +1,7 @@
 import { queryOptions } from '@tanstack/react-query';
 import type { ProblemTypeChip } from '@/types';
 import { api } from './client';
+import { queryKeys } from './queryKeys';
 
 function fetchProblemTypes(levelKey: string): Promise<ProblemTypeChip[]> {
   return api
@@ -10,7 +11,7 @@ function fetchProblemTypes(levelKey: string): Promise<ProblemTypeChip[]> {
 
 export function problemTypesQueryOptions(levelKey: string) {
   return queryOptions({
-    queryKey: ['problem-types', levelKey] as const,
+    queryKey: queryKeys.problemTypes(levelKey),
     queryFn: () => fetchProblemTypes(levelKey),
     staleTime: 5 * 60 * 1000,
   });

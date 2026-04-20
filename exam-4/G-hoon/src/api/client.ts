@@ -1,10 +1,5 @@
 import ky from 'ky';
 
-export const HTTP_STATUS_BAD_REQUEST = 400;
-export const HTTP_STATUS_NOT_FOUND = 404;
-export const HTTP_STATUS_INTERNAL_SERVER_ERROR = 500;
-export const HTTP_STATUS_SERVICE_UNAVAILABLE = 503;
-
 const DEFAULT_ERROR_MESSAGE =
   '요청을 처리하지 못했어요. 잠시 후 다시 시도해주세요.';
 const NOT_FOUND_ERROR_MESSAGE = '요청한 데이터를 찾을 수 없습니다.';
@@ -48,17 +43,19 @@ export function shouldRetryQuery(failureCount: number, error: unknown) {
     return failureCount < 1;
   }
 
-  switch (error.status) {
-    case HTTP_STATUS_BAD_REQUEST:
-    case HTTP_STATUS_NOT_FOUND:
-      return false;
-    case HTTP_STATUS_SERVICE_UNAVAILABLE:
-      return failureCount < 2;
-    case HTTP_STATUS_INTERNAL_SERVER_ERROR:
-      return failureCount < 1;
-    default:
-      return error.status >= 500 && failureCount < 1;
+  if (error.status >= 400 && error.status < 500) {
+    return false;
   }
+
+  if (error.status === 503) {
+    return failureCount < 2;
+  }
+
+  if (error.status >= 500) {
+    return failureCount < 1;
+  }
+
+  return false;
 }
 
 export function getFriendlyErrorMessage(error: unknown) {
@@ -85,15 +82,15 @@ function getApiErrorMessage(status: number, body: unknown) {
   const message = getMessageFromBody(body);
   if (message) return message;
 
-  switch (status) {
-    case HTTP_STATUS_NOT_FOUND:
-      return NOT_FOUND_ERROR_MESSAGE;
-    case HTTP_STATUS_INTERNAL_SERVER_ERROR:
-    case HTTP_STATUS_SERVICE_UNAVAILABLE:
-      return SERVER_ERROR_MESSAGE;
-    default:
-      return DEFAULT_ERROR_MESSAGE;
+  if (status === 404) {
+    return NOT_FOUND_ERROR_MESSAGE;
   }
+
+  if (status >= 500) {
+    return SERVER_ERROR_MESSAGE;
+  }
+
+  return DEFAULT_ERROR_MESSAGE;
 }
 
 function getMessageFromBody(body: unknown) {
