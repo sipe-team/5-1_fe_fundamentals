@@ -1,16 +1,20 @@
 import { useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { getMembersQueryOptions } from '@/data/queries';
 
-export function MemberPanel() {
+type MemberListProps = {
+  selectedId: number | null;
+  onSelect: (memberId: number) => void;
+};
+
+export function MemberList({ selectedId, onSelect }: MemberListProps) {
   const { data: members } = useSuspenseQuery(getMembersQueryOptions());
-  const [selectedId, setSelectedId] = useState<number | null>(null);
   const isEmpty = members.length === 0;
 
   useEffect(() => {
     if (selectedId != null || isEmpty) return;
-    setSelectedId(members[0].id);
-  }, [members, selectedId]);
+    onSelect(members[0].id);
+  }, [isEmpty, members, onSelect, selectedId]);
 
   if (isEmpty) {
     return <p className="px-3 py-2 text-sm text-neutral-500">등록된 스터디원이 없습니다.</p>;
@@ -22,7 +26,7 @@ export function MemberPanel() {
         <li key={member.id}>
           <button
             type="button"
-            onClick={() => setSelectedId(member.id)}
+            onClick={() => onSelect(member.id)}
             className={`flex w-full items-center rounded-md px-3 py-2 text-left text-sm transition-colors ${
               member.id === selectedId
                 ? 'bg-neutral-200 font-medium text-neutral-900'

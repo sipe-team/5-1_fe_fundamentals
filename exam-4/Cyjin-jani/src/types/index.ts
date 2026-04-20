@@ -1,10 +1,12 @@
+export type LevelKey = 'beginner' | 'basic' | 'advanced' | 'expert';
+
 export type Member = {
   id: number;
   name: string;
 };
 
 export type Level = {
-  key: string;
+  key: LevelKey;
   name: string;
 };
 
@@ -25,7 +27,12 @@ export type Proficiency = {
   proficiency: ProficiencyLevel;
 };
 
-export type ProficiencyLevel = 'UNSEEN' | 'FAILED' | 'PARTIAL' | 'PASSED' | 'MASTERED';
+export type ProficiencyLevel =
+  | 'UNSEEN'
+  | 'FAILED'
+  | 'PARTIAL'
+  | 'PASSED'
+  | 'MASTERED';
 
 export type ChipWithProficiency = ProblemTypeChip & {
   proficiency: ProficiencyLevel;

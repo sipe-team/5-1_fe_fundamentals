@@ -1,5 +1,11 @@
 import { queryOptions } from '@tanstack/react-query';
-import { fetchLevels, fetchMembers, fetchProblemTypes, fetchProficiency } from '@/data/api';
+import {
+  fetchLevels,
+  fetchMembers,
+  fetchProblemTypes,
+  fetchProficiency,
+} from '@/data/api';
+import type { LevelKey } from '@/types';
 
 export function getMembersQueryOptions() {
   return queryOptions({
@@ -15,7 +21,7 @@ export function getLevelsQueryOptions() {
   });
 }
 
-export function getProblemTypesQueryOptions(levelKey: string) {
+export function getProblemTypesQueryOptions(levelKey: LevelKey) {
   return queryOptions({
     queryKey: ['problem-types', levelKey] as const,
     queryFn: () => fetchProblemTypes(levelKey),
@@ -23,7 +29,10 @@ export function getProblemTypesQueryOptions(levelKey: string) {
   });
 }
 
-export function getProficiencyQueryOptions(memberId: number, levelKey: string) {
+export function getProficiencyQueryOptions(
+  memberId: number,
+  levelKey: LevelKey,
+) {
   return queryOptions({
     queryKey: ['proficiency', memberId, levelKey] as const,
     queryFn: () => fetchProficiency(memberId, levelKey),
