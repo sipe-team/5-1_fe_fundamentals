@@ -1,9 +1,19 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import { DevToolPanel } from './DevToolPanel';
 import { initializeMockStorage } from './mocks/storage';
 import './styles/reset.css';
+
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 1,
+      staleTime: 1000 * 60,
+    },
+  },
+});
 
 async function enableMocking() {
   const { worker } = await import('./mocks/browser');
@@ -17,8 +27,10 @@ initializeMockStorage();
 enableMocking().then(() => {
   createRoot(document.getElementById('root')!).render(
     <StrictMode>
-      <DevToolPanel />
-      <App />
+      <QueryClientProvider client={queryClient}>
+        <DevToolPanel />
+        <App />
+      </QueryClientProvider>
     </StrictMode>,
   );
 });
