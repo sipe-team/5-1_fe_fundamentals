@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
-import { DashboardChipBoard } from '@/components/dashboard/DashboardChipBoard';
+import { DashboardProblemTypePanel } from '@/components/dashboard/DashboardProblemTypePanel';
 import { DashboardLevelSelector } from '@/components/dashboard/DashboardLevelSelector';
 import {
   ChipSelectionProvider,
@@ -86,7 +86,7 @@ function DashboardContent({ memberId, levelKey, onLevelChange }: DashboardConten
     <section className="flex h-full min-h-0 flex-1 flex-col gap-3">
       <DashboardLevelSelector levelKey={levelKey} onLevelChange={handleLevelChange} />
       <div className="min-h-0 flex-1">
-        <DashboardChipBoard
+        <DashboardProblemTypePanel
           memberId={memberId}
           levelKey={levelKey}
           frequentOnly={frequentOnly}

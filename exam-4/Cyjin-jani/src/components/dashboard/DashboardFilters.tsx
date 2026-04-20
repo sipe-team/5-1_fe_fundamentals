@@ -1,4 +1,4 @@
-import type { ProficiencyCountMap } from '@/lib/chip';
+import type { ProficiencyCountMap } from '@/lib';
 import { Check } from 'lucide-react';
 import type { ProficiencyLevel } from '@/types';
 

@@ -1,7 +1,7 @@
 import { useEffect, useId, useRef } from 'react';
-import { ChipBadge } from '@/components/dashboard/chipField/ChipBadge';
+import { ProblemTypeChipButton } from '@/components/dashboard/chipField/ProblemTypeChipButton';
 import { useGroupSelection } from '@/hooks/useGroupSelection';
-import { getTopicChipIds } from '@/lib/chip';
+import { getTopicChipIds } from '@/lib';
 import type { ChipWithProficiency, TopicRow } from '@/types';
 
 interface TopicDifficultyRowProps {
@@ -42,9 +42,9 @@ export function TopicDifficultyRow({ topic }: TopicDifficultyRowProps) {
       </div>
 
       <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-        <DifficultyColumn label="쉬움" chips={topic.easy} />
-        <DifficultyColumn label="보통" chips={topic.medium} />
-        <DifficultyColumn label="어려움" chips={topic.hard} />
+        <DifficultyChipColumn label="쉬움" chips={topic.easy} />
+        <DifficultyChipColumn label="보통" chips={topic.medium} />
+        <DifficultyChipColumn label="어려움" chips={topic.hard} />
       </div>
     </div>
   );
@@ -55,16 +55,16 @@ interface DifficultyColumnProps {
   chips: ChipWithProficiency[];
 }
 
-function DifficultyColumn({ label, chips }: DifficultyColumnProps) {
+function DifficultyChipColumn({ label, chips }: DifficultyColumnProps) {
   return (
     <div className="min-h-20 rounded-md border border-dashed border-neutral-200 bg-neutral-50 p-2">
       <p className="mb-2 text-xs font-semibold text-neutral-500">{label}</p>
       {chips.length === 0 ? (
-        <p className="text-xs text-neutral-400">칩 없음</p>
+        <p className="text-xs text-neutral-400">문제 없음</p>
       ) : (
         <div className="flex flex-wrap gap-1.5">
           {chips.map((chip) => (
-            <ChipBadge key={chip.chipId} chip={chip} />
+            <ProblemTypeChipButton key={chip.chipId} chip={chip} />
           ))}
         </div>
       )}

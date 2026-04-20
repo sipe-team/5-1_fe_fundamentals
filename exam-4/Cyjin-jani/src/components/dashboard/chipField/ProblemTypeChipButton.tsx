@@ -6,11 +6,11 @@ import { Check } from 'lucide-react';
 import { PROFICIENCY_STYLE } from '@/components/dashboard/DashboardFilters';
 import type { ChipWithProficiency } from '@/types';
 
-interface ChipBadgeProps {
+interface ProblemTypeChipButtonProps {
   chip: ChipWithProficiency;
 }
 
-export function ChipBadge({ chip }: ChipBadgeProps) {
+export function ProblemTypeChipButton({ chip }: ProblemTypeChipButtonProps) {
   const { selectedChipIds } = useChipSelectionState();
   const { toggleChipSelection } = useChipSelectionActions();
   const isSelected = selectedChipIds.has(chip.chipId);

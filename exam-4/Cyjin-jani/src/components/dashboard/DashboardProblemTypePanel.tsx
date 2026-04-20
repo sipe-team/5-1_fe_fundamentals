@@ -1,19 +1,17 @@
 import { QueryErrorResetBoundary } from '@tanstack/react-query';
 import { Suspense, useMemo } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
+import { ErrorFallback } from '@/components/common/fallbacks/ErrorFallback';
+import { LoadingFallback } from '@/components/common/fallbacks/LoadingFallback';
 import { FieldSectionList } from '@/components/dashboard/chipField/FieldSectionList';
 import { DashboardFilters } from '@/components/dashboard/DashboardFilters';
 import { useChipSelectionState } from '@/contexts/dashboard/ChipSelectionContext';
-import {
-  DashboardChipBoardErrorFallback,
-  DashboardChipBoardLoadingFallback,
-} from '@/components/dashboard/DashboardFallbacks';
-import { useChipBoardData } from '@/hooks/useChipBoardData';
+import { useDashboardProblemChips } from '@/hooks/useDashboardProblemChips';
 import { useExpandedFields } from '@/hooks/useExpandedFields';
-import { countSelectedFromVisibleSet } from '@/lib/chip';
+import { countSelectedFromVisibleSet } from '@/lib';
 import type { LevelKey, ProficiencyLevel } from '@/types';
 
-interface DashboardChipBoardProps {
+interface DashboardProblemTypePanelProps {
   memberId: number;
   levelKey: LevelKey;
   frequentOnly: boolean;
@@ -24,7 +22,7 @@ interface DashboardChipBoardProps {
   onResetFilters: () => void;
 }
 
-export function DashboardChipBoard({
+export function DashboardProblemTypePanel({
   memberId,
   levelKey,
   frequentOnly,
@@ -33,13 +31,18 @@ export function DashboardChipBoard({
   onToggleFrequent,
   onToggleProficiency,
   onResetFilters,
-}: DashboardChipBoardProps) {
+}: DashboardProblemTypePanelProps) {
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
-        <ErrorBoundary onReset={reset} FallbackComponent={DashboardChipBoardErrorFallback}>
-          <Suspense fallback={<DashboardChipBoardLoadingFallback />}>
-            <DashboardChipBoardContent
+        <ErrorBoundary
+          onReset={reset}
+          fallbackRender={(props) => (
+            <ErrorFallback {...props} title="칩 보드 데이터를 불러오지 못했습니다." />
+          )}
+        >
+          <Suspense fallback={<LoadingFallback message="칩 보드를 불러오는 중..." />}>
+            <DashboardProblemTypePanelContent
               memberId={memberId}
               levelKey={levelKey}
               frequentOnly={frequentOnly}
@@ -56,7 +59,7 @@ export function DashboardChipBoard({
   );
 }
 
-function DashboardChipBoardContent({
+function DashboardProblemTypePanelContent({
   memberId,
   levelKey,
   frequentOnly,
@@ -65,15 +68,15 @@ function DashboardChipBoardContent({
   onToggleFrequent,
   onToggleProficiency,
   onResetFilters,
-}: DashboardChipBoardProps) {
-  const { tree, visibleChipIds, proficiencyCounts } = useChipBoardData({
+}: DashboardProblemTypePanelProps) {
+  const { problemTypeChipsTree, visibleChipIds, proficiencyCounts } = useDashboardProblemChips({
     memberId,
     levelKey,
     frequentOnly,
     selectedProficiencies,
   });
   const { expandedFieldIds, toggleField } = useExpandedFields({
-    chipBoardDataTree: tree,
+    chipBoardDataTree: problemTypeChipsTree,
     resetSeed: expandSeed,
   });
   const { selectedChipIds } = useChipSelectionState();
@@ -95,7 +98,7 @@ function DashboardChipBoardContent({
       />
       <section className="h-full min-h-0 overflow-y-auto rounded-lg border border-neutral-200 bg-white p-4 pb-28">
         <FieldSectionList
-          fieldSections={tree}
+          fieldSections={problemTypeChipsTree}
           expandedFieldIds={expandedFieldIds}
           onToggleField={toggleField}
         />

@@ -2,7 +2,7 @@ import { useEffect, useId, useRef } from 'react';
 import { ChevronDown } from 'lucide-react';
 import { TopicDifficultyRow } from '@/components/dashboard/chipField/TopicDifficultyRow';
 import { useGroupSelection } from '@/hooks/useGroupSelection';
-import { getFieldChipIds } from '@/lib/chip';
+import { getFieldChipIds } from '@/lib';
 import type { FieldSection as FieldSectionModel } from '@/types';
 
 interface FieldSectionProps {

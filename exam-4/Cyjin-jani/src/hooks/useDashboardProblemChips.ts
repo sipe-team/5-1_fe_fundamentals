@@ -10,39 +10,39 @@ import {
   filterByProficiency,
   mergeChipsWithProficiency,
   type ProficiencyCountMap,
-} from '@/lib/chip';
+} from '@/lib';
 import type { LevelKey, ProblemTypeTree, ProficiencyLevel } from '@/types';
 
-interface UseChipBoardDataParams {
+interface UseDashboardProblemChipsParams {
   memberId: number;
   levelKey: LevelKey;
   frequentOnly: boolean;
   selectedProficiencies: ReadonlySet<ProficiencyLevel>;
 }
 
-export interface ChipBoardViewModel {
-  tree: ProblemTypeTree;
+export interface ProblemTypeChipsData {
+  problemTypeChipsTree: ProblemTypeTree;
   visibleChipIds: Set<number>;
   proficiencyCounts: ProficiencyCountMap;
 }
 
-export function useChipBoardData({
+export function useDashboardProblemChips({
   memberId,
   levelKey,
   frequentOnly,
   selectedProficiencies,
-}: UseChipBoardDataParams): ChipBoardViewModel {
+}: UseDashboardProblemChipsParams): ProblemTypeChipsData {
   const { data: problemTypes } = useSuspenseQuery(getProblemTypesQueryOptions(levelKey));
   const { data: proficiencies } = useSuspenseQuery(getProficiencyQueryOptions(memberId, levelKey));
 
-  return useMemo<ChipBoardViewModel>(() => {
+  return useMemo<ProblemTypeChipsData>(() => {
     const proficiencyMap = buildProficiencyMap(proficiencies);
     const mergedChips = mergeChipsWithProficiency(problemTypes, proficiencyMap);
     const frequentFiltered = filterByFrequent(mergedChips, frequentOnly);
     const visibleChips = filterByProficiency(frequentFiltered, selectedProficiencies);
 
     return {
-      tree: buildProblemTypeTree(visibleChips),
+      problemTypeChipsTree: buildProblemTypeTree(visibleChips),
       visibleChipIds: buildVisibleChipIdSet(visibleChips),
       proficiencyCounts: countByProficiencyForFilterUI(mergedChips, frequentOnly),
     };

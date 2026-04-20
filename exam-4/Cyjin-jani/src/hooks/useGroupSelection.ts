@@ -1,5 +1,5 @@
 import { useCallback, useMemo } from 'react';
-import { countSelectedChips } from '@/lib/chip';
+import { countSelectedChips } from '@/lib';
 import {
   useChipSelectionActions,
   useChipSelectionState,

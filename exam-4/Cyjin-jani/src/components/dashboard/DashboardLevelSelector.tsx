@@ -1,11 +1,9 @@
 import { QueryErrorResetBoundary, useSuspenseQuery } from '@tanstack/react-query';
 import { Suspense } from 'react';
 import { ErrorBoundary } from 'react-error-boundary';
-import {
-  DashboardLevelSelectorErrorFallback,
-  DashboardLevelSelectorLoadingFallback,
-} from '@/components/dashboard/DashboardFallbacks';
 import { getLevelsQueryOptions } from '@/api/queryOptions';
+import { ErrorFallback } from '@/components/common/fallbacks/ErrorFallback';
+import { LoadingFallback } from '@/components/common/fallbacks/LoadingFallback';
 import type { LevelKey } from '@/types';
 
 interface DashboardLevelSelectorProps {
@@ -17,8 +15,13 @@ export function DashboardLevelSelector({ levelKey, onLevelChange }: DashboardLev
   return (
     <QueryErrorResetBoundary>
       {({ reset }) => (
-        <ErrorBoundary onReset={reset} FallbackComponent={DashboardLevelSelectorErrorFallback}>
-          <Suspense fallback={<DashboardLevelSelectorLoadingFallback />}>
+        <ErrorBoundary
+          onReset={reset}
+          fallbackRender={(props) => (
+            <ErrorFallback {...props} title="학습 단계를 불러오지 못했습니다." />
+          )}
+        >
+          <Suspense fallback={<LoadingFallback message="학습 단계를 불러오는 중..." />}>
             <DashboardLevelSelectorContent levelKey={levelKey} onLevelChange={onLevelChange} />
           </Suspense>
         </ErrorBoundary>

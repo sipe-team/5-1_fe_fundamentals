@@ -1,4 +1,4 @@
-import { filterByFrequent } from '@/lib/chip/filtering';
+import { filterByFrequent } from '@/lib/filtering';
 import type { ChipWithProficiency, ProficiencyLevel } from '@/types';
 
 export type ProficiencyCountMap = Record<ProficiencyLevel, number>;
