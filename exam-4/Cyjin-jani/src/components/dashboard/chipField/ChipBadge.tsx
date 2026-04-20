@@ -1,3 +1,4 @@
+import { useChipSelectionActions, useChipSelectionState } from '@/contexts/ChipSelectionContext';
 import type { ChipWithProficiency } from '@/types';
 
 type ChipBadgeProps = {
@@ -13,9 +14,18 @@ const PROFICIENCY_STYLE: Record<ChipWithProficiency['proficiency'], string> = {
 };
 
 export function ChipBadge({ chip }: ChipBadgeProps) {
+  const { selectedChipIds } = useChipSelectionState();
+  const { toggleChipSelection } = useChipSelectionActions();
+  const isSelected = selectedChipIds.has(chip.chipId);
+
   return (
-    <span
-      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium ${PROFICIENCY_STYLE[chip.proficiency]}`}
+    <button
+      type="button"
+      onClick={() => toggleChipSelection(chip.chipId)}
+      aria-pressed={isSelected}
+      className={`inline-flex items-center gap-1 rounded-full border px-2 py-0.5 text-xs font-medium transition-shadow focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-400 ${
+        PROFICIENCY_STYLE[chip.proficiency]
+      } ${isSelected ? 'ring-2 ring-blue-500 ring-offset-1' : 'hover:shadow-sm'}`}
     >
       {chip.frequent ? (
         <span className="rounded-full bg-orange-100 px-1.5 py-0.5 text-[10px] text-orange-700">
@@ -23,6 +33,6 @@ export function ChipBadge({ chip }: ChipBadgeProps) {
         </span>
       ) : null}
       <span>{chip.problemTypeName}</span>
-    </span>
+    </button>
   );
 }
