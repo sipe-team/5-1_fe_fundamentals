@@ -1,16 +1,15 @@
-import { css } from '@emotion/react';
+import { css } from "@emotion/react";
 
 import {
-  DashBoardFooter,
   DashboardPageSkeleton,
   FilterPannel,
   MemberPannel,
   PsContentPannel,
-} from '@/domains/dashboard/components';
+} from "@/domains/dashboard/components";
 
-import { AsyncBoundary } from '@/shared/components';
-import { Container, Layout, Section } from '@/shared/layout';
-import { descriptionStyle, eyebrowStyle, titleStyle } from '@/shared/styles';
+import { AsyncBoundary } from "@/shared/components";
+import { Container, Layout, Section } from "@/shared/layout";
+import { descriptionStyle, eyebrowStyle, titleStyle } from "@/shared/styles";
 
 export default function App() {
   return (
@@ -25,17 +24,16 @@ export default function App() {
             {/* 메인 콘텐츠 */}
             <main
               css={css({
-                display: 'flex',
-                flexDirection: 'column',
-                gap: '16px',
-                height: '100%',
+                display: "flex",
+                flexDirection: "column",
+                gap: "16px",
+                height: "100%",
                 minHeight: 0,
-                overflow: 'hidden',
+                overflow: "hidden",
               })}
             >
               <FilterPannel />
               <PsContentPannel />
-              <DashBoardFooter />
             </main>
           </AsyncBoundary>
         </Section>
@@ -57,6 +55,6 @@ App.Header = () => {
 };
 
 const headerStyle = css({
-  display: 'grid',
-  gap: '12px',
+  display: "grid",
+  gap: "12px",
 });
