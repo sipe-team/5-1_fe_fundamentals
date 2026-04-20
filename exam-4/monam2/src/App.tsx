@@ -1,27 +1,62 @@
-function App() {
+import { css } from '@emotion/react';
+
+import {
+  DashBoardFooter,
+  DashboardPageSkeleton,
+  FilterPannel,
+  MemberPannel,
+  PsContentPannel,
+} from '@/domains/dashboard/components';
+
+import { AsyncBoundary } from '@/shared/components';
+import { Container, Layout, Section } from '@/shared/layout';
+import { descriptionStyle, eyebrowStyle, titleStyle } from '@/shared/styles';
+
+export default function App() {
   return (
-    <div>
-      <h1>SIPE Study Case</h1>
-      <p>여기서부터 시작하세요! 이 파일을 자유롭게 수정해주세요.</p>
-      <p>
-        <code>pnpm dev</code> 실행 후 아래 API로 테스트할 수 있습니다.
-      </p>
-      <ul>
-        <li>
-          <code>GET /api/members</code> — 스터디원 목록
-        </li>
-        <li>
-          <code>GET /api/levels</code> — 학습 단계 목록
-        </li>
-        <li>
-          <code>GET /api/problem-types?levelKey=...</code> — 문제 유형 목록
-        </li>
-        <li>
-          <code>GET /api/proficiency?memberId=...&levelKey=...</code> — 숙련도 목록
-        </li>
-      </ul>
-    </div>
+    <Layout>
+      <Container>
+        <App.Header />
+        <Section>
+          {/* 스터디원 패널 */}
+          <AsyncBoundary suspenseFallback={<DashboardPageSkeleton />}>
+            <MemberPannel />
+
+            {/* 메인 콘텐츠 */}
+            <main
+              css={css({
+                display: 'flex',
+                flexDirection: 'column',
+                gap: '16px',
+                height: '100%',
+                minHeight: 0,
+                overflow: 'hidden',
+              })}
+            >
+              <FilterPannel />
+              <PsContentPannel />
+              <DashBoardFooter />
+            </main>
+          </AsyncBoundary>
+        </Section>
+      </Container>
+    </Layout>
   );
 }
+App.Header = () => {
+  return (
+    <header css={headerStyle}>
+      <span css={eyebrowStyle}>Study Dashboard</span>
+      <h1 css={titleStyle}>Sipe Coding Test</h1>
+      <p css={descriptionStyle}>
+        스터디원, 학습 단계, 필터 상태를 공통 스캐폴딩 위에서 바로 조합할 수
+        있게 구성했습니다.
+      </p>
+    </header>
+  );
+};
 
-export default App;
+const headerStyle = css({
+  display: 'grid',
+  gap: '12px',
+});
