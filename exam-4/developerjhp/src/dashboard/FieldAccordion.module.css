@@ -1,0 +1,112 @@
+.field {
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  margin-bottom: 12px;
+  overflow: hidden;
+}
+
+.fieldHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  padding: 12px 16px;
+  background: #f9fafb;
+  font-size: 15px;
+  font-weight: 600;
+  color: #1f2937;
+}
+
+.fieldToggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  padding: 0;
+}
+
+.fieldHeader:hover {
+  background: #f3f4f6;
+}
+
+.chevron {
+  font-size: 12px;
+  transition: transform 0.15s;
+  color: #6b7280;
+}
+
+.chevronOpen {
+  transform: rotate(90deg);
+}
+
+.fieldCount {
+  font-size: 12px;
+  font-weight: 400;
+  color: #9ca3af;
+}
+
+.fieldBody {
+  padding: 0 16px 12px;
+}
+
+.topicSection {
+  margin-top: 12px;
+}
+
+.topicHeader {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+}
+
+.topicName {
+  font-size: 14px;
+  font-weight: 600;
+  color: #374151;
+}
+
+.topicCount {
+  font-size: 12px;
+  color: #9ca3af;
+}
+
+.difficultyGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 12px;
+}
+
+.difficultyColumn {
+  min-height: 40px;
+}
+
+.difficultyLabel {
+  font-size: 12px;
+  color: #9ca3af;
+  margin-bottom: 6px;
+}
+
+.chipList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.emptyChips {
+  font-size: 12px;
+  color: #d1d5db;
+}
+
+.checkbox {
+  width: 16px;
+  height: 16px;
+  cursor: pointer;
+  accent-color: #2563eb;
+}
