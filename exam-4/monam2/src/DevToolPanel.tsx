@@ -1,5 +1,5 @@
 import { type CSSProperties, useEffect, useState } from 'react';
-import type { ProblemTypeChip } from '@/types';
+import type { ProblemTypeChip } from '@/shared/types';
 import {
   clearMockData,
   getMockControls,

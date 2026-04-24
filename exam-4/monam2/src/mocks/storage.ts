@@ -1,4 +1,9 @@
-import type { Level, Member, ProblemTypeChip, Proficiency } from '@/types';
+import type {
+  Level,
+  Member,
+  ProblemTypeChip,
+  Proficiency,
+} from '@/shared/types';
 import {
   initialLevels,
   initialMembers,

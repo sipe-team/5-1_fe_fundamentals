@@ -3,16 +3,28 @@ export type Member = {
   name: string;
 };
 
+export type ApiErrorResponse = {
+  error: string;
+  message: string;
+};
+
 export type Level = {
   key: string;
   name: string;
 };
 
+export type LevelOption = {
+  label: string;
+  value: string;
+};
+
+export type Difficulty = "easy" | "medium" | "hard";
+
 export type ProblemTypeChip = {
   chipId: number;
   problemTypeId: number;
   problemTypeName: string;
-  difficulty: 'easy' | 'medium' | 'hard';
+  difficulty: Difficulty;
   topicId: number;
   topicName: string;
   fieldId: number;
@@ -25,24 +37,27 @@ export type Proficiency = {
   proficiency: ProficiencyLevel;
 };
 
-export type ProficiencyLevel = 'UNSEEN' | 'FAILED' | 'PARTIAL' | 'PASSED' | 'MASTERED';
+export type ProficiencyLevel =
+  | "UNSEEN"
+  | "FAILED"
+  | "PARTIAL"
+  | "PASSED"
+  | "MASTERED";
 
 export type ChipWithProficiency = ProblemTypeChip & {
   proficiency: ProficiencyLevel;
 };
 
-export type TopicRow = {
+export type TopicSection = {
   topicId: number;
   topicName: string;
-  easy: ChipWithProficiency[];
-  medium: ChipWithProficiency[];
-  hard: ChipWithProficiency[];
+  chips: ChipWithProficiency[];
 };
 
 export type FieldSection = {
   fieldId: number;
   fieldName: string;
-  topics: TopicRow[];
+  topics: TopicSection[];
 };
 
 export type ProblemTypeTree = FieldSection[];

@@ -12,8 +12,13 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@emotion/react": "^11.14.0",
+    "@tanstack/react-query": "^5.99.2",
+    "ky": "^2.0.1",
+    "nuqs": "^2.8.9",
     "react": "^18.3.1",
-    "react-dom": "^18.3.1"
+    "react-dom": "^18.3.1",
+    "react-error-boundary": "^6.1.1"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.8",
@@ -26,6 +31,8 @@
     "vite": "^5.4.1"
   },
   "msw": {
-    "workerDirectory": ["public"]
+    "workerDirectory": [
+      "public"
+    ]
   }
 }
