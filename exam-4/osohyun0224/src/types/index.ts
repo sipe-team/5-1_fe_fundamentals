@@ -25,7 +25,12 @@ export type Proficiency = {
   proficiency: ProficiencyLevel;
 };
 
-export type ProficiencyLevel = 'UNSEEN' | 'FAILED' | 'PARTIAL' | 'PASSED' | 'MASTERED';
+export type ProficiencyLevel =
+  | 'UNSEEN'
+  | 'FAILED'
+  | 'PARTIAL'
+  | 'PASSED'
+  | 'MASTERED';
 
 export type ChipWithProficiency = ProblemTypeChip & {
   proficiency: ProficiencyLevel;
