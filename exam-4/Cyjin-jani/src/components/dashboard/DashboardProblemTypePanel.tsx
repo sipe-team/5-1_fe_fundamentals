@@ -1,8 +1,5 @@
-import { QueryErrorResetBoundary } from '@tanstack/react-query';
-import { Suspense, useMemo } from 'react';
-import { ErrorBoundary } from 'react-error-boundary';
-import { ErrorFallback } from '@/components/common/fallbacks/ErrorFallback';
-import { LoadingFallback } from '@/components/common/fallbacks/LoadingFallback';
+import { useMemo } from 'react';
+import { AsyncBoundary } from '@/components/common/AsyncBoundary';
 import { FieldSectionList } from '@/components/dashboard/chipField/FieldSectionList';
 import { DashboardFilters } from '@/components/dashboard/DashboardFilters';
 import { useChipSelectionState } from '@/contexts/dashboard/ChipSelectionContext';
@@ -33,29 +30,18 @@ export function DashboardProblemTypePanel({
   onResetFilters,
 }: DashboardProblemTypePanelProps) {
   return (
-    <QueryErrorResetBoundary>
-      {({ reset }) => (
-        <ErrorBoundary
-          onReset={reset}
-          fallbackRender={(props) => (
-            <ErrorFallback {...props} title="칩 보드 데이터를 불러오지 못했습니다." />
-          )}
-        >
-          <Suspense fallback={<LoadingFallback message="칩 보드를 불러오는 중..." />}>
-            <DashboardProblemTypePanelContent
-              memberId={memberId}
-              levelKey={levelKey}
-              frequentOnly={frequentOnly}
-              selectedProficiencies={selectedProficiencies}
-              expandSeed={expandSeed}
-              onToggleFrequent={onToggleFrequent}
-              onToggleProficiency={onToggleProficiency}
-              onResetFilters={onResetFilters}
-            />
-          </Suspense>
-        </ErrorBoundary>
-      )}
-    </QueryErrorResetBoundary>
+    <AsyncBoundary resetKeys={[memberId, levelKey]}>
+      <DashboardProblemTypePanelContent
+        memberId={memberId}
+        levelKey={levelKey}
+        frequentOnly={frequentOnly}
+        selectedProficiencies={selectedProficiencies}
+        expandSeed={expandSeed}
+        onToggleFrequent={onToggleFrequent}
+        onToggleProficiency={onToggleProficiency}
+        onResetFilters={onResetFilters}
+      />
+    </AsyncBoundary>
   );
 }
 

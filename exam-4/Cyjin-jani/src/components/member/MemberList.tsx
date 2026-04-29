@@ -1,20 +1,13 @@
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { useEffect } from 'react';
-import { getMembersQueryOptions } from '@/api/queryOptions';
+import type { Member } from '@/types';
 
 interface MemberListProps {
+  members: Member[];
   selectedId: number | null;
   onSelect: (memberId: number) => void;
 }
 
-export function MemberList({ selectedId, onSelect }: MemberListProps) {
-  const { data: members } = useSuspenseQuery(getMembersQueryOptions());
+export function MemberList({ members, selectedId, onSelect }: MemberListProps) {
   const isEmpty = members.length === 0;
-
-  useEffect(() => {
-    if (selectedId != null || isEmpty) return;
-    onSelect(members[0].id);
-  }, [isEmpty, members, onSelect, selectedId]);
 
   if (isEmpty) {
     return <p className="px-3 py-2 text-sm text-neutral-500">등록된 스터디원이 없습니다.</p>;
