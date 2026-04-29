@@ -1,5 +1,5 @@
 import type { ProficiencyCountMap } from '@/lib';
-import { Check } from 'lucide-react';
+import { SelectionCheckOverlay } from '@/components/dashboard/SelectionCheckOverlay';
 import type { ProficiencyLevel } from '@/types';
 
 interface DashboardFiltersProps {
@@ -47,16 +47,7 @@ export function DashboardFilters({
           }`}
         >
           빈출 유형만 보기
-          {frequentOnly ? (
-            <span className="absolute inset-0 inline-flex items-center justify-center rounded-full bg-black/50 text-white">
-              <Check
-                size={16}
-                strokeWidth={3}
-                className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                aria-hidden="true"
-              />
-            </span>
-          ) : null}
+          {frequentOnly && <SelectionCheckOverlay />}
         </button>
 
         <div className="flex flex-wrap items-center gap-2">
@@ -79,16 +70,7 @@ export function DashboardFilters({
                 <span className="w-9 text-right tabular-nums text-neutral-500">
                   ({proficiencyCounts[option.key]})
                 </span>
-                {isActive ? (
-                  <span className="absolute inset-0 inline-flex items-center justify-center rounded-full bg-black/50 text-white">
-                    <Check
-                      size={16}
-                      strokeWidth={3}
-                      className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-                      aria-hidden="true"
-                    />
-                  </span>
-                ) : null}
+                {isActive && <SelectionCheckOverlay />}
               </button>
             );
           })}

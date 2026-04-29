@@ -2,8 +2,8 @@ import {
   useChipSelectionActions,
   useChipSelectionState,
 } from '@/contexts/dashboard/ChipSelectionContext';
-import { Check } from 'lucide-react';
 import { PROFICIENCY_STYLE } from '@/components/dashboard/DashboardFilters';
+import { SelectionCheckOverlay } from '@/components/dashboard/SelectionCheckOverlay';
 import type { ChipWithProficiency } from '@/types';
 
 interface ProblemTypeChipButtonProps {
@@ -30,16 +30,7 @@ export function ProblemTypeChipButton({ chip }: ProblemTypeChipButtonProps) {
         </span>
       ) : null}
       <span>{chip.problemTypeName}</span>
-      {isSelected ? (
-        <span className="absolute inset-0 inline-flex items-center justify-center rounded-full bg-black/50 text-white">
-          <Check
-            size={16}
-            strokeWidth={3}
-            className="drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
-            aria-hidden="true"
-          />
-        </span>
-      ) : null}
+      {isSelected && <SelectionCheckOverlay />}
     </button>
   );
 }
