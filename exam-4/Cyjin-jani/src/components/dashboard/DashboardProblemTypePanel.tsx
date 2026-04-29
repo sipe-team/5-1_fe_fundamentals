@@ -37,6 +37,7 @@ export function DashboardProblemTypePanel({
       {({ reset }) => (
         <ErrorBoundary
           onReset={reset}
+          resetKeys={[memberId, levelKey]}
           fallbackRender={(props) => (
             <ErrorFallback {...props} title="칩 보드 데이터를 불러오지 못했습니다." />
           )}
