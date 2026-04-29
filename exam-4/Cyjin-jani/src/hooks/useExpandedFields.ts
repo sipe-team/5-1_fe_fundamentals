@@ -6,15 +6,14 @@ interface UseExpandedFieldsParams {
   resetSeed?: number;
 }
 
-export function useExpandedFields({
-  chipBoardDataTree,
-  resetSeed,
-}: UseExpandedFieldsParams) {
+export function useExpandedFields({ chipBoardDataTree, resetSeed }: UseExpandedFieldsParams) {
   const [expandedFieldIds, setExpandedFieldIds] = useState<Set<number>>(new Set());
   const isHydratedRef = useRef(false);
+  const latestFieldIdsRef = useRef<number[]>([]);
 
   useEffect(() => {
     const fieldIds = chipBoardDataTree.map((section) => section.fieldId);
+    latestFieldIdsRef.current = fieldIds;
 
     setExpandedFieldIds((prev) => {
       if (!isHydratedRef.current) {
@@ -32,8 +31,8 @@ export function useExpandedFields({
 
   useEffect(() => {
     if (resetSeed == null) return;
-    setExpandedFieldIds(new Set(chipBoardDataTree.map((section) => section.fieldId)));
-  }, [chipBoardDataTree, resetSeed]);
+    setExpandedFieldIds(new Set(latestFieldIdsRef.current));
+  }, [resetSeed]);
 
   const toggleField = (fieldId: number) => {
     setExpandedFieldIds((prev) => {
