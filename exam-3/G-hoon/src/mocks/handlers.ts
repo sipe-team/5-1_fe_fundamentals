@@ -1,4 +1,5 @@
 import { delay, HttpResponse, http } from 'msw';
+import { validateOption } from '@/lib/optionValidation';
 import type {
   CreateOrderRequest,
   MenuCategory,
@@ -237,30 +238,10 @@ export const handlers = [
           }
         }
 
-        // list 타입: 선택 개수 유효성
-        if (validOption.type === 'list') {
-          const count = optSelection.labels.length;
-          if (count < validOption.minCount || count > validOption.maxCount) {
-            return HttpResponse.json(
-              {
-                error: 'Bad Request',
-                message: '잘못된 주문이에요.',
-              },
-              { status: 400 },
-            );
-          }
-        }
-
-        // grid/select 타입: 단일 선택
-        if (
-          (validOption.type === 'grid' || validOption.type === 'select') &&
-          optSelection.labels.length > 1
-        ) {
+        // 옵션 선택 규칙 검증 (list 개수, grid/select 단일 선택)
+        if (validateOption(validOption, optSelection.labels)) {
           return HttpResponse.json(
-            {
-              error: 'Bad Request',
-              message: '잘못된 주문이에요.',
-            },
+            { error: 'Bad Request', message: '잘못된 주문이에요.' },
             { status: 400 },
           );
         }
@@ -268,17 +249,13 @@ export const handlers = [
 
       // 필수 옵션 검증 (grid은 항상 필수)
       for (const opt of itemOptions) {
-        if (opt?.required) {
-          const applied = item.options.find((o) => o.optionId === opt.id);
-          if (!applied || applied.labels.length === 0) {
-            return HttpResponse.json(
-              {
-                error: 'Bad Request',
-                message: '잘못된 주문이에요.',
-              },
-              { status: 400 },
-            );
-          }
+        if (!opt) continue;
+        const applied = item.options.find((o) => o.optionId === opt.id);
+        if (validateOption(opt, applied?.labels ?? [])) {
+          return HttpResponse.json(
+            { error: 'Bad Request', message: '잘못된 주문이에요.' },
+            { status: 400 },
+          );
         }
       }
 
