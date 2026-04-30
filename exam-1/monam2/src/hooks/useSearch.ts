@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
-import { useAutoComplete, useDebounce, useRouteParams } from "@/hooks";
+import { useEffect, useState } from 'react';
+import { useAutoComplete, useDebounce } from '@/hooks';
 
-export default function useSearch() {
-  const { currentQuery, updateQuery } = useRouteParams();
+interface UseSearchProps {
+  appliedKeyword?: string;
+  onSearch: (keyword?: string) => void;
+}
 
-  const [keyword, setKeyword] = useState(currentQuery.search ?? "");
+export default function useSearch({
+  appliedKeyword,
+  onSearch,
+}: UseSearchProps) {
+  const [keyword, setKeyword] = useState(appliedKeyword ?? '');
   const debouncedKeyword = useDebounce(keyword.trim(), 500);
 
   const { data: autocompletedData } = useAutoComplete({
@@ -12,8 +18,8 @@ export default function useSearch() {
   });
 
   useEffect(() => {
-    setKeyword(currentQuery.search ?? "");
-  }, [currentQuery.search]);
+    setKeyword(appliedKeyword ?? '');
+  }, [appliedKeyword]);
 
   const options =
     autocompletedData?.suggestions.map((suggestion) => ({
@@ -21,23 +27,21 @@ export default function useSearch() {
       value: suggestion,
     })) ?? [];
 
-  const onChange = (value: string) => {
+  const onChangeKeyword = (value: string) => {
     setKeyword(value);
   };
 
-  const search = (nextKeyword = keyword) => {
+  const submitSearch = (nextKeyword = keyword) => {
     const trimmedKeyword = nextKeyword.trim();
 
     setKeyword(trimmedKeyword);
-    updateQuery({
-      search: trimmedKeyword || undefined,
-    });
+    onSearch(trimmedKeyword || undefined);
   };
 
   return {
     keyword,
     options,
-    onChange,
-    search,
+    onChangeKeyword,
+    submitSearch,
   };
 }
