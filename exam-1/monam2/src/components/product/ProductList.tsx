@@ -9,7 +9,7 @@ export default function ProductList() {
   const { currentQuery, resetQuery } = useRouteParams();
 
   const {
-    data: products,
+    data: productList,
     hasNextPage,
     isFetchingNextPage,
     loadMore,
@@ -19,6 +19,7 @@ export default function ProductList() {
     sort: currentQuery.sort ?? DEFAULT_SORT,
     size: PAGE_SIZE,
   });
+  const { products, total } = productList;
   const sentinelDisabled = !hasNextPage || isFetchingNextPage;
 
   if (products.length === 0) {
@@ -27,6 +28,7 @@ export default function ProductList() {
 
   return (
     <>
+      <ProductListSummary total={total} />
       <div
         css={{
           display: 'grid',
@@ -49,6 +51,20 @@ export default function ProductList() {
         />
       </ImpressionArea>
     </>
+  );
+}
+
+function ProductListSummary({ total }: { total: number }) {
+  return (
+    <p
+      css={{
+        margin: 0,
+        color: '#4b5563',
+        fontSize: '0.9375rem',
+      }}
+    >
+      총 {total.toLocaleString('ko-KR')}개 상품
+    </p>
   );
 }
 

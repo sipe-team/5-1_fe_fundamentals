@@ -1,6 +1,6 @@
-import { useSuspenseInfiniteQuery } from "@tanstack/react-query";
-import { getProducts } from "@/apis";
-import type { ProductListResponse, SortOption } from "@/types";
+import { useSuspenseInfiniteQuery } from '@tanstack/react-query';
+import { getProducts } from '@/apis';
+import type { ProductListResponse, SortOption } from '@/types';
 
 interface UseProductListProps {
   keyword?: string;
@@ -10,7 +10,7 @@ interface UseProductListProps {
 }
 
 function normalizeQueryValue(value?: string) {
-  return value?.trim() ?? "";
+  return value?.trim() ?? '';
 }
 
 function normalizePageSize(size = 10) {
@@ -23,7 +23,7 @@ const PRODUCT_QUERY_KEY = ({
   sort,
   size,
 }: Required<UseProductListProps>) => [
-  "products",
+  'products',
   keyword,
   categories,
   sort,
@@ -61,7 +61,18 @@ export default function useProductList({
       }),
     initialPageParam: 1,
     getNextPageParam,
-    select: (data) => data.pages.flatMap((page) => page.products),
+    select: (data) => {
+      const firstPage = data.pages[0];
+      const lastPage = data.pages.at(-1);
+
+      return {
+        products: data.pages.flatMap((page) => page.products),
+        total: firstPage?.total ?? 0,
+        page: lastPage?.page ?? 1,
+        size: firstPage?.size ?? normalizedSize,
+        totalPages: firstPage?.totalPages ?? 0,
+      };
+    },
   });
 
   const loadMore = () => {
