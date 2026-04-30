@@ -61,7 +61,9 @@ export const handlers = [
     // 카테고리 필터
     if (categoriesParam) {
       const categories = categoriesParam.split(',') as Category[];
-      filtered = filtered.filter((product) => categories.includes(product.category));
+      filtered = filtered.filter((product) =>
+        categories.includes(product.category),
+      );
     }
 
     // 키워드 검색

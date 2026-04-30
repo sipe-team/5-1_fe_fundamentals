@@ -1,5 +1,5 @@
-import type { Product } from '@/types';
 import { CATEGORY_LABELS } from '@/shared/constants/product';
+import type { Product } from '@/types';
 
 function formatPrice(price: number): string {
   return price.toLocaleString('ko-KR') + '원';

@@ -1,8 +1,9 @@
-import { Suspense, useState } from 'react';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { NuqsAdapter } from 'nuqs/adapters/react';
+import { Suspense, useState } from 'react';
 import { ProductListPage } from '@/pages/ProductListPage';
-import { ErrorBoundary } from '@/shared/components/ErrorBoundary';
 import { LoadingSpinner } from '@/shared/components/LoadingSpinner';
+import { ProductErrorBoundary } from '@/shared/components/ProductErrorBoundary';
 
 export default function App() {
   const [queryClient] = useState(
@@ -18,12 +19,14 @@ export default function App() {
   );
 
   return (
-    <QueryClientProvider client={queryClient}>
-      <ErrorBoundary>
-        <Suspense fallback={<LoadingSpinner />}>
-          <ProductListPage />
-        </Suspense>
-      </ErrorBoundary>
-    </QueryClientProvider>
+    <NuqsAdapter>
+      <QueryClientProvider client={queryClient}>
+        <ProductErrorBoundary>
+          <Suspense fallback={<LoadingSpinner />}>
+            <ProductListPage />
+          </Suspense>
+        </ProductErrorBoundary>
+      </QueryClientProvider>
+    </NuqsAdapter>
   );
 }
