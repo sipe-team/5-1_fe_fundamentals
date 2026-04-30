@@ -2,9 +2,6 @@ import ky from "ky";
 
 export const client = ky.create({
   prefixUrl: "/api",
-  headers: {
-    "Content-Type": "application/json",
-  },
   // 로깅
   hooks: {
     beforeRequest: [
