@@ -1,64 +1,27 @@
-import { useCallback, useMemo, useSyncExternalStore } from 'react';
-import type {
-  Category,
-  Product,
-  ProductFilters,
-  SortOption,
-} from '@/types';
+import {
+  parseAsArrayOf,
+  parseAsString,
+  parseAsStringLiteral,
+  useQueryStates,
+} from 'nuqs';
+import { useCallback, useMemo, useTransition } from 'react';
 import { ALL_CATEGORIES } from '@/shared/constants/product';
+import type { Category, Product, SortOption } from '@/types';
 
-const VALID_SORTS: SortOption[] = ['price_asc', 'price_desc', 'newest', 'rating'];
+const SORT_OPTIONS: SortOption[] = [
+  'price_asc',
+  'price_desc',
+  'newest',
+  'rating',
+];
 
-function getSearchParams(): URLSearchParams {
-  return new URLSearchParams(window.location.search);
-}
-
-function parseFilters(params: URLSearchParams): ProductFilters {
-  const categories = params
-    .getAll('categories')
-    .filter((c) => ALL_CATEGORIES.includes(c as Category)) as Category[];
-
-  const keyword = params.get('keyword') ?? '';
-
-  const sortParam = params.get('sort');
-  const sort: SortOption = VALID_SORTS.includes(sortParam as SortOption)
-    ? (sortParam as SortOption)
-    : 'newest';
-
-  return { categories, keyword, sort };
-}
-
-function buildSearch(filters: ProductFilters): string {
-  const parts: string[] = [];
-
-  for (const cat of filters.categories) {
-    parts.push(`categories=${cat}`);
-  }
-  if (filters.keyword.trim()) {
-    parts.push(`keyword=${encodeURIComponent(filters.keyword)}`);
-  }
-  if (filters.sort !== 'newest') {
-    parts.push(`sort=${filters.sort}`);
-  }
-
-  return parts.length > 0 ? parts.join('&') : '';
-}
-
-function setSearchParams(filters: ProductFilters) {
-  const search = buildSearch(filters);
-  const url = search ? `${window.location.pathname}?${search}` : window.location.pathname;
-  window.history.pushState(null, '', url);
-  window.dispatchEvent(new PopStateEvent('popstate'));
-}
-
-function subscribe(callback: () => void) {
-  window.addEventListener('popstate', callback);
-  return () => window.removeEventListener('popstate', callback);
-}
-
-function getSnapshot() {
-  return window.location.search;
-}
+const filtersParsers = {
+  categories: parseAsArrayOf(parseAsStringLiteral(ALL_CATEGORIES)).withDefault(
+    [],
+  ),
+  keyword: parseAsString.withDefault(''),
+  sort: parseAsStringLiteral(SORT_OPTIONS).withDefault('newest'),
+};
 
 function sortProducts(products: Product[], sort: SortOption): Product[] {
   const sorted = [...products];
@@ -80,50 +43,69 @@ function sortProducts(products: Product[], sort: SortOption): Product[] {
 }
 
 export function useFilters(products: Product[]) {
-  const search = useSyncExternalStore(subscribe, getSnapshot);
+  const [isPending, startTransition] = useTransition();
 
-  const filters = useMemo(() => parseFilters(getSearchParams()), [search]);
+  const [filters, setFilters] = useQueryStates(filtersParsers, {
+    shallow: false,
+  });
 
   const filteredProducts = useMemo(() => {
     let result = [...products];
 
     if (filters.categories.length > 0) {
-      result = result.filter((product) => filters.categories.includes(product.category));
+      result = result.filter((product) =>
+        filters.categories.includes(product.category),
+      );
     }
 
     if (filters.keyword.trim()) {
       const lower = filters.keyword.toLowerCase();
-      result = result.filter((product) => product.name.toLowerCase().includes(lower));
+      result = result.filter((product) =>
+        product.name.toLowerCase().includes(lower),
+      );
     }
 
     result = sortProducts(result, filters.sort);
     return result;
   }, [products, filters]);
 
-  const toggleCategory = useCallback((category: Category) => {
-    const current = parseFilters(getSearchParams());
-    const has = current.categories.includes(category);
-    setSearchParams({
-      ...current,
-      categories: has
-        ? current.categories.filter((cat) => cat !== category)
-        : [...current.categories, category],
-    });
-  }, []);
+  const toggleCategory = useCallback(
+    (category: Category) => {
+      startTransition(() => {
+        const has = filters.categories.includes(category);
+        setFilters({
+          categories: has
+            ? filters.categories.filter((cat) => cat !== category)
+            : [...filters.categories, category],
+        });
+      });
+    },
+    [filters.categories, setFilters],
+  );
 
-  const setKeyword = useCallback((keyword: string) => {
-    const current = parseFilters(getSearchParams());
-    setSearchParams({ ...current, keyword });
-  }, []);
+  const setKeyword = useCallback(
+    (keyword: string) => {
+      startTransition(() => {
+        setFilters({ keyword: keyword || null });
+      });
+    },
+    [setFilters],
+  );
 
-  const setSort = useCallback((sort: SortOption) => {
-    const current = parseFilters(getSearchParams());
-    setSearchParams({ ...current, sort });
-  }, []);
+  const setSort = useCallback(
+    (sort: SortOption) => {
+      startTransition(() => {
+        setFilters({ sort });
+      });
+    },
+    [setFilters],
+  );
 
   const resetFilters = useCallback(() => {
-    setSearchParams({ categories: [], keyword: '', sort: 'newest' });
-  }, []);
+    startTransition(() => {
+      setFilters(null);
+    });
+  }, [setFilters]);
 
   const hasActiveFilters =
     filters.categories.length > 0 ||
@@ -131,12 +113,17 @@ export function useFilters(products: Product[]) {
     filters.sort !== 'newest';
 
   return {
-    filters,
+    filters: {
+      categories: filters.categories as Category[],
+      keyword: filters.keyword,
+      sort: filters.sort as SortOption,
+    },
     filteredProducts,
     toggleCategory,
     setKeyword,
     setSort,
     resetFilters,
     hasActiveFilters,
+    isPending,
   };
 }

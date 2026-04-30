@@ -1,10 +1,7 @@
 import * as Checkbox from '@radix-ui/react-checkbox';
-import type { Category } from '@/types';
-import {
-  ALL_CATEGORIES,
-  CATEGORY_LABELS,
-} from '@/shared/constants/product';
 import { CheckIcon } from '@/shared/components/icons/CheckIcon';
+import { ALL_CATEGORIES, CATEGORY_LABELS } from '@/shared/constants/product';
+import type { Category } from '@/types';
 
 interface CategoryFilterProps {
   selected: Category[];

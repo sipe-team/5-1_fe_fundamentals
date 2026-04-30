@@ -1,5 +1,5 @@
-import type { Category, ProductFilters } from '@/types';
 import { CATEGORY_LABELS, SORT_LABELS } from '@/shared/constants/product';
+import type { Category, ProductFilters } from '@/types';
 
 interface ActiveFiltersProps {
   filters: ProductFilters;
@@ -47,11 +47,7 @@ export function ActiveFilters({
               {SORT_LABELS[filters.sort]}
             </span>
           )}
-          <button
-            type="button"
-            className="reset-button"
-            onClick={onResetAll}
-          >
+          <button type="button" className="reset-button" onClick={onResetAll}>
             필터 초기화
           </button>
         </div>

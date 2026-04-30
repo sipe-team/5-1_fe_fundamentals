@@ -1,7 +1,7 @@
-import { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { queryKeys } from '@/shared/api/queryKeys';
+import { useEffect, useState } from 'react';
 import { fetchAutocomplete } from '@/features/search/api/fetchAutocomplete';
+import { autocompleteQuery } from '@/shared/api/queryKeys';
 
 export function useAutocomplete(keyword: string) {
   const [debouncedKeyword, setDebouncedKeyword] = useState(keyword);
@@ -14,10 +14,11 @@ export function useAutocomplete(keyword: string) {
   const trimmed = debouncedKeyword.trim();
 
   const { data: suggestions = [], isLoading: loading } = useQuery({
-    queryKey: queryKeys.autocomplete(trimmed),
+    queryKey: autocompleteQuery.suggestions(trimmed),
     queryFn: () => fetchAutocomplete(trimmed),
     enabled: trimmed.length > 0,
     staleTime: 60 * 1000,
+    throwOnError: false,
   });
 
   return { suggestions: trimmed ? suggestions : [], loading };

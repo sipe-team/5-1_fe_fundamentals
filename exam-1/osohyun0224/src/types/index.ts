@@ -1,8 +1,8 @@
 export type {
+  AutocompleteResponse,
   Category,
   Product,
-  SortOption,
   ProductFilters,
   ProductsResponse,
-  AutocompleteResponse,
+  SortOption,
 } from './product';

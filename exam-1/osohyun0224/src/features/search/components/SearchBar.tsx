@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
 import * as Popover from '@radix-ui/react-popover';
+import { useEffect, useRef, useState } from 'react';
 import { useAutocomplete } from '@/features/search/hooks/useAutocomplete';
 
 interface SearchBarProps {
