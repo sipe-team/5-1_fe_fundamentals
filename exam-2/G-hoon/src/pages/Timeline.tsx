@@ -13,6 +13,7 @@ import {
   RoomFilter,
   TimelineBody,
   TimelineGrid,
+  TimelineSkeletonBody,
 } from '@/features/timeline/components';
 import { TIME_SLOTS_LENGTH } from '@/features/timeline/constants';
 import { createRoomFilter } from '@/features/timeline/utils/roomFilter';
@@ -21,17 +22,7 @@ import type { Equipment } from '@/types/reservation';
 const TOTAL_COLUMNS = TIME_SLOTS_LENGTH + 1;
 
 function LoadingBody() {
-  return (
-    <tbody>
-      <tr>
-        <td colSpan={TOTAL_COLUMNS} className="py-12">
-          <div className="flex items-center justify-center">
-            <div className="h-8 w-8 animate-spin rounded-full border-4 border-slate-200 border-t-blue-500" />
-          </div>
-        </td>
-      </tr>
-    </tbody>
-  );
+  return <TimelineSkeletonBody />;
 }
 
 function ErrorBody({ onReset }: { onReset: () => void }) {

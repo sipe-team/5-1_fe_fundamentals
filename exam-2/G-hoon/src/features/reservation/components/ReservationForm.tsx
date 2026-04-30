@@ -51,6 +51,7 @@ export default function ReservationForm({
   const [conflictError, setConflictError] = useState<ConflictError | null>(
     null,
   );
+  const [submitError, setSubmitError] = useState<string | null>(null);
 
   const updateField = <K extends keyof CreateReservationRequest>(
     key: K,
@@ -59,11 +60,13 @@ export default function ReservationForm({
     setValues((prev) => ({ ...prev, [key]: value }));
     setErrors((prev) => ({ ...prev, [key]: undefined }));
     setConflictError(null);
+    setSubmitError(null);
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
     setConflictError(null);
+    setSubmitError(null);
 
     const validationErrors = validateReservation(values, { rooms });
     if (hasErrors(validationErrors)) {
@@ -77,7 +80,10 @@ export default function ReservationForm({
       if (error instanceof HTTPError && error.response.status === 409) {
         const data = (await error.response.json()) as ConflictError;
         setConflictError(data);
+        return;
       }
+
+      setSubmitError('예약 생성에 실패했습니다. 잠시 후 다시 시도해주세요.');
     }
   };
 
@@ -189,6 +195,12 @@ export default function ReservationForm({
             {conflictError.conflictWith.startTime} ~{' '}
             {conflictError.conflictWith.endTime})
           </p>
+        </div>
+      )}
+
+      {submitError && (
+        <div className="rounded-md bg-red-50 border border-red-200 p-4 text-sm">
+          <p className="font-medium text-red-800">{submitError}</p>
         </div>
       )}
 

@@ -29,6 +29,7 @@ function NotFound() {
 }
 
 function ReservationDetailContent({ id }: { id: string }) {
+  const navigate = useNavigate();
   const { data: reservation } = useReservation(id);
   const { data: rooms } = useRooms();
   const { data: myReservations } = useMyReservations();
@@ -39,10 +40,13 @@ function ReservationDetailContent({ id }: { id: string }) {
   const isMine = myReservations.some((r) => r.id === id);
 
   const handleDelete = () => {
-    deleteMutation.mutate(id);
+    deleteMutation.mutate(
+      { id, date: reservation.date },
+      {
+        onSuccess: () => navigate(-1),
+      },
+    );
   };
-
-  const navigate = useNavigate();
 
   return (
     <div className="max-w-lg mx-auto">
