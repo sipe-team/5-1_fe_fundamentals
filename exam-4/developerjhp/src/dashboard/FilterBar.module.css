@@ -1,0 +1,55 @@
+.bar {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+}
+
+.filterLabel {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 1px solid #d1d5db;
+  border-radius: 16px;
+  background: white;
+  font-size: 12px;
+  cursor: pointer;
+  color: #374151;
+  transition: all 0.1s;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: #9ca3af;
+}
+
+.chipActive {
+  background: #dbeafe;
+  border-color: #93c5fd;
+  color: #1d4ed8;
+}
+
+.count {
+  font-size: 11px;
+  color: #9ca3af;
+}
+
+.chipActive .count {
+  color: #60a5fa;
+}
+
+.separator {
+  width: 1px;
+  height: 16px;
+  background: #e5e7eb;
+  margin: 0 4px;
+}

@@ -1,0 +1,62 @@
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  border: 2px solid transparent;
+  border-radius: 16px;
+  font-size: 12px;
+  cursor: pointer;
+  transition: all 0.1s;
+  white-space: nowrap;
+}
+
+.chip:hover {
+  opacity: 0.85;
+}
+
+.selected {
+  border-color: #2563eb;
+  box-shadow: 0 0 0 1px #2563eb;
+}
+
+.frequentBadge {
+  font-size: 10px;
+  background: #f59e0b;
+  color: white;
+  padding: 1px 4px;
+  border-radius: 4px;
+  font-weight: 600;
+  line-height: 1;
+}
+
+.checkIcon {
+  font-size: 11px;
+  color: #2563eb;
+}
+
+/* proficiency colors */
+.proficiency-UNSEEN {
+  background: #f3f4f6;
+  color: #6b7280;
+}
+
+.proficiency-FAILED {
+  background: #fef2f2;
+  color: #dc2626;
+}
+
+.proficiency-PARTIAL {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.proficiency-PASSED {
+  background: #f0fdf4;
+  color: #16a34a;
+}
+
+.proficiency-MASTERED {
+  background: #eff6ff;
+  color: #2563eb;
+}

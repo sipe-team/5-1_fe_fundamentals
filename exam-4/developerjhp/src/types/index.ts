@@ -25,7 +25,12 @@ export type Proficiency = {
   proficiency: ProficiencyLevel;
 };
 
-export type ProficiencyLevel = 'UNSEEN' | 'FAILED' | 'PARTIAL' | 'PASSED' | 'MASTERED';
+export type ProficiencyLevel =
+  | 'UNSEEN'
+  | 'FAILED'
+  | 'PARTIAL'
+  | 'PASSED'
+  | 'MASTERED';
 
 export type ChipWithProficiency = ProblemTypeChip & {
   proficiency: ProficiencyLevel;
@@ -34,9 +39,7 @@ export type ChipWithProficiency = ProblemTypeChip & {
 export type TopicRow = {
   topicId: number;
   topicName: string;
-  easy: ChipWithProficiency[];
-  medium: ChipWithProficiency[];
-  hard: ChipWithProficiency[];
+  chips: ChipWithProficiency[];
 };
 
 export type FieldSection = {

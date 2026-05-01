@@ -1,0 +1,21 @@
+.footer {
+  position: sticky;
+  bottom: 0;
+  padding: 12px 0;
+  background: #fafafa;
+  border-top: 1px solid #e5e7eb;
+  font-size: 14px;
+  color: #374151;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #9ca3af;
+  font-size: 14px;
+  text-align: center;
+  gap: 8px;
+}
