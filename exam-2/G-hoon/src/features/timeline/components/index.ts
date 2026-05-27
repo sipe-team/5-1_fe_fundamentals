@@ -5,3 +5,4 @@ export { RoomFilter } from './RoomFilter';
 export { default as TimelineBody } from './TimelineBody';
 export { default as TimelineGrid } from './TimelineGrid';
 export { default as TimelineRow } from './TimelineRow';
+export { default as TimelineSkeletonBody } from './TimelineSkeletonBody';

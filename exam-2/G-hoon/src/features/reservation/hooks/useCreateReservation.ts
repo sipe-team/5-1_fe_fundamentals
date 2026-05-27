@@ -1,16 +1,17 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { useNavigate } from 'react-router-dom';
+import { queryKeys } from '@/shared/api/queryKeys';
 import { createReservation } from '../api';
 
 export function useCreateReservation() {
   const queryClient = useQueryClient();
-  const navigate = useNavigate();
 
   return useMutation({
     mutationFn: createReservation,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['reservations'] });
-      navigate('/');
+    onSuccess: (_data, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.reservations.byDate(variables.date),
+      });
+      queryClient.invalidateQueries({ queryKey: queryKeys.reservations.my });
     },
   });
 }
