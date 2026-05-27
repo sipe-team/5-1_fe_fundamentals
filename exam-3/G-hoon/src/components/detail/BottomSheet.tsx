@@ -1,6 +1,7 @@
 import { AnimatePresence, motion } from 'framer-motion';
 import { type ReactNode, type RefObject, useEffect, useRef } from 'react';
 import { createPortal } from 'react-dom';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 interface BottomSheetProps {
   isOpen: boolean;
@@ -29,38 +30,11 @@ export function BottomSheet({
     };
   }, [isOpen]);
 
-  useEffect(() => {
-    if (!isOpen) return;
-
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape') {
-        onClose();
-        return;
-      }
-
-      if (e.key !== 'Tab') return;
-
-      const focusableElements =
-        dialogRef.current?.querySelectorAll<HTMLElement>(
-          'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])',
-        );
-      const firstElement = focusableElements?.[0];
-      const lastElement = focusableElements?.[focusableElements.length - 1];
-
-      if (!firstElement || !lastElement) return;
-
-      if (e.shiftKey && document.activeElement === firstElement) {
-        e.preventDefault();
-        lastElement.focus();
-      } else if (!e.shiftKey && document.activeElement === lastElement) {
-        e.preventDefault();
-        firstElement.focus();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isOpen, onClose]);
+  useFocusTrap(dialogRef, {
+    enabled: isOpen,
+    mode: 'circular',
+    onEscape: onClose,
+  });
 
   useEffect(() => {
     if (!isOpen) return;

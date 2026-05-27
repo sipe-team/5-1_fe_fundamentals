@@ -1,8 +1,11 @@
 import { motion } from 'framer-motion';
-import { type KeyboardEvent, useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
 
 export function OrderPendingOverlay() {
   const overlayRef = useRef<HTMLDivElement>(null);
+
+  useFocusTrap(overlayRef, { enabled: true, mode: 'lock' });
 
   useEffect(() => {
     const previousOverflow = document.body.style.overflow;
@@ -14,13 +17,6 @@ export function OrderPendingOverlay() {
     };
   }, []);
 
-  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
-    if (event.key !== 'Tab') return;
-
-    event.preventDefault();
-    overlayRef.current?.focus();
-  };
-
   return (
     <div
       ref={overlayRef}
@@ -30,7 +26,6 @@ export function OrderPendingOverlay() {
       aria-describedby="order-pending-description"
       aria-busy="true"
       tabIndex={-1}
-      onKeyDown={handleKeyDown}
       className="fixed inset-0 z-50 flex items-center justify-center bg-gray-950/25 px-6 backdrop-blur-sm"
     >
       <motion.div
