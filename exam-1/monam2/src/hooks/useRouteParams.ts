@@ -1,11 +1,17 @@
-import { useSearchParams } from "react-router-dom";
-import { isSortOption, type SortOption } from "@/types";
+import { useSearchParams } from 'react-router-dom';
+import { isSortOption, type SortOption } from '@/types';
 
 export interface ProductQueryState {
   search?: string;
   categories?: string;
   sort?: SortOption;
 }
+
+const PRODUCT_QUERY_KEYS = [
+  'search',
+  'categories',
+  'sort',
+] as const satisfies readonly (keyof ProductQueryState)[];
 
 type ProductQueryPatch = {
   [Key in keyof ProductQueryState]?: ProductQueryState[Key] | undefined;
@@ -17,11 +23,11 @@ function normalizeQueryValue(value: string | null) {
 }
 
 function readProductQuery(searchParams: URLSearchParams): ProductQueryState {
-  const rawSort = searchParams.get("sort");
+  const rawSort = searchParams.get('sort');
 
   return {
-    search: normalizeQueryValue(searchParams.get("search")),
-    categories: normalizeQueryValue(searchParams.get("categories")),
+    search: normalizeQueryValue(searchParams.get('search')),
+    categories: normalizeQueryValue(searchParams.get('categories')),
     sort: isSortOption(rawSort) ? rawSort : undefined,
   };
 }
@@ -37,7 +43,7 @@ export default function useRouteParams() {
       [keyof ProductQueryState, string | undefined]
     >) {
       const normalizedValue =
-        typeof value === "string" ? value.trim() : (value ?? undefined);
+        typeof value === 'string' ? value.trim() : (value ?? undefined);
 
       if (!normalizedValue) {
         nextParams.delete(key);
@@ -51,7 +57,13 @@ export default function useRouteParams() {
   };
 
   const resetQuery = () => {
-    setSearchParams(new URLSearchParams());
+    const nextParams = new URLSearchParams(searchParams);
+
+    for (const key of PRODUCT_QUERY_KEYS) {
+      nextParams.delete(key);
+    }
+
+    setSearchParams(nextParams);
   };
 
   return {
